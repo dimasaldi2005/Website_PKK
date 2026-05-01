@@ -1,0 +1,20 @@
+  .background-blue-1 {
+    background: rgb(0 171, 205);
+  }
+
+  .font-col {
+    color: rgb(0 171, 205);
+  }
+  
+  @media (min-width: 768px) {
+  .gradient-form {
+  height: 100vh !important;
+  }
+  }
+  @media (min-width: 769px) {
+  .background-blue-1 {
+  border-top-right-radius: .3rem;
+  border-bottom-right-radius: .3rem;
+  
+  }
+  }

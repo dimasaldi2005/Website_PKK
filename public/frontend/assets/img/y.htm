@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+    <title>Portal Kecamatan Nganjuk</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link href="https://nganjuk.nganjukkab.go.id/assets/frontend/images/log.png" rel="shortcut icon" />
+  
+  <!--<script type="text/javascript" src="assets/jquery/jquery.js"></script>-->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://nganjuk.nganjukkab.go.id/assets/bootstrap/css/bootstrap.css">
+  <script type="text/javascript" src="https://nganjuk.nganjukkab.go.id/assets/bootstrap/js/bootstrap.js"></script>
+  <link rel="stylesheet" href="https://nganjuk.nganjukkab.go.id/assets/dist/css/qibul.css">
+
+  <link href="https://nganjuk.nganjukkab.go.id/assets/frontend/css/style.css" rel="stylesheet">
+  <link href="https://nganjuk.nganjukkab.go.id/assets/frontend/css/mdb.css" rel="stylesheet">
+  <script type="text/javascript" src="https://widget.kominfo.go.id/gpr-widget-kominfo.min.js"></script>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:700" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Squada+One" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Paytone+One" rel="stylesheet">
+
+  <style type="text/css">
+    .nav-link, .dropdown-item{
+      font-size: 15px;
+    }
+    .card-header{
+      background-color: #3385ff;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div>
+  <div class="" style="z-index: 90; padding: 8px; background-color: #3385ff; font-family: 'Open Sans', sans-serif;">
+
+    <div class="container">  
+      <div class="row">
+        <div class="col-5"> 
+          <img class="logo" src="https://nganjuk.nganjukkab.go.id/assets/frontend/images/log.png" alt="">
+          <div class="logo-text">
+            <div class="text-bawah">
+              <span class="brand-text font-weight-light" style="font-family: 'Squada One';">
+                <span style="color: #fff;">Pemerintah Kab. Nganjuk</span>
+              </span>
+            </div>
+            <div class="text-atas">
+              <span class="brand-text font-weight-light" style="font-family: 'Squada One';">
+                <strong><span style="color: #fff;"> Kecamatan Nganjuk</span></strong>
+              </span>
+            </div>
+            
+          </div>
+
+        </div>
+        <div class="col-7" style="text-align: right;">
+          <div class="navbar navbar-expand-lg navbar-light" id="myheader">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+         <span class="navbar-toggler-icon"></span>
+        </button>
+
+            <div class="collapse navbar-collapse" id="navbarColor03">
+              
+                 <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="https://nganjuk.nganjukkab.go.id/beranda" style="color: #fff;" href="https://nganjuk.nganjukkab.go.id/">Beranda</a>
+          </li>
+            <li class="dropdown">
+            <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #fff;">Profil <i class="fa fa-angle-down"></i></a>
+              <div class="dropdown-menu dropdown-primary" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="https://nganjuk.nganjukkab.go.id/profil/1">Struktur Organisasi</a>
+                                <a class="dropdown-item" href="https://nganjuk.nganjukkab.go.id/profil/2">Sejarah</a>
+                              </div>
+          </li>
+          
+           <li class="nav-item">
+            <a class="nav-link active" href="https://nganjuk.nganjukkab.go.id/all-kelurahan" style="color: #fff;" href="https://nganjuk.nganjukkab.go.id/">Desa/Kelurahan</a>
+          </li>
+         <li class="dropdown ">
+            <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #fff;">PATEN <i class="fa fa-angle-down"></i></a>
+            <ul class="dropdown-menu dropdown-primary">
+                <li><a href="https://nganjuk.nganjukkab.go.id/timpaten" class="dropdown-item">Tim PATEN</a></li>
+                <li class="dropdown submenu">
+                    <a href="#" class="nav-link dropdown-item" data-toggle="dropdown">Pelayanan</a>
+                    <div class="dropdown-menu dropdown-primary" aria-labelledby="navbarDropdown">
+                      <!-- <a href="https://nganjuk.nganjukkab.go.id/informasi/pengertian-paten" class="dropdown-item">Pengertian PATEN</a> -->
+                      <a href="https://nganjuk.nganjukkab.go.id/informasi/perizinan" class="dropdown-item">Perizinan</a>
+                      <a href="https://nganjuk.nganjukkab.go.id/informasi/non-perizinan" class="dropdown-item">Non Perizinan</a>
+                    </div>
+                </li>
+                <!-- <li><a href="https://nganjuk.nganjukkab.go.id/informasi/musrenbang" class="dropdown-item">Musrenbang</a></li> -->
+            </ul>
+          </li>
+           <li class="nav-item">
+            <a class="nav-link" href="https://nganjuk.nganjukkab.go.id/galeri/semua-galeri" style="color: #fff;">Galeri</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://ppid.nganjukkab.go.id/" target="_blank" style="color: #fff;">PPID</a>
+          </li>
+         
+           
+        
+           
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+     
+    </div>  
+  </div>
+  <!--Carousel Wrapper-->
+  <div id="carousel-example-2" class="carousel slide carousel-fade" data-ride="carousel">
+       
+      <!--Indicators-->
+      <ol class="carousel-indicators poster-indicators">
+          
+      </ol>
+      <!--/.Indicators-->
+      <!--Slides-->
+      <div id="header" class="carousel-inner poster-inner" role="listbox">
+          
+      </div>
+      
+      <!--/.Slides-->
+      <!--Controls-->
+      <a class="carousel-control-prev" href="#carousel-example-2" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#carousel-example-2" role="button" data-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+      </a>
+      <!--/.Controls-->
+  </div>
+  <!--/.Carousel Wrapper-->
+</div>
+
+  <div class="navbar navbar-expand-lg navbar-light" id="myheader" style="z-index: 90; background-color: #3385ff; font-family: 'Open Sans', sans-serif; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="container">  
+     <div class="row">
+        <div class="col-12"> 
+            
+            <p style="color: #f8c300; font-size: 22px;">&nbspKinerja Kecamatan</p>
+          
+        </div>
+
+        <div class="col-12"> 
+                   <div class="collapse navbar-collapse" id="navbarColor02">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="https://nganjuk.nganjukkab.go.id/pemberdaya_masyarakat" style="color: #fff;" href="https://nganjuk.nganjukkab.go.id/">Pemberdayaan Masyarakat</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://nganjuk.nganjukkab.go.id/tantribum" style="color: #fff;">Trantibum</a>
+          </li>
+          <!-- <li class="nav-item">
+            <a class="nav-link active" href="https://nganjuk.nganjukkab.go.id/#" style="color: #fff;" href="https://nganjuk.nganjukkab.go.id/">Kabar Desa</a>
+          </li> -->
+          <li class="nav-item">
+            <a class="nav-link active" href="https://nganjuk.nganjukkab.go.id/sarpras" style="color: #fff;" href="https://nganjuk.nganjukkab.go.id/">Sarpras Pelayanan Umum</a>
+          </li>
+           <li class="nav-item">
+            <a class="nav-link" href="https://nganjuk.nganjukkab.go.id/pemerintahan"  style="color: #fff;">Pemerintahan</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://nganjuk.nganjukkab.go.id/pembinaan"  style="color: #fff;">Pembinaan Pengawasan Desa</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://nganjuk.nganjukkab.go.id/pkk"  style="color: #fff;">PKK</a>
+          </li>
+         <li class="nav-item">
+            <a class="nav-link" href="https://nganjuk.nganjukkab.go.id/prestasi"  style="color: #fff;">Prestasi</a>
+          </li>
+          
+           
+       
+       
+                   
+        </ul>
+        
+      </div>
+
+        </div>
+
+     </div>
+
+     
+   
+    </div>  
+  </div>
+  <script src="https://nganjuk.nganjukkab.go.id/services/HeaderVisitorService.js"></script><section>
+<div class="container">
+  <section>
+    <div class="col-12" id="title">
+      <h2 id="judul" style="text-align: center;">PKK</h2><hr align="center">
+    </div> 
+
+    <div class="col-lg-12 col-md-12 magazine-section my-5">
+            <div class="single-news mb-2">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="view overlay rounded z-depth-1 mb-2">
+              <img class="img-fluid" src="https://nganjuk.nganjukkab.go.id/upload_file/news_image/2b8ca5b23ef15afa7c9d4686e49c2395.jpg" alt="Sample image">
+              <a>
+                <div class="mask rgba-white-slight"></div>
+              </a>
+            </div>
+          </div>
+          <a href="berita/detail-berita/109">
+            <div class="col-md-9">
+              <p class="font-weight-bold dark-grey-text" style="font-weight: bold;">Pameran Hasil Produk UP2K Desa/Kelurahan Se Kecamatan Nganjuk</p>
+              <p class="font-weight-bold dark-grey-text"><i class="fa fa-calendar"> 2022-11-22</i> | <i class="fa fa-user-o"> Kecamatan Nganjuk</i> </p>
+              <div class="d-flex justify-content-between">
+                <div class="col-11 text-truncate pl-0 mb-3">
+                  <a href="#!" class="dark-grey-text"><p>Pemerintah Kabupaten Nganjuk melalui Dinas Pemberdayaan Masyarakat Desa (PMD) dan Tim Penggerak PKK menyelenggarakan Puncak Peringatan Bulan Bhakti Gotong Royong Masyarakat (BBGRM), dan Hari Kesatu</a>
+                </div>
+                <a href="berita/detail-berita/109"><i class="fa fa-angle-double-right"></i></a>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+            <div class="single-news mb-2">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="view overlay rounded z-depth-1 mb-2">
+              <img class="img-fluid" src="https://nganjuk.nganjukkab.go.id/upload_file/news_image/2e26a6d74f9a1f718c0c1b76d92945c1.jpeg" alt="Sample image">
+              <a>
+                <div class="mask rgba-white-slight"></div>
+              </a>
+            </div>
+          </div>
+          <a href="berita/detail-berita/100">
+            <div class="col-md-9">
+              <p class="font-weight-bold dark-grey-text" style="font-weight: bold;">GEBRAK MASKER TP-PKK Kec. Nganjuk</p>
+              <p class="font-weight-bold dark-grey-text"><i class="fa fa-calendar"> 2020-08-31</i> | <i class="fa fa-user-o"> Kecamatan Nganjuk</i> </p>
+              <div class="d-flex justify-content-between">
+                <div class="col-11 text-truncate pl-0 mb-3">
+                  <a href="#!" class="dark-grey-text"><p>Nganjuk- Gebrak Masker TP-PKK Kecamatan Nganjuk Kabupaten Nganjuk dilaksanakan pada Senin, 31 Agustus 2020 tepatnya di Kantor Kecamatan Nganjuk. Di tengah wabah Covid-19 ini maka Kegiatan&nbsp;diha</a>
+                </div>
+                <a href="berita/detail-berita/100"><i class="fa fa-angle-double-right"></i></a>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+            <div class="single-news mb-2">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="view overlay rounded z-depth-1 mb-2">
+              <img class="img-fluid" src="https://nganjuk.nganjukkab.go.id/upload_file/news_image/cb2fbe42f7dadd6ed121f4603e32545f.jpeg" alt="Sample image">
+              <a>
+                <div class="mask rgba-white-slight"></div>
+              </a>
+            </div>
+          </div>
+          <a href="berita/detail-berita/79">
+            <div class="col-md-9">
+              <p class="font-weight-bold dark-grey-text" style="font-weight: bold;">Giat Baksos PKK Kabupaten Nganjuk Bersama TP PKK Kecamatan Nganjuk di Kelurahan Begadung</p>
+              <p class="font-weight-bold dark-grey-text"><i class="fa fa-calendar"> 2020-05-12</i> | <i class="fa fa-user-o"> Kecamatan Nganjuk</i> </p>
+              <div class="d-flex justify-content-between">
+                <div class="col-11 text-truncate pl-0 mb-3">
+                  <a href="#!" class="dark-grey-text"><p>Nganjuk, 11 Mei 2020 PKK Kabupaten Nganjuk mengadakan Bakti Sosial di Posko Kelurahan Begadung Kecamatan Nganjuk Kabupaten Nganjuk.</p>
+
+<p>Acara tersebut dihadiri oleh Camat Nganjuk beserta Tim Pe</a>
+                </div>
+                <a href="berita/detail-berita/79"><i class="fa fa-angle-double-right"></i></a>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+            <div class="single-news mb-2">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="view overlay rounded z-depth-1 mb-2">
+              <img class="img-fluid" src="https://nganjuk.nganjukkab.go.id/upload_file/news_image/546a847f107dfd53df94ce5beb06196a.jpg" alt="Sample image">
+              <a>
+                <div class="mask rgba-white-slight"></div>
+              </a>
+            </div>
+          </div>
+          <a href="berita/detail-berita/70">
+            <div class="col-md-9">
+              <p class="font-weight-bold dark-grey-text" style="font-weight: bold;">Berada di Lingkungan Desa/ Kelurahan Kecamatan Nganjuk TP PKK Lakukan Pembagian Masker Gratis Kepada</p>
+              <p class="font-weight-bold dark-grey-text"><i class="fa fa-calendar"> 2020-04-15</i> | <i class="fa fa-user-o"> Kecamatan Nganjuk</i> </p>
+              <div class="d-flex justify-content-between">
+                <div class="col-11 text-truncate pl-0 mb-3">
+                  <a href="#!" class="dark-grey-text"><p>Nganjuk - Himbauan Bupati Nganjuk Kabupaten Nganjuk untuk masyarakat selalu menggunakan masker baik yang sehat maupun sakit. Kali ini Tim Penggerak PKK Desa/ Kelurahan Se Kecamatan Nganjuk adakan p</a>
+                </div>
+                <a href="berita/detail-berita/70"><i class="fa fa-angle-double-right"></i></a>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+            <div class="single-news mb-2">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="view overlay rounded z-depth-1 mb-2">
+              <img class="img-fluid" src="https://nganjuk.nganjukkab.go.id/upload_file/news_image/374e103f3cbe6e0b58ea11bdb89b7ce4.jpeg" alt="Sample image">
+              <a>
+                <div class="mask rgba-white-slight"></div>
+              </a>
+            </div>
+          </div>
+          <a href="berita/detail-berita/69">
+            <div class="col-md-9">
+              <p class="font-weight-bold dark-grey-text" style="font-weight: bold;">Berada di Kecamatan Nganjuk TP- PKK Adakan rapat koordinasi Antisipasi Penyebaran Virus Covid-19  </p>
+              <p class="font-weight-bold dark-grey-text"><i class="fa fa-calendar"> 2020-04-13</i> | <i class="fa fa-user-o"> Kecamatan Nganjuk</i> </p>
+              <div class="d-flex justify-content-between">
+                <div class="col-11 text-truncate pl-0 mb-3">
+                  <a href="#!" class="dark-grey-text"><p>mengantisipasi penyebaran virus corona, PKK ikut berperan aktif dalam pencegahan penyebaran covid-19 baik sosialisasi maupun himbauan melalui media sosial.&nbsp;</p>
+
+<p>ketua TP PKK Ny. Nur Fauza </a>
+                </div>
+                <a href="berita/detail-berita/69"><i class="fa fa-angle-double-right"></i></a>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+            <div class="single-news mb-2">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="view overlay rounded z-depth-1 mb-2">
+              <img class="img-fluid" src="https://nganjuk.nganjukkab.go.id/upload_file/news_image/e0b14a6875f2e472ee5b7103ef83ff33.jpg" alt="Sample image">
+              <a>
+                <div class="mask rgba-white-slight"></div>
+              </a>
+            </div>
+          </div>
+          <a href="berita/detail-berita/68">
+            <div class="col-md-9">
+              <p class="font-weight-bold dark-grey-text" style="font-weight: bold;">Peran Serta PKK Kecamatan Nganjuk dalam Pencegahan Covid-19</p>
+              <p class="font-weight-bold dark-grey-text"><i class="fa fa-calendar"> 2020-04-11</i> | <i class="fa fa-user-o"> Kecamatan Nganjuk</i> </p>
+              <div class="d-flex justify-content-between">
+                <div class="col-11 text-truncate pl-0 mb-3">
+                  <a href="#!" class="dark-grey-text"><p>Nganjuk- Beberapa langkah telah dilakukan TP PKK Kabupaten Nganjuk dalam membantu mencegah penyebaran Covid-19. Salah satunya, menyalurkan sumbangan dari pengurus TP PKK Kabupaten Nganjuk pada tim </a>
+                </div>
+                <a href="berita/detail-berita/68"><i class="fa fa-angle-double-right"></i></a>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+            <div class="single-news mb-2">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="view overlay rounded z-depth-1 mb-2">
+              <img class="img-fluid" src="https://nganjuk.nganjukkab.go.id/upload_file/news_image/7df4c3d6fdedb57b12bc4dcf0cbbbe3b.jpeg" alt="Sample image">
+              <a>
+                <div class="mask rgba-white-slight"></div>
+              </a>
+            </div>
+          </div>
+          <a href="berita/detail-berita/38">
+            <div class="col-md-9">
+              <p class="font-weight-bold dark-grey-text" style="font-weight: bold;">Kelurahan Bogo Mewakilli Lomba PTP Tingkat Kabupaten Tahun 2020</p>
+              <p class="font-weight-bold dark-grey-text"><i class="fa fa-calendar"> 2020-03-05</i> | <i class="fa fa-user-o"> Kecamatan Nganjuk</i> </p>
+              <div class="d-flex justify-content-between">
+                <div class="col-11 text-truncate pl-0 mb-3">
+                  <a href="#!" class="dark-grey-text"><p>Tanah pekarangan adalah lahan terbuka yang terdapat di sekitar rumah tinggal.</p>
+
+<p>Pemanfaatan lahan pekarangan baik di daerah pedesaan maupun perkotaan bisa mendukung ketahanan pangan nasional </a>
+                </div>
+                <a href="berita/detail-berita/38"><i class="fa fa-angle-double-right"></i></a>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+            <div class="single-news mb-2">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="view overlay rounded z-depth-1 mb-2">
+              <img class="img-fluid" src="https://nganjuk.nganjukkab.go.id/upload_file/news_image/6bd6ecc8de986613bccb4e60d4e8634d.jpeg" alt="Sample image">
+              <a>
+                <div class="mask rgba-white-slight"></div>
+              </a>
+            </div>
+          </div>
+          <a href="berita/detail-berita/34">
+            <div class="col-md-9">
+              <p class="font-weight-bold dark-grey-text" style="font-weight: bold;">Guru TK Dharmawanita dan TK Pertiwi se Kecamatan lakukan Pertemuan di Kantor Kecamatan Nganjuk</p>
+              <p class="font-weight-bold dark-grey-text"><i class="fa fa-calendar"> 2020-02-27</i> | <i class="fa fa-user-o"> Kecamatan Nganjuk</i> </p>
+              <div class="d-flex justify-content-between">
+                <div class="col-11 text-truncate pl-0 mb-3">
+                  <a href="#!" class="dark-grey-text"><p>Pertemuan rutin untuk sinkronisasi untuk program kegiatan belajar mengajar yang dilakukan di Kantor Kecamatan Nganjuk , Kamis(27/02/2020) yang dihadiri oleh&nbsp;Guru TK Dharmawanita dan Guru TK Pe</a>
+                </div>
+                <a href="berita/detail-berita/34"><i class="fa fa-angle-double-right"></i></a>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+            <div class="single-news mb-2">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="view overlay rounded z-depth-1 mb-2">
+              <img class="img-fluid" src="https://nganjuk.nganjukkab.go.id/upload_file/news_image/3cb85f833f665ecb033e94d270d2f37e.jpeg" alt="Sample image">
+              <a>
+                <div class="mask rgba-white-slight"></div>
+              </a>
+            </div>
+          </div>
+          <a href="berita/detail-berita/33">
+            <div class="col-md-9">
+              <p class="font-weight-bold dark-grey-text" style="font-weight: bold;">Rutinitas Pertemuan Pleno PKK di Kecamatan Nganjuk</p>
+              <p class="font-weight-bold dark-grey-text"><i class="fa fa-calendar"> 2020-02-26</i> | <i class="fa fa-user-o"> Kecamatan Nganjuk</i> </p>
+              <div class="d-flex justify-content-between">
+                <div class="col-11 text-truncate pl-0 mb-3">
+                  <a href="#!" class="dark-grey-text"><p>Kecamatan Nganjuk adakan&nbsp;Pertemuan Rutin Pleno PKK, Rabu (26/02/2020) yang dihadiri oleh pengurus dan anggota PKK Kecamatan.&nbsp;</p>
+
+<p>Acara tersebut di sambut oleh Camat Nganjuk (Agus Iri</a>
+                </div>
+                <a href="berita/detail-berita/33"><i class="fa fa-angle-double-right"></i></a>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      
+    </div>
+  </section>  
+</div>  
+</section>
+</body>
+
+</body>
+
+<!--Section: -->
+  <section id="stylishcolor">
+      <!-- Footer -->
+      <footer class="page-footer font-small pt-4 " style="background-color: #3385ff;">
+        <div class="container text-center text-md-left">
+          <div class="row text-center text-md-left pb-3">
+                        <div class="col-md-3 col-lg-3 col-xl-3 mx-auto ">
+              <p><div style="font-size:12pt; font-weight: bold; margin-top: -7%;" >Kecamatan Nganjuk</div></p>
+              <p>Kabupaten Nganjuk</p>
+              <a href='https://www.symptoma.it/'>search engine for diseases</a> <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=cc559798aa62b9900842ee26f7110a4c5d7a8c6c'></script>
+<script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/634399/t/0"></script>
+            </div>
+
+            <hr class="w-100 clearfix d-md-none">
+
+            <div class="col-md-3 col-lg-3 col-xl-3 mx-auto ">
+              <p><div style="font-size:12pt; font-weight: bold; margin-top: -7%;" >Kontak</div></p>
+              <p>
+                <i class="fa fa-home mr-1"></i> Jl. Dermojoyo No.21, Payaman, Kec. Nganjuk, Kabupaten Nganjuk, Jawa Timur 64412 </p>
+              <p>
+                <i class="fa fa-envelope mr-1"></i> nganjuk@nganjukkab.go.id</p>
+              <p>
+                <i class="fa fa-phone mr-1"></i> (0358) 321746</p>
+            </div>
+            <hr class="w-100 clearfix d-md-none">
+
+            <!-- Grid column -->
+            <div class="col-md-6 peta" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); padding: 0px 0px 0px 0px;">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3954.6721473142666!2d111.899082515381!3d-7.610609077344243!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e784b07ac19a107%3A0xb935ccd6b9eb6f71!2sKantor%20Kecamatan%20Nganjuk!5e0!3m2!1sen!2sid!4v1568162218895!5m2!1sen!2sid" width="100%" height="100%" frameborder="0" style="border:0;" allowfullscreen=""></iframe>            </div>
+          </div>
+          <hr>
+
+          <!-- Grid row -->
+          <div class="row d-flex align-items-center">
+
+            <!-- Grid column -->
+            <div class="col-md-7 col-lg-8">
+
+              <!--Copyright-->
+              <p class="text-center text-md-left">© 2019 Copyright:
+                <a href="https://diskominfo.nganjukkab.go.id/">
+                  <strong>E-GOV Team Dinas Kominfo Kab. Nganjuk</strong>
+                </a>
+              </p>
+
+            </div>
+
+            <!-- Grid column -->
+
+            <!-- Grid column -->
+            <div class="col-md-5 col-lg-4 ml-lg-0">
+
+              <!-- Social buttons -->
+              <!--<div class="text-center text-md-right">
+                <ul class="list-unstyled list-inline">
+                  <li class="list-inline-item">
+                    <a class="btn-floating btn-sm rgba-white-slight mx-1">
+                      <i class="fa fa-facebook"></i>
+                    </a>
+                  </li>
+                  <li class="list-inline-item">
+                    <a class="btn-floating btn-sm rgba-white-slight mx-1">
+                      <i class="fa fa-twitter"></i>
+                    </a>
+                  </li>
+                  <li class="list-inline-item">
+                    <a class="btn-floating btn-sm rgba-white-slight mx-1">
+                      <i class="fa fa-google-plus"></i>
+                    </a>
+                  </li>
+                  <li class="list-inline-item">
+                    <a class="btn-floating btn-sm rgba-white-slight mx-1">
+                      <i class="fa fa-linkedin"></i>
+                    </a>
+                  </li>
+                </ul>
+              </div>-->
+
+            </div>
+            <!-- Grid column -->
+
+          </div>
+          <!-- Grid row -->
+
+        </div>
+        </div>
+      </footer>
+      <!-- Footer -->
+</section>
+
+  <a id="button"></a>
+
+  <script type="text/javascript">
+    var btn = $('#button');
+
+    $(window).scroll(function() {
+      if ($(window).scrollTop() > 300) {
+        btn.addClass('show');
+      } else {
+        btn.removeClass('show');
+      }
+    });
+
+    btn.on('click', function(e) {
+      e.preventDefault();
+      $('html, body').animate({scrollTop:0}, '300');
+    });
+
+
+  </script>
+  <script type="text/javascript">
+  window.onscroll = function() {myFunction()};
+
+  var header = document.getElementById("myheader");
+  var sticky = header.offsetTop;
+
+
+  function myFunction() {
+    if (window.pageYOffset > 350) {
+      header.classList.add("sticky");
+    } else {
+    header.classList.remove("sticky");
+    }
+  } 
+  
+  jQuery(document).ready(function($){
+  //set your google maps parameters
+  var $latitude = 61.5255069,
+    $longitude = -0.0836207,
+    $map_zoom = 14;
+
+  //google map custom marker icon - .png fallback for IE11
+  var is_internetExplorer11= navigator.userAgent.toLowerCase().indexOf('trident') > -1;
+  var $marker_url = ( is_internetExplorer11 ) ? 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/148866/cd-icon-location.png' : 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/148866/cd-icon-location_1.svg';
+    
+  //define the basic color of your map, plus a value for saturation and brightness
+  var $main_color = '#2d313f',
+    $saturation= -20,
+    $brightness= 5;
+
+  //we define here the style of the map
+  var style= [ 
+    {
+      //set saturation for the labels on the map
+      elementType: "labels",
+      stylers: [
+        {saturation: $saturation}
+      ]
+    },  
+      { //poi stands for point of interest - don't show these lables on the map 
+      featureType: "poi",
+      elementType: "labels",
+      stylers: [
+        {visibility: "off"}
+      ]
+    },
+    {
+      //don't show highways lables on the map
+          featureType: 'road.highway',
+          elementType: 'labels',
+          stylers: [
+              {visibility: "off"}
+          ]
+      }, 
+    {   
+      //don't show local road lables on the map
+      featureType: "road.local", 
+      elementType: "labels.icon", 
+      stylers: [
+        {visibility: "off"} 
+      ] 
+    },
+    { 
+      //don't show arterial road lables on the map
+      featureType: "road.arterial", 
+      elementType: "labels.icon", 
+      stylers: [
+        {visibility: "off"}
+      ] 
+    },
+    {
+      //don't show road lables on the map
+      featureType: "road",
+      elementType: "geometry.stroke",
+      stylers: [
+        {visibility: "off"}
+      ]
+    }, 
+    //style different elements on the map
+    { 
+      featureType: "transit", 
+      elementType: "geometry.fill", 
+      stylers: [
+        { hue: $main_color },
+        { visibility: "on" }, 
+        { lightness: $brightness }, 
+        { saturation: $saturation }
+      ]
+    }, 
+    {
+      featureType: "poi",
+      elementType: "geometry.fill",
+      stylers: [
+        { hue: $main_color },
+        { visibility: "on" }, 
+        { lightness: $brightness }, 
+        { saturation: $saturation }
+      ]
+    },
+    {
+      featureType: "poi.government",
+      elementType: "geometry.fill",
+      stylers: [
+        { hue: $main_color },
+        { visibility: "on" }, 
+        { lightness: $brightness }, 
+        { saturation: $saturation }
+      ]
+    },
+    {
+      featureType: "poi.sport_complex",
+      elementType: "geometry.fill",
+      stylers: [
+        { hue: $main_color },
+        { visibility: "on" }, 
+        { lightness: $brightness }, 
+        { saturation: $saturation }
+      ]
+    },
+    {
+      featureType: "poi.attraction",
+      elementType: "geometry.fill",
+      stylers: [
+        { hue: $main_color },
+        { visibility: "on" }, 
+        { lightness: $brightness }, 
+        { saturation: $saturation }
+      ]
+    },
+    {
+      featureType: "poi.business",
+      elementType: "geometry.fill",
+      stylers: [
+        { hue: $main_color },
+        { visibility: "on" }, 
+        { lightness: $brightness }, 
+        { saturation: $saturation }
+      ]
+    },
+    {
+      featureType: "transit",
+      elementType: "geometry.fill",
+      stylers: [
+        { hue: $main_color },
+        { visibility: "on" }, 
+        { lightness: $brightness }, 
+        { saturation: $saturation }
+      ]
+    },
+    {
+      featureType: "transit.station",
+      elementType: "geometry.fill",
+      stylers: [
+        { hue: $main_color },
+        { visibility: "on" }, 
+        { lightness: $brightness }, 
+        { saturation: $saturation }
+      ]
+    },
+    {
+      featureType: "landscape",
+      stylers: [
+        { hue: $main_color },
+        { visibility: "on" }, 
+        { lightness: $brightness }, 
+        { saturation: $saturation }
+      ]
+      
+    },
+    {
+      featureType: "road",
+      elementType: "geometry.fill",
+      stylers: [
+        { hue: $main_color },
+        { visibility: "on" }, 
+        { lightness: $brightness }, 
+        { saturation: $saturation }
+      ]
+    },
+    {
+      featureType: "road.highway",
+      elementType: "geometry.fill",
+      stylers: [
+        { hue: $main_color },
+        { visibility: "on" }, 
+        { lightness: $brightness }, 
+        { saturation: $saturation }
+      ]
+    }, 
+    {
+      featureType: "water",
+      elementType: "geometry",
+      stylers: [
+        { hue: $main_color },
+        { visibility: "on" }, 
+        { lightness: $brightness }, 
+        { saturation: $saturation }
+      ]
+    }
+  ];
+    
+  //set google map options
+  var map_options = {
+        center: new google.maps.LatLng($latitude, $longitude),
+        zoom: $map_zoom,
+        panControl: false,
+        zoomControl: false,
+        mapTypeControl: false,
+        streetViewControl: false,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        scrollwheel: false,
+        styles: style,
+    }
+    //inizialize the map
+  var map = new google.maps.Map(document.getElementById('google-container'), map_options);
+  //add a custom marker to the map        
+  var marker = new google.maps.Marker({
+      position: new google.maps.LatLng($latitude, $longitude),
+      map: map,
+      visible: true,
+    icon: $marker_url,
+  });
+
+  //add custom buttons for the zoom-in/zoom-out on the map
+  function CustomZoomControl(controlDiv, map) {
+    //grap the zoom elements from the DOM and insert them in the map 
+      var controlUIzoomIn= document.getElementById('cd-zoom-in'),
+        controlUIzoomOut= document.getElementById('cd-zoom-out');
+      controlDiv.appendChild(controlUIzoomIn);
+      controlDiv.appendChild(controlUIzoomOut);
+
+    // Setup the click event listeners and zoom-in or out according to the clicked element
+    google.maps.event.addDomListener(controlUIzoomIn, 'click', function() {
+        map.setZoom(map.getZoom()+1)
+    });
+    google.maps.event.addDomListener(controlUIzoomOut, 'click', function() {
+        map.setZoom(map.getZoom()-1)
+    });
+  }
+
+  var zoomControlDiv = document.createElement('div');
+  var zoomControl = new CustomZoomControl(zoomControlDiv, map);
+
+    //insert the zoom div on the top left of the map
+    map.controls[google.maps.ControlPosition.LEFT_TOP].push(zoomControlDiv);
+});
+
+  
+  </script>
+
+
+  <!--
+
+  <footer>
+    <div class="container">
+
+      
+    </div>
+  </footer>-->
+  <script type="text/javascript">
+    var $headline = $('.headline'),
+    $inner = $('.inner'),
+    $nav = $('nav'),
+    navHeight = 75;
+
+$(window).scroll(function() {
+  var scrollTop = $(this).scrollTop(),
+      headlineHeight = $headline.outerHeight() - navHeight,
+      navOffset = $nav.offset().top;
+
+  $headline.css({
+    'opacity': (1 - scrollTop / headlineHeight)
+  });
+  $inner.children().css({
+    'transform': 'translateY('+ scrollTop * 0.4 +'px)'
+  });
+  if (navOffset > headlineHeight) {
+    $nav.addClass('scrolled');
+  } else {
+    $nav.removeClass('scrolled');
+  }
+});
+  </script>
+
+</html>

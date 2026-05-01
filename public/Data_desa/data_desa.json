@@ -1,0 +1,22 @@
+{
+  "Sawahan": ["Bareng", "Bendolo", "Duren", "Kebonagung", "Margopatur", "Ngliman", "Sawahan", "Sidorejo", "Siwalan"],
+  "Ngetos": ["Blongko", "Kepel", "Klodan", "Kuncir", "Kweden", "Mojoduwur", "Ngetos", "Oro-oro Ombo", "Suru"],
+  "Berbek": ["Balongrejo", "Bendungrejo", "Berbek", "Bulu", "Cepoko", "Grojogan", "Kacangan", "Maguan", "Millir", "Ngrawan", "Patranrejo", "Salamrojo", "Semare", "Sendangbumen", "Senglxut", "Sonopatik", "Sumberurip", "Sumberwindu", "Tiripan"],
+  "Loceret": ["Bajulan", "Candirejo", "Gejagan", "Genjeng", "Godean", "Jatirejo", "Karangsono", "Kenep", "Kwagean", "Loceret", "Macanan", "Mungkung", "Ngepeh", "Nglaban", "Pathan", "Putukrejo", "Sekaran", "Sombron", "Sukorejo", "Tanjungrejo", "Teken Glagahan", "Tempel Wetan"],
+  "Pace": ["Babadan", "Banaran", "Batembat", "Bodor", "Cerme", "Gemenggeng", "Gondang", "Jampes", "Jatigreges", "Jetis", "Joho", "Kecubung", "Kepanjen", "Miandangan", "Pace Wetan", "Pacekulon", "Plosoharjo", "Sanan"],
+  "Tanjunganom": ["Kedungombo", "Sumberkepuh", "Kampungbaru", "Wates", "Malangsari", "Getas", "Sonobekel", "Ngadirejo", "Banjaranyar", "Sidoharjo", "Jogomerto", "Kedungrejo", "Sambirejo", "Demangan", "Tanjunganom", "Warujayeng"],
+  "Prambon": ["Baleturi", "Bandung", "Gondanglegi", "Kurungrejo", "Mojoaqung", "Nglawak", "Rowoharjo", "Sanggrahan", "Singkalanyar", "Sono Ageng", "Sugihwaras", "Tanjungtani", "Tegaron", "Watudandang"],
+  "Ngronggot": ["Banjarsari", "Betet", "Cengkok", "Dadapan", "Juwet", "Kallanyar", "Kaloran", "Kelutan", "Klurahan", "Mojokendil", "Ngronggot", "Tanjungkalang", "Trayang"],
+  "Kertosono": ["Bangsri", "Drenges", "Juwono", "Kalianyar", "Kepuh", "Kudu", "Kutorejo", "Lambangkuning", "Nglawak", "Pandantoyo", "Pelem", "Tanjung", "Tembarak", "Banaran"],
+  "Patianrowo": ["Babadan", "Bukur", "Lestari", "Ngepung", "Ngrombot", "Pakuncen", "Patianrowo", "Pecuk", "Pisang", "Rowomarto", "Tirtobinangun"],
+  "Baron": ["Baron", "Garu", "Gebangkerep", "Jambi", "Je kek", "Katerban", "Kemaduh", "Kernlokolegi", "Mabung", "Sambiroto", "Waung"],
+  "Gondang": ["Balonggehang", "Campur", "Gondangkulon", "Jaan", "Karangsemi", "Kedungglugu", "Ketawang", "Losari", "Mojoseto", "Nglinggo", "Ngunjung", "Pandcan", "Sanggrahan", "Senggowar", "Senjayan", "Sumberagung", "Sumberjo"],
+  "Sukomoro": ["Bagor Wetan", "Blitaran", "Bungur", "Kedungsoko", "Nglundo", "Ngrami", "Ngrengket", "Pehserut", "Purren", "Sumengko", "Kapas", "Sukomoro"],
+  "Nganjuk": ["Balongpacul", "Kedungdowo", "Begadung", "Bogo", "Cangkringan", "Ganungkidul", "Jatirejo", "Kartoharjo", "Kauman", "Kramat", "Mangundikaran", "Payaman", "Ploso", "Ringinanom", "Werungotok"],
+  "Bagor": ["Bagor Kulon", "Balongrejo", "Banaran Kulon", "Banaran Wetan", "Buduran", "Gandu", "Gemenggeng", "Girirejo", "Karang Tengah", "Kendalrejo", "Kerep Kidul", "Kutorejo", "Ngumpul", "Paron", "Pesudukuh", "Petak", "Sekarputh", "Selorejo", "Sugihwaras", "Guyangan", "Kedondong"],
+  "Wilangan": ["Mancon", "Ngadipiro", "Ngudikan", "Sudimoroharjo", "Sukoharjo", "Wilangan"],
+  "Rejoso": ["Banjarejo", "Bendoasri", "Gempol", "Jatirejo", "Jintel", "Kedungpadang", "Klagen", "Miorah", "Mojorembun", "Mungkung", "Musir Kidul", "Musir Lor", "Ngadiboyo", "Ngangkatan", "Pulkerep", "Rejoso", "Sambikerep", "Setten", "Sidokare", "Sukorejo", "Talang", "Talun", "Tritik", "Wengkal"],
+  "Ngluyu": ["Bajang", "Gampeng", "Lengkong Lor", "Nqluyu", "Sugihwaras", "Tempuran"],
+  "Lengkong": ["Balongasem", "Bangle", "Banjardowo", "Jatipunggur", "Jegreg", "Kedungmiaten", "Ketandan", "Lengkong", "Njepung", "Ngringin", "Pinggir", "Prayungan", "Sawahan", "Sumberkepuh", "Sumbermiriri", "Sumbersono"],
+  "Jatikalen": ["Begendang", "Dawuhan", "Diururejo", "Gondang Wetan", "Jatikalen", "Lumpangkuwik", "Munung", "Ngasem", "Perning", "Pule", "Pulowetan"]
+}
