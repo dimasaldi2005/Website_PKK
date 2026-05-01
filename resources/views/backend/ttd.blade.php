@@ -1,375 +1,188 @@
-{{-- @extends('backend/layouts.template') --}}
-{{-- @section('content1') --}}
-<!DOCTYPE html>
-
-<html lang="en">
-
-
-
-<head>
-
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Tanda Tangan</title>
-    <meta content="" name="description">
-    <meta content="" name="keywords">
-    <!-- Favicons -->
-    <link href="backend/assets/img/favicon.png" rel="icon">
-    <link href="backend/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-    <!-- Google Fonts -->
-    <link href="https://fonts.gstatic.com" rel="preconnect">
-    <link
-        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
-        rel="stylesheet">
-    <!-- Vendor CSS Files -->
-    <link href="backend/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="backend/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-    <link href="backend/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-    <link href="backend/assets/vendor/quill/quill.snow.css" rel="stylesheet">
-    <link href="backend/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
-    <link href="backend/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
-    <link href="backend/assets/vendor/simple-datatables/style.css" rel="stylesheet">
-    <!-- Template Main CSS File -->
-    <link href="backend/assets/css/style.css" rel="stylesheet">
-    {{-- fontawesome --}}
-
-    <link rel="stylesheet" type="text/css" href="{{ asset('fontawesome/css/all.min.css') }}">
-
-
-
-</head>
-
-
-
-<body>
-
-
-
-    <!-- ======= Header ======= -->
-
-    <header id="header" class="header fixed-top d-flex align-items-center">
-
-
-
-        <div class="d-flex align-items-center justify-content-between">
-
-            <a href="{{ route('dashboard') }}" class="logo d-flex align-items-center">
-
-                <img src="{{ asset('backend/assets/img/pkk.png') }}" alt="">
-
-                <span class="d-none d-lg-block">PKK NGANJUK</span>
-
-            </a>
-
-            <i class="bi bi-list toggle-sidebar-btn"></i>
-        </div><!-- End Logo -->
-        <nav class="header-nav ms-auto">
-        </nav><!-- End Icons Navigation -->
-    </header><!-- End Header -->
-
-
-    {{-- SIDEBAR --}}
-    @include('backend.includes.sidebar')
-
-
-    <main id="main" class="main">
-
-
-
-        <section class="section">
-
-            <div class="row">
-
-                <div class="col-md-12 mx-auto mt-2">
-
-                    <div class="pagetitle">
-
-                        <h1>Input Tanda Tangan Ketua</h1>
-
-                    </div><!-- End Page Title -->
-
-
-
-                    <div class="card">
-
-                        <div class="card-body mt-4">
-
-                            <form action="{{ route('ttdketua.store') }}" method="POST" enctype="multipart/form-data">
-
-                                @csrf
-
-
-
-                                <div class="form-outline mb-4">
-
-                                    <label for="nama_terang" class="form-label">Nama Terang</label>
-
-                                    <input type="text" name="nama_terang" id="nama_terang" class="form-control"
-                                        required oninvalid="this.setCustomValidity('Harap lengkapi nama terang')"
-                                        oninput="this.setCustomValidity('')" placeholder="Masukkan nama terang" />
-
-                                </div>
-
-
-
-                                <div class="form-outline mb-4">
-
-                                    <label for="jabatan" class="form-label">Jabatan</label>
-
-                                    <select name="jabatan" class="datepicker-trigger form-control hasDatepicker"
-                                        onchange="exibeMsg(this.value);">
-
-                                        <option value="">--Pilih--</option>
-
-                                        <option value="Ketua">Ketua</option>
-
-                                        <option value="Wakil Ketua">Wakil Ketua</option>
-
-                                        <option value="Sekretaris">Sekretaris</option>
-
-                                        <option value="Bendahara">Bendahara</option>
-
-                                    </select>
-
-                                </div>
-
-
-
-                                <div class="form-outline mb-4">
-
-                                    <label for="pokja" class="form-label">Pokja</label>
-
-                                    <select name="pokja" class="datepicker-trigger form-control hasDatepicker"
-                                        onchange="exibeMsg(this.value);">
-
-                                        <option value="">--Pilih--</option>
-
-                                        <option value="Bidang Umum">Bidang Umum</option>
-
-                                        <option value="Kelompok Kerja I">Kelompok Kerja I</option>
-
-                                        <option value="Kelompok Kerja II">Kelompok Kerja II</option>
-
-                                        <option value="Kelompok Kerja III">Kelompok Kerja III</option>
-
-                                        <option value="Kelompok Kerja IV">Kelompok Kerja IV</option>
-
-                                    </select>
-
-                                </div>
-
-
-
-                                <div class="text-end pt-1 pb-1 mt-4">
-
-                                    <button
-                                        class="btn btn-primary ps-xxl-5 pe-xxl-5 mr-auto background-blue-1 mb-2 fw-semibold fs-5"
-                                        type="submit">Kirim</button>
-
-                                </div>
-
-                            </form>
-
-
-
-
-
-                        </div>
-
+@extends('backend/layouts.template')
+
+@section('content1')
+
+<main id="main" class="main">
+
+    <div class="pagetitle">
+        <h1>Input Tanda Tangan Ketua</h1>
+    </div>
+
+    @if ($message = Session::get('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ $message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    <section class="section">
+        <div class="row">
+            <div class="col-12">
+
+                {{-- Form Card --}}
+                <div class="card">
+                    <div class="card-body" style="padding: 24px 28px 28px;">
+                        <form action="{{ route('ttd.store') }}" method="POST">
+                            @csrf
+
+                            <div class="mb-3">
+                                <label for="nama_terang" class="form-label fw-normal">Nama Terang :</label>
+                                <input type="text"
+                                    name="nama_terang"
+                                    id="nama_terang"
+                                    class="form-control @error('nama_terang') is-invalid @enderror"
+                                    value="{{ old('nama_terang') }}"
+                                    required
+                                    oninvalid="this.setCustomValidity('Harap lengkapi nama terang')"
+                                    oninput="this.setCustomValidity('')">
+                                @error('nama_terang')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="jabatan" class="form-label fw-normal">Jabatan :</label>
+                                <select name="jabatan"
+                                    id="jabatan"
+                                    class="form-select @error('jabatan') is-invalid @enderror"
+                                    required>
+                                    <option value="">--Pilih--</option>
+                                    <option value="Ketua"       {{ old('jabatan') == 'Ketua'       ? 'selected' : '' }}>Ketua</option>
+                                    <option value="Wakil Ketua" {{ old('jabatan') == 'Wakil Ketua' ? 'selected' : '' }}>Wakil Ketua</option>
+                                    <option value="Sekretaris"  {{ old('jabatan') == 'Sekretaris'  ? 'selected' : '' }}>Sekretaris</option>
+                                    <option value="Bendahara"   {{ old('jabatan') == 'Bendahara'   ? 'selected' : '' }}>Bendahara</option>
+                                </select>
+                                @error('jabatan')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="pokja" class="form-label fw-normal">PokJa :</label>
+                                <select name="pokja"
+                                    id="pokja"
+                                    class="form-select @error('pokja') is-invalid @enderror"
+                                    required>
+                                    <option value="">--Pilih--</option>
+                                    <option value="Bidang Umum"      {{ old('pokja') == 'Bidang Umum'      ? 'selected' : '' }}>Bidang Umum</option>
+                                    <option value="Kelompok Kerja I"  {{ old('pokja') == 'Kelompok Kerja I'  ? 'selected' : '' }}>Kelompok Kerja I</option>
+                                    <option value="Kelompok Kerja II" {{ old('pokja') == 'Kelompok Kerja II' ? 'selected' : '' }}>Kelompok Kerja II</option>
+                                    <option value="Kelompok Kerja III"{{ old('pokja') == 'Kelompok Kerja III'? 'selected' : '' }}>Kelompok Kerja III</option>
+                                    <option value="Kelompok Kerja IV" {{ old('pokja') == 'Kelompok Kerja IV' ? 'selected' : '' }}>Kelompok Kerja IV</option>
+                                </select>
+                                @error('pokja')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="text-end">
+                                <button type="submit"
+                                    class="btn btn-primary px-4"
+                                    style="background-color:#1a73e8; border-color:#1a73e8; font-size:15px; padding: 8px 28px;">
+                                    Kirim
+                                </button>
+                            </div>
+                        </form>
                     </div>
+                </div>
 
+                {{-- Daftar Tanda Tangan --}}
+                <div class="pagetitle mt-3">
+                    <h1>Daftar Tanda Tangan</h1>
+                </div>
 
-
-                    <div class="pagetitle">
-
-                        <h1>Daftar Tanda Tangan</h1>
-
-                    </div><!-- End Page Title -->
-
-
-
-                    @if ($message = Session::get('success'))
-                    <div class="alert alert-success" role="alert">
-
-                        {{ $message }}
-
-                    </div>
-                    @endif
-
-
-
-                    <div class="card mt-2">
-
-                        <div class="card-body">
-
-
-
-                            <table class="table">
-
-                                <thead>
-
+                <div class="card">
+                    <div class="card-body" style="padding: 0;">
+                        <div class="table-responsive">
+                            <table class="table table-bordered mb-0" style="font-size:14px;">
+                                <thead style="background-color:#f8f9fa;">
                                     <tr>
-
-                                        <th scope="col">No</th>
-
-                                        <th scope="col">Nama Terang</th>
-
-                                        <th scope="col">Jabatan</th>
-
-                                        <th scope="col">Pokja</th>
-
-                                        <th scope="col">Aksi</th>
-
+                                        <th class="text-center" style="width:60px; padding:12px 16px;">No</th>
+                                        <th style="padding:12px 16px;">Nama Terang</th>
+                                        <th style="padding:12px 16px;">Jabatan</th>
+                                        <th style="padding:12px 16px;">Pokja</th>
+                                        <th style="width:90px; padding:12px 16px;"></th>
                                     </tr>
-
                                 </thead>
-
                                 <tbody>
-
-                                    @php
-
-                                    $no = 1;
-
-                                    @endphp
-
-                                    @forelse ($data as $berita)
-                                    <tr>
-
-                                        <th scope="row">{{ $no++ }}</th>
-
-                                        <td>{{ Str::limit($berita->nama_terang, 25) }}</td>
-
-                                        <td>{{ Str::limit($berita->jabatan, 25) }}</td>
-
-                                        <td>{{ Str::limit($berita->pokja, 20) }}</td>
-
-                                        <td>
-
-
-
-                                            <a href="{{ route('ttd.edit', $berita->id_ttds) }}"
-                                                class="btn btn-sm btn-tambah">Edit</a>
-
-                                            <form action="{{ route('ttd.destroy', $berita->id_ttds) }}"
-                                                method="POST" class="d-inline delete-form">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button" class="btn btn-sm btn-danger"
-                                                    onclick="confirmDelete(this)">Hapus</button>
-                                            </form>
-                                        </td>
-
-                                    </tr>
-
+                                    @php $no = 1; @endphp
+                                    @forelse ($data as $item)
+                                        <tr>
+                                            <td class="text-center" style="padding:12px 16px; vertical-align:middle;">{{ $no++ }}</td>
+                                            <td style="padding:12px 16px; vertical-align:middle;">{{ Str::limit($item->nama_terang, 30) }}</td>
+                                            <td style="padding:12px 16px; vertical-align:middle;">{{ $item->jabatan }}</td>
+                                            <td style="padding:12px 16px; vertical-align:middle;">{{ $item->pokja }}</td>
+                                            <td style="padding:10px 12px; vertical-align:middle; text-align:center;">
+                                                <a href="{{ route('ttd.edit', $item->id_ttds) }}"
+                                                    title="Edit"
+                                                    style="display:inline-flex; align-items:center; justify-content:center;
+                                                           width:30px; height:30px; background:#28a745; border-radius:4px;
+                                                           color:#fff; text-decoration:none; margin-right:4px;">
+                                                    <i class="bi bi-pencil-fill" style="font-size:12px;"></i>
+                                                </a>
+                                                <form action="{{ route('ttd.destroy', $item->id_ttds) }}"
+                                                    method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="button"
+                                                        onclick="confirmDelete(this)"
+                                                        title="Hapus"
+                                                        style="display:inline-flex; align-items:center; justify-content:center;
+                                                               width:30px; height:30px; background:#dc3545; border:none;
+                                                               border-radius:4px; color:#fff; cursor:pointer;">
+                                                        <i class="bi bi-trash-fill" style="font-size:12px;"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
                                     @empty
-
-                                    <div class="alert alert-danger mt-4">
-
-                                        Tidak ada data tanda tangan
-
-                                    </div>
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted py-4">
+                                                Tidak ada data tanda tangan
+                                            </td>
+                                        </tr>
                                     @endforelse
-
-
-
                                 </tbody>
-
                             </table>
-
-
-
                         </div>
-
                     </div>
-
-
-
                 </div>
 
             </div>
+        </div>
+    </section>
 
-        </section>
+</main>
 
-
-
-    </main><!-- End #main -->
-
-
-
-    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
-            class="bi bi-arrow-up-short"></i></a>
-
-
-
-    <!-- Vendor JS Files -->
-
-    <script src="backend/assets/vendor/apexcharts/apexcharts.min.js"></script>
-
-    <script src="backend/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <script src="backend/assets/vendor/chart.js/chart.umd.js"></script>
-
-    <script src="backend/assets/vendor/echarts/echarts.min.js"></script>
-
-    <script src="backend/assets/vendor/quill/quill.min.js"></script>
-
-    <script src="backend/assets/vendor/simple-datatables/simple-datatables.js"></script>
-
-    <script src="backend/assets/vendor/tinymce/tinymce.min.js"></script>
-
-    <script src="backend/assets/vendor/php-email-form/validate.js"></script>
-
-
-
-    <!-- Template Main JS File -->
-
-    <script src="backend/assets/js/main.js"></script>
-    <script type="text/javascript">
-        Dropzone.autoDiscover = false;
-        var myDropzone = new Dropzone('#pdf', {
-            maxFilesize: 1,
-            acceptedFiles: ".pdf",
-            addRemoveLinks: true,
-            autoProcessQueue: false,
-            init: function() {
-                $("button").click(function(e) {
-                    e.preventDefault();
-                    myDropzone.processQueue();
-                });
-                this.on('sending', function(file, xhr, formData) {
-                    var data = $('#pdf').serializeArray();
-                    $.each(data, function(key, el) {
-                        formData.append(el.name, el.value);
-                    });
-                });
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete(button) {
+        Swal.fire({
+            title: 'Yakin hapus data?',
+            text: "Data yang dihapus tidak bisa dikembalikan.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                button.closest('form').submit();
             }
         });
-    </script>
+    }
+</script>
 
-    <script>
-        function confirmDelete(button) {
-            Swal.fire({
-                title: 'Yakin hapus data?',
-                text: "Data yang dihapus tidak bisa dikembalikan.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Cari form terdekat dan submit
-                    button.closest('form').submit();
-                }
-            });
-        }
-    </script>
-
-</body>
-
-
-
-{{--</html> --}}
-
-{{-- @endsection --}}
+@endsection
