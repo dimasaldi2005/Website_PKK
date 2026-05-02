@@ -1,258 +1,145 @@
-{{-- @extends('backend/layouts.template') --}}
+@extends('backend.layouts.template')
 
-{{-- @section('content1') --}}
+@section('content1')
 
-<!DOCTYPE html>
-,<html lang="en">
+<main id="main" class="main">
+    <section class="section">
+        <h1 class="page-heading">Galeri Kelompok Kerja 4</h1>
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
-  <title>Galeri</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
-
-  <!-- Favicons -->
-  <link href="backend/assets/img/favicon.png" rel="icon">
-  <link href="backend/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.gstatic.com" rel="preconnect">
-  <link
-    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
-    rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
-  <link href="backend/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="backend/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="backend/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-  <link href="backend/assets/vendor/quill/quill.snow.css" rel="stylesheet">
-  <link href="backend/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
-  <link href="backend/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
-  <link href="backend/assets/vendor/simple-datatables/style.css" rel="stylesheet">
-
-  <!-- Template Main CSS File -->
-  <link href="backend/assets/css/style.css" rel="stylesheet">
-
-  {{-- fontawesome --}}
-  <link rel="stylesheet" type="text/css" href="{{ asset('fontawesome/css/all.min.css') }}">
-
-</head>
-
-<body>
-
-  <!-- ======= Header ======= -->
-  <header id="header" class="header fixed-top d-flex align-items-center">
-
-    <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
-        <img src="{{asset('backend/assets/img/pkk.png')}}" alt="">
-        <span class="d-none d-lg-block">PKK NGANJUK</span>
-      </a>
-      <i class="bi bi-list toggle-sidebar-btn"></i>
-    </div><!-- End Logo -->
-
-    <nav class="header-nav ms-auto">
-    </nav><!-- End Icons Navigation -->
-
-  </header><!-- End Header -->
-
-  <!-- ======= Sidebar ======= -->
-  @include('backend.includes.sidebar')
-
-
-  <main id="main" class="main">
-
-    <section class="section dashboard">
-      <div class="row">
-
-        <!-- Left side columns -->
-
-        <div class="row">
-
-          <!-- Sales Card -->
-          <div class="col-xxl-6 col-md-6">
-            <div class="card info-card sales-card">
-              <div class="card-body">
-                <h5 class="card-title">Cetak Perbulan</h5>
-
-                <form action="{{ route('galeripokja4.filter') }}" method="GET">
-                  <a>Bulanan : </a><input type="month" name="search" value="Laporan Perbulan" class="input-laporan">
-                  <button type="submit" class="input-laporan-btn btn-sm">Cetak</button>
-                </form>
-                <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
-                <script type="text/javascript">
-                  $(function () {
-                    $("#date").datepicker({ dateFormat: 'yy' });
-                  });
-                </script>
-              </div>
+        <!-- Gallery Cards -->
+        <div class="row" style="margin-bottom: 30px;">
+            <!-- Kesehatan -->
+            <div class="col-md-6 mb-3">
+                <a href="{{ route('galerikesehatan.index') }}" style="text-decoration: none;">
+                    <div class="form-card gallery-card" style="padding: 16px; transition: all 0.3s; cursor: pointer; min-height: 140px; display: flex; flex-direction: column;">
+                        <div style="background-color: #0369a1; width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; flex-shrink: 0;">
+                            <i class="bi bi-bookmark-fill" style="font-size: 20px; color: white;"></i>
+                        </div>
+                        <h5 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 13px; color: #2d3748; margin-bottom: 6px; line-height: 1.3; flex-grow: 1;">Kesehatan</h5>
+                        <p style="font-family: 'Poppins', sans-serif; font-size: 11px; color: #6b7280; margin: 0;">{{ $pertama }} Data Galeri</p>
+                    </div>
+                </a>
             </div>
-            {{-- test. --}}
-          </div><!-- End Sales Card -->
 
-          <!-- Sales Card -->
-          <div class="col-xxl-6 col-md-6">
-            <div class="card info-card sales-card">
-              <div class="card-body">
-                <h5 class="card-title">Cetak Galeri Tahunan</h5>
-
-                <form action="{{ route('galeripokja4.filter') }}" method="GET">
-                  <a>Tahunan : </a><select name="search2" class="input-laporan mt-2">
-                    <option>-- Pilih --</option>
-                    <option value="2023">2023</option>
-                    <option value="2024">2024</option>
-                  </select>
-
-                  <button type="submit" class="input-laporan-btn btn-sm">Cetak</button>
-                </form>
-                <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
-                <script type="text/javascript">
-                  $(function () {
-                    $("#date").datepicker({ dateFormat: 'yy' });
-                  });
-                </script>
-
-              </div>
+            <!-- Kelestarian Lingkungan Hidup -->
+            <div class="col-md-6 mb-3">
+                <a href="{{ route('galerikelestarian.index') }}" style="text-decoration: none;">
+                    <div class="form-card gallery-card" style="padding: 16px; transition: all 0.3s; cursor: pointer; min-height: 140px; display: flex; flex-direction: column;">
+                        <div style="background-color: #0369a1; width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; flex-shrink: 0;">
+                            <i class="bi bi-bookmark-fill" style="font-size: 20px; color: white;"></i>
+                        </div>
+                        <h5 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 13px; color: #2d3748; margin-bottom: 6px; flex-grow: 1;">Kelestarian Lingkungan Hidup</h5>
+                        <p style="font-family: 'Poppins', sans-serif; font-size: 11px; color: #6b7280; margin: 0;">{{ $kedua }} Data Galeri</p>
+                    </div>
+                </a>
             </div>
-          </div><!-- End Sales Card -->
 
-          <!-- Sales Card -->
-          <div class="col-xxl-6 col-md-6">
-            <div class="card info-card sales-card">
-              <a href="{{ route('galerikesehatan.index') }}">
-                <div class="card-body">
-                  <h5 class="card-title">Kesehatan</h5>
-
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="fa-sharp fa-solid fa-book"></i>
+            <!-- Perencanaan Sehat -->
+            <div class="col-md-6 mb-3">
+                <a href="{{ route('galeriperencanaan.index') }}" style="text-decoration: none;">
+                    <div class="form-card gallery-card" style="padding: 16px; transition: all 0.3s; cursor: pointer; min-height: 140px; display: flex; flex-direction: column;">
+                        <div style="background-color: #0369a1; width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; flex-shrink: 0;">
+                            <i class="bi bi-bookmark-fill" style="font-size: 20px; color: white;"></i>
+                        </div>
+                        <h5 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 13px; color: #2d3748; margin-bottom: 6px; flex-grow: 1;">Perencanaan Sehat</h5>
+                        <p style="font-family: 'Poppins', sans-serif; font-size: 11px; color: #6b7280; margin: 0;">{{ $ketiga }} Data Galeri</p>
                     </div>
-                    <div class="ps-3">
-                      <h6>{{ $pertama }}</h6>
-                      <span class="text-muted small pt-2 ps-1">Jumlah total laporan</span>
-
-                    </div>
-                  </div>
-                </div>
-              </a>
+                </a>
             </div>
-          </div><!-- End Sales Card -->
 
-          <!-- Revenue Card -->
-          <div class="col-xxl-6 col-md-6">
-            <div class="card info-card sales-card">
-              <a href="{{ route('galerikelestarian.index') }}">
-                <div class="card-body">
-                  <h5 class="card-title">Kelestarian Lingkungan Hidup</h5>
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="fa-sharp fa-solid fa-book"></i>
+            <!-- Kader Pokja 4 -->
+            <div class="col-md-6 mb-3">
+                <a href="{{ route('galerilaporanpokja4.index') }}" style="text-decoration: none;">
+                    <div class="form-card gallery-card" style="padding: 16px; transition: all 0.3s; cursor: pointer; min-height: 140px; display: flex; flex-direction: column;">
+                        <div style="background-color: #0369a1; width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; flex-shrink: 0;">
+                            <i class="bi bi-bookmark-fill" style="font-size: 20px; color: white;"></i>
+                        </div>
+                        <h5 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 13px; color: #2d3748; margin-bottom: 6px; flex-grow: 1;">Kader Pokja 4</h5>
+                        <p style="font-family: 'Poppins', sans-serif; font-size: 11px; color: #6b7280; margin: 0;">{{ $keempat }} Data Galeri</p>
                     </div>
-                    <div class="ps-3">
-                      <h6>{{ $kedua }}</h6>
-                      <span class="text-muted small pt-2 ps-1">Jumlah total galeri</span>
-                    </div>
-                  </div>
-                </div>
-              </a>
+                </a>
             </div>
-          </div><!-- End Revenue Card -->
-
-          <!-- Revenue Card -->
-          <div class="col-xxl-6 col-md-6">
-            <div class="card info-card sales-card">
-              <a href="{{ route('galeriperencanaan.index') }}">
-                <div class="card-body">
-                  <h5 class="card-title">Perencanaan Sehat</h5>
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="fa-sharp fa-solid fa-book"></i>
-                    </div>
-                    <div class="ps-3">
-                      <h6>{{ $ketiga }}</h6>
-                      <span class="text-muted small pt-2 ps-1">Jumlah total galeri</span>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </div>
-          </div><!-- End Revenue Card -->
-
-          <!-- Revenue Card -->
-          <div class="col-xxl-6 col-md-6">
-            <div class="card info-card sales-card">
-              <a href="{{ route('galerilaporanpokja4.index') }}">
-                <div class="card-body">
-                  <h5 class="card-title">Kader Pokja 4</h5>
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="fa-sharp fa-solid fa-book"></i>
-                    </div>
-                    <div class="ps-3">
-                      <h6>{{ $keempat }}</h6>
-                      <span class="text-muted small pt-2 ps-1">Jumlah total galeri</span>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </div>
-          </div><!-- End Revenue Card -->
-
-          <div class="col-md-12 mx-auto mt-2">
-          </div>
-
-
         </div>
-      </div>
+
+        <!-- Filter Section -->
+        <div class="row">
+            <!-- Cetak Perbulan -->
+            <div class="col-md-6 mb-3">
+                <div class="form-card">
+                    <h5 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px; margin-bottom: 12px; color: #2d3748;">Cetak Perbulan</h5>
+                    <form action="{{ route('galeripokja4.filter') }}" method="GET">
+                        <div class="d-flex align-items-end gap-2">
+                            <div style="flex: 1;">
+                                <label style="font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 500; color: #6b7280; margin-bottom: 6px; display: block;">Bulan :</label>
+                                <select name="search" class="form-control" style="height: 38px; font-size: 13px;">
+                                    <option value="">-- Pilih Bulan --</option>
+                                    <option value="01">Januari</option>
+                                    <option value="02">Februari</option>
+                                    <option value="03">Maret</option>
+                                    <option value="04">April</option>
+                                    <option value="05">Mei</option>
+                                    <option value="06">Juni</option>
+                                    <option value="07">Juli</option>
+                                    <option value="08">Agustus</option>
+                                    <option value="09">September</option>
+                                    <option value="10">Oktober</option>
+                                    <option value="11">November</option>
+                                    <option value="12">Desember</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn-kirim" style="margin-bottom: 0; font-size: 13px; padding: 8px 20px;">Cetak</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Cetak Pertahun -->
+            <div class="col-md-6 mb-3">
+                <div class="form-card">
+                    <h5 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px; margin-bottom: 12px; color: #2d3748;">Cetak Pertahun</h5>
+                    <form action="{{ route('galeripokja4.filter') }}" method="GET">
+                        <div class="d-flex align-items-end gap-2">
+                            <div style="flex: 1;">
+                                <label style="font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 500; color: #6b7280; margin-bottom: 6px; display: block;">Tahun :</label>
+                                <select name="search2" class="form-control" style="height: 38px; font-size: 13px;">
+                                    <option value="">-- Pilih Tahun --</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2026">2026</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn-kirim" style="margin-bottom: 0; font-size: 13px; padding: 8px 20px;">Cetak</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </section>
+</main>
 
-  </main><!-- End #main -->
+<style>
+    .gallery-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.15) !important;
+    }
+    
+    .gallery-card {
+        height: 100%;
+    }
+    
+    /* Pastikan semua text menggunakan Poppins */
+    .form-card * {
+        font-family: 'Poppins', sans-serif !important;
+    }
+    
+    .form-card h5,
+    .form-card p,
+    .form-card label,
+    .form-card select,
+    .form-card button {
+        font-family: 'Poppins', sans-serif !important;
+    }
+</style>
 
-
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
-      class="bi bi-arrow-up-short"></i></a>
-
-  <!-- Vendor JS Files -->
-  <script src="backend/assets/vendor/apexcharts/apexcharts.min.js"></script>
-  <script src="backend/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="backend/assets/vendor/chart.js/chart.umd.js"></script>
-  <script src="backend/assets/vendor/echarts/echarts.min.js"></script>
-  <script src="backend/assets/vendor/quill/quill.min.js"></script>
-  <script src="backend/assets/vendor/simple-datatables/simple-datatables.js"></script>
-  <script src="backend/assets/vendor/tinymce/tinymce.min.js"></script>
-  <script src="backend/assets/vendor/php-email-form/validate.js"></script>
-
-  <!-- Template Main JS File -->
-  <script src="backend/assets/js/main.js"></script>
-
-  <script type="text/javascript">
-    Dropzone.autoDiscover = false;
-    var myDropzone = new Dropzone('#pdf', {
-      maxFilesize: 1,
-      acceptedFiles: ".pdf",
-      addRemoveLinks: true,
-      autoProcessQueue: false,
-      init: function () {
-        $("button").click(function (e) {
-          e.preventDefault();
-          myDropzone.processQueue();
-        });
-
-        this.on('sending', function (file, xhr, formData) {
-          var data = $('#pdf').serializeArray();
-          $.each(data, function (key, el) {
-            formData.append(el.name, el.value);
-          });
-        });
-      }
-    });
-  </script>
-
-</body>
-
-{{--
-
-</html> --}}
-{{-- @endsection --}}
+@endsection

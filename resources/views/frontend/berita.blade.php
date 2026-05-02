@@ -2,72 +2,93 @@
 
 @section('content')
 
-<div id="cekk">
-    <p class="text-center fs-1">Berita PKK Kabupaten Nganjuk</p>
-    </div>
-<!-- Breadcrumb -->
+<section class="berita-section" style="background-color: #f5f5f5; padding: 60px 0; min-height: 100vh;">
+    <div class="container">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 style="font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 36px; color: #1a1a1a; margin-bottom: 0;">Berita</h1>
+        </div>
 
-<div class="container">
-    <nav aria-label="breadcrumb" style="background-color: #fff" class="mt-3">
-        <ol class="breadcrumb p-3">
-            <li class="breadcrumb-item"><a href="landing-page" class="text-decoration-none">Beranda</a></li>
-            <li class="breadcrumb-item active"><a aria-current="page" value="">Berita</a></li>
-        </ol>
-    </nav>
-</div>
-<!-- Akhir Breadcrumb -->
-{{-- <div class="my-1 ">
-            <form action="" method="get">
-                <div class="input-grub mb-2">
-                    <input type="text" class="form-control" id="floatingInputGroup1" placeholder="Username">
-                    <button class="input-group-text btn btn-primary">search</button>
-                </div>
-            </form>
-        </div> --}}
-        <section id="ml" class="about section-bg">
-        <div class="row g-3  mt-4 mb-4 " > 
-   
-            <div class="col-auto" style="margin-left: 100px;">
-              
-              <form action="" method="GET">  
-              <input type="search"  name="search" class="form-control" aria-describedby="passwordHelpInline" placeholder="Cari" >
-              </form>
-            </div>
-          </div>
-<!-- Main -->
-@forelse ($beritas as $tampil)
-
-            <div class="container">
-                <div class="row ">
-                    <a href=""> </a>
-                    <div class="box">
-                        <div class="col-lg-2 mx-3" style="float: left">
-                            <img src="{{ asset('/storage/berita/'.$tampil->image) }}" class="img-thumbnail" alt="...">
-                        </div>
-                        <div class="mx-3 md-1">
-                            <h5>{{ $tampil->judul }}</h5>
-                            <p>{{ Str::limit($tampil->deskripsi, 80) }}</p>
-
-                            @csrf
-                        </div>
+        <div class="row">
+            <!-- Main Content - Kiri -->
+            <div class="col-lg-8">
+                @forelse ($beritas as $tampil)
+                <div class="card mb-4" style="border: none; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; background-color: #fff;">
+                    <!-- Image -->
+                    <div style="width: 100%; height: 300px; background-color: #d3d3d3; overflow: hidden;">
+                        <img src="{{ asset('/storage/berita/'.$tampil->image) }}" alt="{{ $tampil->judul }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
                     
-                    
-
-                        <p><small class="text-muted">Tanggal Upload : {{ $tampil->created_at }}</small></p>
-                        <p><small class="text-muted">Terakhir Diubah : {{ $tampil->updated_at }}</small></p>
-                        <a href="{{ route('berita.show', $tampil->id) }}" name="detail"
-                            class="btn btn-primary d-grid me-auto">Lihat Selengkapnya</a>
+                    <!-- Content -->
+                    <div style="padding: 30px;">
+                        <h3 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 22px; color: #1a1a1a; margin-bottom: 15px; line-height: 1.4;">
+                            {{ $tampil->judul }}
+                        </h3>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <p style="font-family: 'Poppins', sans-serif; font-size: 13px; color: #888; margin-bottom: 5px;">
+                                <strong>Tanggal Upload :</strong> {{ $tampil->created_at->format('Y-m-d H:i:s') }}
+                            </p>
+                            <p style="font-family: 'Poppins', sans-serif; font-size: 13px; color: #888; margin-bottom: 0;">
+                                <strong>Terakhir Diubah :</strong> {{ $tampil->updated_at->format('Y-m-d H:i:s') }}
+                            </p>
+                        </div>
                     </div>
                 </div>
+                @empty
+                <div class="card" style="border: none; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 30px; background-color: #fff;">
+                    <p style="font-family: 'Poppins', sans-serif; font-size: 16px; color: #666; text-align: center; margin: 0;">
+                        Data Berita belum Tersedia.
+                    </p>
+                </div>
+                @endforelse
+
+                <!-- Pagination -->
+                <div class="d-flex justify-content-center mt-4">
+                    {{ $beritas->links() }}
+                </div>
             </div>
 
-@empty
-Data Post belum Tersedia.
-@endforelse
-<div class="pagination justify-content-center">
-            
-    {{ $beritas->links() }}
-    
-</div>
-</section><!-- End About Section -->
+            <!-- Sidebar - Kanan -->
+            <div class="col-lg-4">
+                <!-- Search Box -->
+                <div class="card mb-4" style="border: none; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 25px; background-color: #fff;">
+                    <h4 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 18px; color: #1a1a1a; margin-bottom: 15px;">Search</h4>
+                    <form action="" method="GET">
+                        <div class="input-group">
+                            <input type="search" name="search" class="form-control" placeholder="Kata kunci" style="font-family: 'Poppins', sans-serif; font-size: 14px; border: 1px solid #ddd; border-radius: 6px 0 0 6px;">
+                            <button type="submit" class="btn" style="background-color: #0ea5e9; color: white; border-radius: 0 6px 6px 0; padding: 8px 20px; font-family: 'Poppins', sans-serif; font-weight: 500;">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Berita Terbaru -->
+                <div class="card" style="border: none; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 25px; background-color: #fff;">
+                    <h4 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 18px; color: #1a1a1a; margin-bottom: 20px;">Berita Terbaru</h4>
+                    
+                    @foreach ($beritas->take(10) as $recent)
+                    <div class="d-flex mb-3" style="padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
+                        <div style="width: 80px; height: 60px; background-color: #d3d3d3; border-radius: 6px; overflow: hidden; flex-shrink: 0; margin-right: 15px;">
+                            <img src="{{ asset('/storage/berita/'.$recent->image) }}" alt="{{ $recent->judul }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div style="flex: 1;">
+                            <a href="{{ route('berita.show', $recent->id) }}" style="text-decoration: none;">
+                                <h6 style="font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 13px; color: #1a1a1a; margin-bottom: 5px; line-height: 1.4;">
+                                    {{ Str::limit($recent->judul, 60) }}
+                                </h6>
+                            </a>
+                            <p style="font-family: 'Poppins', sans-serif; font-size: 11px; color: #888; margin: 0;">
+                                {{ $recent->created_at->format('Y-m-d H:i:s') }}
+                            </p>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 @endsection

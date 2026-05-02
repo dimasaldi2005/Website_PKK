@@ -11,14 +11,14 @@
     {{-- Dashboard --}}
     @if ($isAdmin)
     <li class="nav-item">
-      <a class="nav-link" href="{{ route('dashboard') }}">
+      <a class="nav-link {{ Request::is('dashboard') ? '' : 'collapsed' }}" href="{{ route('dashboard') }}">
       <i class="bi bi-grid"></i>
       <span>Dashboard</span>
       </a>
     </li>
   @elseif ($isPengguna)
     <li class="nav-item">
-      <a class="nav-link" href="{{ route('dashboard') }}">
+      <a class="nav-link {{ Request::is('dashboard') ? '' : 'collapsed' }}" href="{{ route('dashboard') }}">
       <i class="bi bi-grid"></i>
       <span>Dashboard</span>
       </a>
@@ -28,21 +28,21 @@
     {{-- Admin Only --}}
     @if ($isAdmin)
     <li class="nav-item">
-      <a class="nav-link collapsed" href="{{ route('ttd.index') }}">
+      <a class="nav-link {{ Request::is('ttd*') ? '' : 'collapsed' }}" href="{{ route('ttd.index') }}">
       <i class="fa-solid fa-signature"></i>
       <span>Tanda Tangan</span>
       </a>
     </li>
 
     <li class="nav-item">
-      <a class="nav-link collapsed" href="input_berita">
+      <a class="nav-link {{ Request::is('input_berita*') ? '' : 'collapsed' }}" href="input_berita">
       <i class="fa-solid fa-newspaper"></i>
       <span>Berita</span>
       </a>
     </li>
 
     <li class="nav-item">
-      <a class="nav-link collapsed" href="input_pengumuman">
+      <a class="nav-link {{ Request::is('input_pengumuman*') ? '' : 'collapsed' }}" href="input_pengumuman">
       <i class="fa-sharp fa-solid fa-bullhorn"></i>
       <span>Pengumuman</span>
       </a>
@@ -94,7 +94,7 @@
     </li>
 
     <li class="nav-item">
-      <a class="nav-link collapsed" href="logout" onclick="return confirm('Apakah anda yakin ingin keluar?')">
+      <a class="nav-link collapsed" href="#" onclick="confirmLogout(event)">
         <i class="fa-solid fa-right-from-bracket"></i>
         <span>Keluar</span>
       </a>
@@ -103,3 +103,85 @@
   </ul>
 
 </aside><!-- End Sidebar -->
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  function confirmLogout(event) {
+    event.preventDefault();
+    Swal.fire({
+      title: 'Apakah anda yakin ingin Logout?',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#d1d5db',
+      confirmButtonText: 'Logout',
+      cancelButtonText: 'Batal',
+      customClass: {
+        popup: 'logout-popup',
+        title: 'logout-title',
+        confirmButton: 'logout-confirm-btn',
+        cancelButton: 'logout-cancel-btn'
+      },
+      buttonsStyling: false,
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = 'logout';
+      }
+    });
+  }
+</script>
+
+<style>
+  .logout-popup {
+    border-radius: 20px !important;
+    padding: 40px 30px !important;
+    width: 450px !important;
+  }
+  
+  .logout-title {
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 24px !important;
+    font-weight: 600 !important;
+    color: #2d3748 !important;
+    margin-bottom: 30px !important;
+  }
+  
+  .logout-confirm-btn {
+    background-color: #ef4444 !important;
+    color: white !important;
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    padding: 12px 50px !important;
+    border-radius: 10px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+  }
+  
+  .logout-confirm-btn:hover {
+    background-color: #dc2626 !important;
+  }
+  
+  .logout-cancel-btn {
+    background-color: #e5e7eb !important;
+    color: #4b5563 !important;
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    padding: 12px 50px !important;
+    border-radius: 10px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+    margin-right: 10px !important;
+  }
+  
+  .logout-cancel-btn:hover {
+    background-color: #d1d5db !important;
+  }
+  
+  .swal2-actions {
+    gap: 10px !important;
+  }
+</style>

@@ -44,59 +44,77 @@
 
 
   <!-- ======= Footer ======= -->
-  <footer id="footer">
+  <footer id="footer" style="background-color: #07304A !important; padding: 40px 0 20px 0;">
 
-    <div class="footer-top">
+    <div class="footer-top" style="background-color: #07304A !important; padding: 60px 0 30px 0;">
       <div class="container">
         <div class="row">
 
-          <div class="col-lg-4 col-md-6 footer-contact">
-            <h3>TP - PKK <span>Kabupaten Nganjuk</span></h3>
-            <div class="mt-3">
-              <h6 class="p-2 ">Kontak :</h6>
-              <div class="p-2 "><a href="#" class=""><i class="bi bi-whatsapp"></i></a> 087754215178</div>
-              <div class="p-2 "><a href="#" class="email"><i class="bi bi-envelope"></i></a> admin@pkk-nganjuk.my.id</div>
-              <div class="p-2 "><a href="#" class=""><i class="bi bi-geo-alt-fill"></i></a>Jl. Dermojoyo No.21, Payaman, Kec. Nganjuk, Kabupaten Nganjuk, Jawa Timur 64418</div>
+          <!-- Kolom 1: Info Kontak -->
+          <div class="col-lg-4 col-md-4 footer-contact">
+            <h3 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 18px; color: #fff; margin-bottom: 15px;">Pemberdayaan Kesejahteraan Keluarga</h3>
+            <h4 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 18px; color: #fff; margin-bottom: 20px;">Kabupaten Nganjuk</h4>
+            
+            <div style="margin-top: 20px;">
+              <p style="font-family: 'Poppins', sans-serif; font-size: 14px; color: #e0e0e0; line-height: 1.8; margin-bottom: 10px;">
+                Jl. Dermojoyo No.21, Payaman, Kec. Nganjuk, Kabupaten Nganjuk, Jawa Timur 64418
+              </p>
+              <p style="font-family: 'Poppins', sans-serif; font-size: 14px; color: #e0e0e0; margin-bottom: 5px;">
+                <strong style="color: #fff;">Phone</strong> : 087754215178
+              </p>
+              <p style="font-family: 'Poppins', sans-serif; font-size: 14px; color: #e0e0e0; margin-bottom: 0;">
+                <strong style="color: #fff;">Email</strong> : admin@pkk-nganjuk.my.id
+              </p>
             </div>
           </div>
 
-          <div class="col-lg-4 col-md-6 footer-links" style="pointer-events: none;">
-            <h6 class="p-2 ">Jumlah Pengunjung :</h6>
-            <p class=" ">Hari ini :&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{{ $visitor->count }}</p>
-            <p class=" ">Minggu ini :&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;&ensp;&ensp;{{ $totalMinggu }}</p>
-            <p class=" ">Bulan ini :&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;&ensp;&ensp;{{ $totalBulan }}</p>
-            <p class=" ">Tahun ini :&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{{ $totalTahun }}</p>
-            <p class=" ">Semua Pengunjung :&emsp;&emsp;&emsp;{{ $totalVisitors }}</p>
-            </ul>
+          <!-- Kolom 2: Link Terkait (Jumlah Pengunjung) -->
+          <div class="col-lg-4 col-md-4 footer-links">
+            <h4 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; color: #fff; margin-bottom: 20px;">Link Terkait</h4>
+            <div style="font-family: 'Poppins', sans-serif; font-size: 14px; color: #e0e0e0; line-height: 2;">
+              <p style="margin-bottom: 8px;">› Hari ini : {{ $visitor->count }}</p>
+              <p style="margin-bottom: 8px;">› Minggu ini : {{ $totalMinggu }}</p>
+              <p style="margin-bottom: 8px;">› Bulan ini : {{ $totalBulan }}</p>
+              <p style="margin-bottom: 8px;">› Tahun ini : {{ $totalTahun }}</p>
+              <p style="margin-bottom: 0;">› Semua Pengunjung : {{ $totalVisitors }}</p>
+            </div>
           </div>
 
-          <div class="col-lg-4 col-md-6 footer-links" style="pointer-events: none;">
-            <h6 class="p-2 ">IP Pengunjung anda :</h6>
-            <?php
-            if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-              $visitorIP = $_SERVER['HTTP_X_FORWARDED_FOR'];
-            } else {
-              $visitorIP = $_SERVER['REMOTE_ADDR'];
-            }
-
-            echo "Alamat IP pengunjung: " . $visitorIP;
-            ?>
+          <!-- Kolom 3: Lokasi PKK dengan Maps -->
+          <div class="col-lg-4 col-md-4 footer-links">
+            <h4 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; color: #fff; margin-bottom: 20px;">Lokasi PKK :</h4>
+            <div style="border-radius: 8px; overflow: hidden; border: 3px solid #fff;">
+              <a href="https://maps.app.goo.gl/37AmTwodTWA6hius7" target="_blank">
+                <iframe 
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.9876543210987!2d111.90345678901234!3d-7.603456789012345!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7856f123456789%3A0x1234567890abcdef!2sJl.%20Dermojoyo%20No.21%2C%20Payaman%2C%20Kec.%20Nganjuk%2C%20Kabupaten%20Nganjuk%2C%20Jawa%20Timur%2064418!5e0!3m2!1sen!2sid!4v1234567890123!5m2!1sen!2sid" 
+                  width="100%" 
+                  height="150" 
+                  style="border:0;" 
+                  allowfullscreen="" 
+                  loading="lazy" 
+                  referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+              </a>
+            </div>
           </div>
-
-
 
         </div>
       </div>
     </div>
 
-    <div class="container py-4">
-      <div class="copyright">
-        &copy; Copyright <strong><span>A5 Politeknik Negeri Jember</span></strong>. All Rights Reserved
-      </div>
-      <div class="credits">
-      </div>
-    </div>
   </footer><!-- End Footer -->
+
+  <style>
+    /* Override footer background color */
+    #footer,
+    #footer .footer-top {
+      background-color: #07304A !important;
+    }
+    
+    #footer .footer-links a:hover {
+      color: #4fc3f7 !important;
+    }
+  </style>
 
   <div id="preloader"></div>
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>

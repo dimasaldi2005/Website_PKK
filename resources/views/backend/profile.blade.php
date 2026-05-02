@@ -1,317 +1,241 @@
+@extends('backend.layouts.template')
 
-<!DOCTYPE html>
-,<html lang="en">
+@section('content1')
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+<main id="main" class="main">
 
-  <title>Profil</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
+  <section class="section">
+    <div class="row">
+      <div class="col-xl-6">
+        <h1 class="page-heading">Informasi Pribadi</h1>
 
-  <!-- Favicons -->
-  <link href="{{ asset('backend/assets/img/favicon.png') }}" rel="icon">
-  <link href="{{ asset('backend/assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
+        @if ($message = Session::get('success'))
+          <div class="alert alert-success" role="alert">
+            {{ $message }}
+          </div>
+        @endif
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.gstatic.com" rel="preconnect">
-  <link
-    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
-    rel="stylesheet">
+        <div class="form-card">
+          <div class="row mb-3">
+            <div class="col-5" style="font-weight: 500; color: #6b7280;">Nama lengkap :</div>
+            <div class="col-7" style="color: #2d3748; font-weight: 500;">
+              {{ $userType == 'pengguna' ? $user->full_name : $user->name }}
+            </div>
+          </div>
+          
+          @if($userType == 'user')
+            <div class="row mb-3">
+              <div class="col-5" style="font-weight: 500; color: #6b7280;">Email :</div>
+              <div class="col-7" style="color: #2d3748; font-weight: 500;">{{ $user->email }}</div>
+            </div>
+          @endif
+          
+          <div class="row mb-3">
+            <div class="col-5" style="font-weight: 500; color: #6b7280;">Nomor telepon :</div>
+            <div class="col-7" style="color: #2d3748; font-weight: 500;">
+              {{ $userType == 'pengguna' ? $user->phone_number : $user->nomer_telepon }}
+            </div>
+          </div>
+          
+          @if($userType == 'user')
+            <div class="row mb-3">
+              <div class="col-5" style="font-weight: 500; color: #6b7280;">Alamat :</div>
+              <div class="col-7" style="color: #2d3748; font-weight: 500;">{{ $user->alamat }}</div>
+            </div>
+          @endif
 
-  <!-- Vendor CSS Files -->
-  <link href="{{ asset('backend/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('backend/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-  <link href="{{ asset('backend/assets/vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('backend/assets/vendor/quill/quill.snow.css') }}" rel="stylesheet">
-  <link href="{{ asset('backend/assets/vendor/quill/quill.bubble.css') }}" rel="stylesheet">
-  <link href="{{ asset('backend/assets/vendor/remixicon/remixicon.css') }}" rel="stylesheet">
-  <link href="{{ asset('backend/assets/vendor/simple-datatables/style.css') }}" rel="stylesheet">
-
-  <!-- Template Main CSS File -->
-  <link href="{{ asset('backend/assets/css/style.css') }}" rel="stylesheet">
-
-  {{-- fontawesome --}}
-  <link rel="stylesheet" type="text/css" href="{{ asset('fontawesome/css/all.min.css') }}">
-
-</head>
-
-<body>
-
-  <!-- ======= Header ======= -->
-  <header id="header" class="header fixed-top d-flex align-items-center">
-
-    <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
-        <img src="{{asset('backend/assets/img/pkk.png')}}" alt="">
-        <span class="d-none d-lg-block">PKK NGANJUK</span>
-      </a>
-      <i class="bi bi-list toggle-sidebar-btn"></i>
-    </div><!-- End Logo -->
-
-    <nav class="header-nav ms-auto">
-    </nav><!-- End Icons Navigation -->
-
-  </header><!-- End Header -->
-
-  {{-- SIDEBAR --}}
-  @include('backend.includes.sidebar')
-
-  <main id="main" class="main">
-    <div class="pagetitle">
-      <h1>Profil</h1>
+          <div class="text-end" style="margin-top: 24px;">
+            <button class="btn-kirim" type="button" onclick="openEditModal()">Edit</button>
+          </div>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <section class="section">
-      <div class="section profile">
-        <div class="row">
-          <div class="col-xl-8">
-            <div class="card">
-              <div class="card-body pt-3">
-                <div class="tab-pane fade show active profile-overview">
+  <section class="section" style="margin-top: 30px;">
+    <div class="row">
+      <div class="col-xl-6">
+        <h1 class="page-heading">Ubah kata sandi</h1>
 
-                  <h5 class="card-title">Profile lengkap</h5>
-
-                  <div class="row">
-                    <div class="col-lg-3 col-md-4 label">Nama lengkap</div>
-                    <div class="col-lg-9 col-md-8">
-                      {{ $userType == 'pengguna' ? $user->full_name : $user->name }}
-                    </div>
-                  </div>
-                  
-                  @if($userType == 'user')
-            <div class="row">
-            <div class="col-lg-3 col-md-4 label">Email</div>
-            <div class="col-lg-9 col-md-8">{{ $user->email }}</div>
-            </div>
-          @endif
-                  
-                  <div class="row">
-                    <div class="col-lg-3 col-md-4 label">Nomor telepon</div>
-                    <div class="col-lg-9 col-md-8">
-                      {{ $userType == 'pengguna' ? $user->phone_number : $user->nomer_telepon }}
-                    </div>
-                  </div>
-                  
-                  @if($userType == 'user')
-            <div class="row">
-            <div class="col-lg-3 col-md-4 label">Alamat</div>
-            <div class="col-lg-9 col-md-8">{{ $user->alamat }}</div>
-            </div>
-          @endif
-
-                </div>
-
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-    </section>
-
-
-
-
-    <section class="section">
-
-      <div class="section profile">
-        <div class="row">
-          <div class="col-xl-8">
-            <div class="card">
-              <div class="card-body pt-3">
-                @if ($message = Session::get('success'))
+        @if ($message = Session::get('successs'))
           <div class="alert alert-success" role="alert">
             {{ $message }}
           </div>
         @endif
 
-                <h5 class="card-title">Edit profil</h5>
-
-                <!-- Profile Edit Form -->
-                <form action="{{ route('profile.update', $user->id) }}" method="POST">
-                  @method('PUT')
-                  @csrf
-                
-                  <div class="row mb-3">
-                    <label for="name" class="col-md-4 col-lg-3 col-form-label">Nama lengkap</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="name" type="text" class="form-control" id="name"
-                        value="{{ $userType == 'pengguna' ? $user->full_name : $user->name }}" required
-                        oninvalid="this.setCustomValidity('Harap lengkapi nama')" oninput="this.setCustomValidity('')">
-                      @error('name')
-              <div class="invalid-feedback">
-              {{ $message }}
-              </div>
-            @enderror
-                    </div>
-                  </div>
-                
-                  @if($userType == 'user')
-            <div class="row mb-3">
-            <label for="email" class="col-md-4 col-lg-3 col-form-label">Email</label>
-            <div class="col-md-8 col-lg-9">
-              <input name="email" type="text" class="form-control" readonly value="{{ $user->email }}">
-            </div>
-            </div>
-          @endif
-                
-                  <div class="row mb-3">
-                    <label for="nomer_telepon" class="col-md-4 col-lg-3 col-form-label">Nomor telepon</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="nomer_telepon" type="tel" pattern="^08\d{10,13}$"
-                        class="form-control @error('nomer_telepon') is-invalid @enderror"
-                        value="{{ $userType == 'pengguna' ? $user->phone_number : $user->nomer_telepon }}" required
-                        oninvalid="this.setCustomValidity('Nomor telepon tidak sesuai')" oninput="this.setCustomValidity('')">
-                      <p class="mt-1">*Nomor telepon harus diawali dengan 08 dan diikuti 10-13 digit angka</p>
-                      @error('nomer_telepon')
-              <div class="invalid-feedback">
-              {{ $message }}
-              </div>
-            @enderror
-                    </div>
-                  </div>
-                
-                  @if($userType == 'user')
-            <div class="row mb-3">
-            <label for="alamat" class="col-md-4 col-lg-3 col-form-label">Alamat</label>
-            <div class="col-md-8 col-lg-9">
-              <textarea class="form-control @error('alamat') is-invalid @enderror" name="alamat" rows="6" required
-              oninvalid="this.setCustomValidity('Harap lengkapi alamat')"
-              oninput="this.setCustomValidity('')">{{ $user->alamat }}</textarea>
-              @error('alamat')
-          {{-- <div class="invalid-feedback">
-          {{ $message }}
-          </div> --}}
-        @enderror
-            </div>
-            </div>
-          @endif
-                  <div class="text-end mt-4">
-                    <button class="btn btn-primary mr-auto background-blue-1 mb-2 fw-semibold fs-5" type="submit">
-                      Edit Data Profil
-                    </button>
-                  </div>
-                </form><!-- End Profile Edit Form -->
-
-                
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </section>
-
-    <section class="section">
-      <div class="section profile">
-        <div class="row">
-          <div class="col-xl-8">
-            <div class="card">
-              <div class="card-body pt-3">
-
-                @if ($message = Session::get('successs'))
-          <div class="alert alert-success" role="alert">
-            {{ $message }}
-          </div>
-        @endif
-
-                @if ($message = Session::get('error'))
+        @if ($message = Session::get('error'))
           <div class="alert alert-danger" role="alert">
             {{ $message }}
           </div>
         @endif
 
-                <h5 class="card-title">Ubah Kata Sandi</h5>
+        <div class="form-card">
+          <form action="{{ route('change_password.update', $user->id) }}" method="POST">
+            @method('PUT')
+            @csrf
 
-                <form action="{{ route('change_password.update', $user->id) }}" method="POST">
-
-                  @method('PUT')
-                  @csrf
-
-                  <div class="row mb-3">
-                    <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Kata sandi saat ini</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="currentPassword" type="password" minlength="8"
-                        class="form-control @error('currentPassword') is-invalid @enderror" id="currentPassword"
-                        required placeholder="Masukkan Kata Sandi Saat Ini">
-                      @error('currentPassword')
-              <div class="invalid-feedback">
-              {{ $message }}
-              </div>
-            @enderror
-                    </div>
-
-                  </div>
-
-                  <div class="row mb-3">
-                    <label for="newpassword" class="col-md-4 col-lg-3 col-form-label">Kata sandi baru</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="newpassword" type="password" minlength="8"
-                        class="form-control @error('newpassword') is-invalid @enderror" id="newPassword"
-                        placeholder="Masukkan Kata Sandi Baru" required>
-                      @error('newpassword')
-              <div class="invalid-feedback">
-              {{ $message }}
-              </div>
-            @enderror
-                    </div>
-                  </div>
-
-
-                  <div class="row mb-3">
-                    <label for="renewpassword" class="col-md-4 col-lg-3 col-form-label">Konfirmasi kata sandi baru
-                    </label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="renewpassword" type="password" minlength="8"
-                        class="form-control @error('renewpassword') is-invalid @enderror" id="renewPassword"
-                        placeholder="Konfirmasi Kata Sandi Anda" required>
-                      @error('renewpassword')
-              <div class="invalid-feedback">
-              {{ $message }}
-              </div>
-            @enderror
-                    </div>
-                  </div>
-
-                  <div class="text-end mt-4">
-                    <button class="btn btn-primary mr-auto background-blue-1 mb-2 fw-semibold fs-5" type="submit">Ubah
-                      Kata Sandi</button>
-                  </div>
-                </form><!-- End Change Password Form -->
-
-              </div>
+            <div class="form-group">
+              <label for="currentPassword" class="form-label">Masukkan Kata Sandi</label>
+              <input name="currentPassword" type="password" minlength="8"
+                class="form-control @error('currentPassword') is-invalid @enderror" id="currentPassword"
+                required placeholder="Masukkan kata sandi saat ini">
+              @error('currentPassword')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
             </div>
-          </div>
+
+            <div class="form-group">
+              <label for="newpassword" class="form-label">Masukkan Kata Sandi Baru</label>
+              <input name="newpassword" type="password" minlength="8"
+                class="form-control @error('newpassword') is-invalid @enderror" id="newPassword"
+                placeholder="Masukkan kata sandi baru" required>
+              @error('newpassword')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
+
+            <div class="form-group">
+              <label for="renewpassword" class="form-label">Konfirmasi Kata Sandi Baru</label>
+              <input name="renewpassword" type="password" minlength="8"
+                class="form-control @error('renewpassword') is-invalid @enderror" id="renewPassword"
+                placeholder="Konfirmasi kata sandi anda" required>
+              @error('renewpassword')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
+
+            <div class="text-end">
+              <button class="btn-kirim" type="submit">Simpan</button>
+            </div>
+          </form>
         </div>
       </div>
+    </div>
+  </section>
 
+</main>
 
-    </section>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  function openEditModal() {
+    Swal.fire({
+      title: '<span style="font-family: \'Poppins\', sans-serif; font-weight: 600; font-size: 24px; color: #2d3748;">Edit Profil</span>',
+      html: `
+        <form id="editProfileForm" action="{{ route('profile.update', $user->id) }}" method="POST">
+          @method('PUT')
+          @csrf
+          
+          <div style="text-align: left; margin-bottom: 16px;">
+            <label style="display: block; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; color: #6b7280; margin-bottom: 6px;">Nama Lengkap :</label>
+            <input name="name" type="text" class="swal2-input" style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e0; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 14px; margin: 0;" value="{{ $userType == 'pengguna' ? $user->full_name : $user->name }}" required>
+          </div>
+          
+          @if($userType == 'user')
+          <div style="text-align: left; margin-bottom: 16px;">
+            <label style="display: block; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; color: #6b7280; margin-bottom: 6px;">Email :</label>
+            <input name="email" type="text" class="swal2-input" style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e0; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 14px; margin: 0; background-color: #f3f4f6;" value="{{ $user->email }}" readonly>
+          </div>
+          @endif
+          
+          <div style="text-align: left; margin-bottom: 16px;">
+            <label style="display: block; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; color: #6b7280; margin-bottom: 6px;">Nomor Telepon :</label>
+            <input name="nomer_telepon" type="tel" pattern="^08\\d{10,13}$" class="swal2-input" style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e0; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 14px; margin: 0;" value="{{ $userType == 'pengguna' ? $user->phone_number : $user->nomer_telepon }}" placeholder="08xxxxxxxxxx" required>
+          </div>
+          
+          @if($userType == 'user')
+          <div style="text-align: left; margin-bottom: 16px;">
+            <label style="display: block; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; color: #6b7280; margin-bottom: 6px;">Alamat :</label>
+            <textarea name="alamat" class="swal2-textarea" style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e0; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 14px; margin: 0; min-height: 80px;" required>{{ $user->alamat }}</textarea>
+          </div>
+          @endif
+        </form>
+      `,
+      width: '600px',
+      showCancelButton: false,
+      showConfirmButton: true,
+      showCloseButton: true,
+      confirmButtonText: 'Simpan',
+      customClass: {
+        popup: 'edit-profile-popup',
+        title: 'edit-profile-title',
+        htmlContainer: 'edit-profile-content',
+        confirmButton: 'edit-profile-confirm-btn',
+        closeButton: 'edit-profile-close-btn'
+      },
+      buttonsStyling: false,
+      didOpen: () => {
+        // Focus pada input pertama
+        document.querySelector('input[name="name"]').focus();
+      },
+      preConfirm: () => {
+        const form = document.getElementById('editProfileForm');
+        const formData = new FormData(form);
+        
+        // Validasi nomor telepon
+        const nomorTelepon = formData.get('nomer_telepon');
+        if (!/^08\d{10,13}$/.test(nomorTelepon)) {
+          Swal.showValidationMessage('Nomor telepon harus diawali dengan 08 dan diikuti 10-13 digit angka');
+          return false;
+        }
+        
+        return true;
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.getElementById('editProfileForm').submit();
+      }
+    });
+  }
+</script>
 
-  </main><!-- End #main -->
+<style>
+  .edit-profile-popup {
+    border-radius: 16px !important;
+    padding: 32px !important;
+  }
+  
+  .edit-profile-title {
+    padding: 0 !important;
+    margin-bottom: 24px !important;
+  }
+  
+  .edit-profile-content {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .edit-profile-confirm-btn {
+    background-color: #0369a1 !important;
+    color: white !important;
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    padding: 10px 32px !important;
+    border-radius: 6px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+    margin-top: 20px !important;
+  }
+  
+  .edit-profile-confirm-btn:hover {
+    background-color: #0284c7 !important;
+  }
+  
+  .edit-profile-close-btn {
+    background-color: #ef4444 !important;
+    color: white !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 6px !important;
+    font-size: 18px !important;
+    font-weight: bold !important;
+    transition: all 0.2s !important;
+  }
+  
+  .edit-profile-close-btn:hover {
+    background-color: #dc2626 !important;
+  }
+</style>
 
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
-      class="bi bi-arrow-up-short"></i></a>
-
-  <!-- Vendor JS Files -->
-  <script src="{{ asset('backend/assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
-  <script src="{{ asset('backend/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ asset('backend/assets/vendor/chart.js/chart.umd.js') }}"></script>
-  <script src="{{ asset('backend/assets/vendor/echarts/echarts.min.js') }}"></script>
-  <script src="{{ asset('backend/assets/vendor/quill/quill.min.js') }}"></script>
-  <script src="{{ asset('backend/assets/vendor/simple-datatables/simple-datatables.js') }}"></script>
-  <script src="{{ asset('backend/assets/vendor/tinymce/tinymce.min.js') }}"></script>
-  <script src="{{ asset('backend/assets/vendor/php-email-form/validate.js') }}"></script>
-
-  <!-- Template Main JS File -->
-  <script src="{{ asset('backend/assets/js/main.js') }}"></script>
-
-</body>
-
-{{--
-
-</html> --}}
-{{-- @endsection --}}
+@endsection

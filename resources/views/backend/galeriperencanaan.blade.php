@@ -1,194 +1,115 @@
-{{-- @extends('backend/layouts.template') --}}
+@extends('backend.layouts.template')
 
-{{-- @section('content1') --}}
+@section('content1')
 
-<!DOCTYPE html>
-,<html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
-    <title>Galeri</title>
-    <meta content="" name="description">
-    <meta content="" name="keywords">
-
-    <!-- Favicons -->
-    <link href="backend/assets/img/favicon.png" rel="icon">
-    <link href="backend/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.gstatic.com" rel="preconnect">
-    <link
-        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
-        rel="stylesheet">
-
-    <!-- Vendor CSS Files -->
-    <link href="backend/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="backend/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-    <link href="backend/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-    <link href="backend/assets/vendor/quill/quill.snow.css" rel="stylesheet">
-    <link href="backend/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
-    <link href="backend/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
-    <link href="backend/assets/vendor/simple-datatables/style.css" rel="stylesheet">
-
-    <!-- Template Main CSS File -->
-    <link href="backend/assets/css/style.css" rel="stylesheet">
-
-    {{-- fontawesome --}}
-    <link rel="stylesheet" type="text/css" href="{{ asset('fontawesome/css/all.min.css') }}">
-
-</head>
-
-<body>
-
-    <!-- ======= Header ======= -->
-    <header id="header" class="header fixed-top d-flex align-items-center">
-
-        <div class="d-flex align-items-center justify-content-between">
-            <a href="index.html" class="logo d-flex align-items-center">
-                <img src="{{ asset('backend/assets/img/pkk.png') }}" alt="">
-                <span class="d-none d-lg-block">PKK NGANJUK</span>
-            </a>
-            <i class="bi bi-list toggle-sidebar-btn"></i>
-        </div><!-- End Logo -->
-
-        <nav class="header-nav ms-auto">
-        </nav><!-- End Icons Navigation -->
-
-    </header><!-- End Header -->
-
-    <!-- ======= Sidebar ======= -->
-    @include('backend.includes.sidebar')
-    <!-- End Sidebar-->
-
-
-    <main id="main" class="main">
-        <div class="pagetitle">
-            <h1>Daftar Galeri</h1>
-        </div><!-- End Page Title -->
-
+<main id="main" class="main">
+    <section class="section">
+        <h1 class="page-heading">Galeri Perencanaan Sehat</h1>
+        
         @if ($message = Session::get('success'))
-            <div class="alert alert-success" role="alert">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ $message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
 
-        <div class="card mt-2">
-            <div class="card-body">
+        @if ($message = Session::get('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ $message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
 
-                <table class="table">
-                    <thead>
+        <div class="table-card">
+            <table class="table-ttd">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">No</th>
+                        <th style="width: 150px;">Gambar</th>
+                        <th>Deskripsi</th>
+                        <th style="width: 180px;">Tanggal</th>
+                        <th style="width: 120px;">Status</th>
+                        <th style="width: 120px; text-align: center;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $no = 1;
+                    @endphp
+                    @forelse ($data as $tampil)
                         <tr>
-                            <th scope="col">No</th>
-                            <th scope="col">Gambar</th>
-                            <th scope="col">Deskripsi</th>
-                            <th scope="col">Tanggal</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php
-                            $no = 1;
-                        @endphp
-                        @forelse ($data as $tampil)
-                            <tr>
-                                <th scope="row">{{ $no++ }}</th>
-                                <td><img src="{{ asset('frontend2/gallery2/' . $tampil->gambar) }}" class="rounded img"
-                                        style="width: 150px" style="height: 100px">
-                                </td>
-                                <td>{{ $tampil->deskripsi }}</td>
-                                <td>{{ $tampil->created_at }}</td>
-                                <td>{{ $tampil->status }}</td>
-                                <td>
-                                    <a href="{{ route('galeriperencanaan.edit', $tampil->id) }}"
-                                        class="btn btn-sm btn-tambah">Review</a>
-                                    <form action="{{ route('galeriperencanaan.destroy', $tampil->id) }}" method="POST"
-                                        class="d-inline delete-form">
+                            <td>{{ $no++ }}</td>
+                            <td>
+                                <img src="{{ asset('frontend2/gallery2/' . $tampil->gambar) }}" 
+                                     alt="{{ $tampil->deskripsi }}" 
+                                     class="rounded" 
+                                     style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #e2e8f0;">
+                            </td>
+                            <td>{{ $tampil->deskripsi }}</td>
+                            <td>{{ $tampil->created_at }}</td>
+                            <td>
+                                @if(strtolower($tampil->status) == 'upload')
+                                    <span style="background-color: #22c55e; color: white; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600;">Upload</span>
+                                @else
+                                    <span style="background-color: #f59e0b; color: white; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600;">{{ $tampil->status }}</span>
+                                @endif
+                            </td>
+                            <td style="text-align: center;">
+                                <div style="display: inline-flex; gap: 6px; align-items: center;">
+                                    <a href="{{ route('galeriperencanaan.edit', $tampil->id) }}" class="btn-act btn-act-edit" title="Review" style="margin-right: 0 !important;">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+
+                                    <form action="{{ route('galeriperencanaan.destroy', $tampil->id) }}" method="POST" class="delete-form" style="margin: 0; display: inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="button" class="btn btn-sm btn-danger"
-                                            onclick="confirmDelete(this)">Hapus</button>
+                                        <button type="button" class="btn-act btn-act-delete" onclick="confirmDelete(this)" title="Hapus">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
                                     </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <div class="alert alert-danger mt-4">
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px; color: #9ca3af;">
+                                <i class="bi bi-inbox" style="font-size: 48px; display: block; margin-bottom: 10px;"></i>
                                 Tidak ada data galeri
-                            </div>
-                        @endforelse
-
-                    </tbody>
-                </table>
-
-            </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
-    </main><!-- End #main -->
+    </section>
+</main>
 
-
-    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
-            class="bi bi-arrow-up-short"></i></a>
-
-    <!-- Vendor JS Files -->
-    <script src="backend/assets/vendor/apexcharts/apexcharts.min.js"></script>
-    <script src="backend/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="backend/assets/vendor/chart.js/chart.umd.js"></script>
-    <script src="backend/assets/vendor/echarts/echarts.min.js"></script>
-    <script src="backend/assets/vendor/quill/quill.min.js"></script>
-    <script src="backend/assets/vendor/simple-datatables/simple-datatables.js"></script>
-    <script src="backend/assets/vendor/tinymce/tinymce.min.js"></script>
-    <script src="backend/assets/vendor/php-email-form/validate.js"></script>
-
-    <!-- Template Main JS File -->
-    <script src="backend/assets/js/main.js"></script>
-
-    <script type="text/javascript">
-        Dropzone.autoDiscover = false;
-        var myDropzone = new Dropzone('#pdf', {
-            maxFilesize: 1,
-            acceptedFiles: ".pdf",
-            addRemoveLinks: true,
-            autoProcessQueue: false,
-            init: function() {
-                $("button").click(function(e) {
-                    e.preventDefault();
-                    myDropzone.processQueue();
-                });
-
-                this.on('sending', function(file, xhr, formData) {
-                    var data = $('#pdf').serializeArray();
-                    $.each(data, function(key, el) {
-                        formData.append(el.name, el.value);
-                    });
-                });
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete(button) {
+        Swal.fire({
+            title: 'Yakin hapus data?',
+            text: "Data yang dihapus tidak bisa dikembalikan.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal',
+            customClass: {
+                popup: 'logout-popup',
+                title: 'logout-title',
+                confirmButton: 'logout-confirm-btn',
+                cancelButton: 'logout-cancel-btn'
+            },
+            buttonsStyling: false,
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                button.closest('form').submit();
             }
         });
-    </script>
+    }
+</script>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script>
-        function confirmDelete(button) {
-            Swal.fire({
-                title: 'Yakin hapus data?',
-                text: "Data yang dihapus tidak bisa dikembalikan.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Cari form terdekat dan submit
-                    button.closest('form').submit();
-                }
-            });
-        }
-    </script>
-
-</body>
-
-{{-- </html> --}}
-{{-- @endsection --}}
+@endsection

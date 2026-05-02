@@ -1,246 +1,278 @@
-{{-- @extends('backend/layouts.template') --}}
+@extends('backend.layouts.template')
 
-{{-- @section('content1') --}}
+@section('content1')
 
-<!DOCTYPE html>
-,<html lang="en">
+<main id="main" class="main">
+    <section class="section">
+        <h1 class="page-heading">Galeri Bidang Umum</h1>
+        
+        @if ($message = Session::get('success'))
+            <div class="alert alert-success" role="alert">
+                {{ $message }}
+            </div>
+        @endif
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <div class="form-card" style="margin-bottom: 20px; padding: 20px 32px;">
+            <form action="{{ route('galeribidangumum.filter') }}" method="GET" id="filterForm">
+                <!-- Baris Atas: Pilih Bulan dan Tahun -->
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <!-- Pilih Bulan -->
+                    <div class="d-flex align-items-center gap-2">
+                        <label for="bulan" class="form-label" style="margin-bottom: 0; font-size: 14px; color: #6b7280; white-space: nowrap; font-weight: 500;">Pilih Bulan</label>
+                        <select name="bulan" id="bulan" class="form-control" style="height: 40px; width: 180px; font-size: 13px; border: 1px solid #cbd5e0; border-radius: 6px; padding: 8px 12px; color: #4a5568;">
+                            <option value="">-- Pilih Bulan --</option>
+                            <option value="01">Januari</option>
+                            <option value="02">Februari</option>
+                            <option value="03">Maret</option>
+                            <option value="04">April</option>
+                            <option value="05">Mei</option>
+                            <option value="06">Juni</option>
+                            <option value="07">Juli</option>
+                            <option value="08">Agustus</option>
+                            <option value="09">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Desember</option>
+                        </select>
+                    </div>
 
-  <title>Galeri</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
+                    <!-- Pilih Tahun -->
+                    <div class="d-flex align-items-center gap-2">
+                        <label for="tahun" class="form-label" style="margin-bottom: 0; font-size: 14px; color: #6b7280; white-space: nowrap; font-weight: 500;">Pilih Tahun</label>
+                        <select name="tahun" id="tahun" class="form-control" style="height: 40px; width: 180px; font-size: 13px; border: 1px solid #cbd5e0; border-radius: 6px; padding: 8px 12px; color: #4a5568;">
+                            <option value="">-- Pilih Tahun --</option>
+                            <option value="2023">2023</option>
+                            <option value="2024">2024</option>
+                            <option value="2025">2025</option>
+                            <option value="2026">2026</option>
+                        </select>
+                    </div>
+                </div>
 
-  <!-- Favicons -->
-  <link href="backend/assets/img/favicon.png" rel="icon">
-  <link href="backend/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.gstatic.com" rel="preconnect">
-  <link
-    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
-    rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
-  <link href="backend/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="backend/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="backend/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-  <link href="backend/assets/vendor/quill/quill.snow.css" rel="stylesheet">
-  <link href="backend/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
-  <link href="backend/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
-  <link href="backend/assets/vendor/simple-datatables/style.css" rel="stylesheet">
-
-  <!-- Template Main CSS File -->
-  <link href="backend/assets/css/style.css" rel="stylesheet">
-
-  {{-- fontawesome --}}
-  <link rel="stylesheet" type="text/css" href="{{ asset('fontawesome/css/all.min.css') }}">
-
-</head>
-
-<body>
-
-  <!-- ======= Header ======= -->
-  <header id="header" class="header fixed-top d-flex align-items-center">
-
-    <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
-        <img src="{{asset('backend/assets/img/pkk.png')}}" alt="">
-        <span class="d-none d-lg-block">PKK NGANJUK</span>
-      </a>
-      <i class="bi bi-list toggle-sidebar-btn"></i>
-    </div><!-- End Logo -->
-
-    <nav class="header-nav ms-auto">
-    </nav><!-- End Icons Navigation -->
-
-  </header><!-- End Header -->
-
-  <!-- ======= Sidebar ======= -->
-  @include('backend.includes.sidebar')
-
-
-  <main id="main" class="main">
-
-
-    <div class="pagetitle">
-      <h1>Daftar Galeri</h1>
-    </div><!-- End Page Title -->
-
-    @if ($message = Session::get('success'))
-    <div class="alert alert-success" role="alert">
-      {{ $message }}
-    </div>
-  @endif
-    <div class="row">
-      <!-- Sales Card -->
-      <div class="col-xxl-6 col-md-6">
-        <div class="card info-card sales-card">
-          <div class="card-body">
-            <h5 class="card-title">Cetak Perbulan</h5>
-
-            <form action="{{ route('galeribidangumum.filter') }}" method="GET">
-              <a>Bulanan : </a><input type="month" name="search" value="Laporan Perbulan" class="input-laporan">
-              <button type="submit" class="input-laporan-btn btn-sm">Cetak</button>
+                <!-- Baris Bawah: Tombol Refresh dan Filter (Kanan) -->
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="button" class="btn d-flex align-items-center justify-content-center" onclick="resetFilter()" style="background-color: #9ca3af; color: white; border: none; height: 40px; padding: 0 24px; border-radius: 6px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px;">
+                        Refresh
+                    </button>
+                    <button type="button" class="btn d-flex align-items-center justify-content-center gap-2" onclick="submitFilter()" style="background-color: #0369a1; color: white; border: none; height: 40px; padding: 0 24px; border-radius: 6px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px;">
+                        <i class="bi bi-funnel-fill" style="font-size: 14px;"></i>
+                        <span>Filter</span>
+                    </button>
+                </div>
             </form>
-            <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
-            <script type="text/javascript">
-              $(function () {
-                $("#date").datepicker({ dateFormat: 'yy' });
-              });
-            </script>
-          </div>
         </div>
-        {{-- test. --}}
-      </div><!-- End Sales Card -->
 
-      <!-- Sales Card -->
-      <div class="col-xxl-6 col-md-6">
-        <div class="card info-card sales-card">
-          <div class="card-body">
-            <h5 class="card-title">Cetak Galeri Tahunan</h5>
-
-            <form action="{{ route('galeribidangumum.filter') }}" method="GET">
-              <a>Tahunan : </a><select name="search2" class="input-laporan mt-2">
-                <option>-- Pilih --</option>
-                <option value="2023">2023</option>
-                <option value="2024">2024</option>
-              </select>
-
-              <button type="submit" class="input-laporan-btn btn-sm">Cetak</button>
-            </form>
-            <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
-            <script type="text/javascript">
-              $(function () {
-                $("#date").datepicker({ dateFormat: 'yy' });
-              });
-            </script>
-
-          </div>
+        <!-- Tombol Cetak Galeri (Di Luar Frame) -->
+        <div class="d-flex justify-content-end mb-3">
+            <button type="button" class="btn d-flex align-items-center justify-content-center gap-2" onclick="cetakGaleri()" style="background-color: #0369a1; color: white; border: none; height: 40px; padding: 0 24px; border-radius: 6px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px;">
+                <i class="bi bi-download" style="font-size: 14px;"></i>
+                <span>Cetak Galeri</span>
+            </button>
         </div>
-      </div><!-- End Sales Card -->
-    </div>
 
+        <div class="table-card">
+            <table class="table-ttd">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">No</th>
+                        <th style="width: 150px;">Gambar</th>
+                        <th>Deskripsi</th>
+                        <th style="width: 180px;">Tanggal</th>
+                        <th style="width: 120px;">Status</th>
+                        <th style="width: 120px; text-align: center;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $no = 1;
+                    @endphp
+                    @forelse ($data as $tampil)
+                        <tr>
+                            <td>{{ $no++ }}</td>
+                            <td>
+                                <img src="{{ asset('frontend2/gallery2/' . $tampil->gambar) }}" 
+                                     alt="{{ $tampil->deskripsi }}" 
+                                     class="rounded" 
+                                     style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #e2e8f0;">
+                            </td>
+                            <td>{{ $tampil->deskripsi }}</td>
+                            <td>{{ $tampil->created_at }}</td>
+                            <td>
+                                @if(strtolower($tampil->status) == 'upload')
+                                    <span style="background-color: #22c55e; color: white; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600;">Upload</span>
+                                @else
+                                    <span style="background-color: #f59e0b; color: white; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600;">{{ $tampil->status }}</span>
+                                @endif
+                            </td>
+                            <td style="text-align: center;">
+                                <div style="display: inline-flex; gap: 6px; align-items: center;">
+                                    <a href="{{ route('galeribidangumum.edit', $tampil->id) }}" class="btn-act btn-act-edit" title="Review" style="margin-right: 0 !important;">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
 
-    <div class="card mt-2">
-      <div class="card-body">
-
-
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">No</th>
-              <th scope="col">Gambar</th>
-              <th scope="col">Deskripsi</th>
-              <th scope="col">Tanggal</th>
-              <th scope="col">Status</th>
-              <th scope="col">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            @php
-        $no = 1;
-        @endphp
-            @forelse ($data as $tampil)
-        <tr>
-          <th scope="row">{{ $no++ }}</th>
-          <td><img src="{{ asset('frontend2/gallery2/' . $tampil->gambar) }}" class="rounded img"
-            style="width: 150px" style="height: 100px">
-          </td>
-          <td>{{ $tampil->deskripsi }}</td>
-          <td>{{ $tampil->created_at }}</td>
-          <td>{{ $tampil->status }}</td>
-          <td>
-          <a href="{{ route('galeribidangumum.edit', $tampil->id) }}" class="btn btn-sm btn-tambah">Review</a>
-          <form action="{{ route('galeribidangumum.destroy', $tampil->id)}}" method="POST"
-            class="d-inline delete-form">
-            @csrf
-            @method('DELETE')
-            <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(this)">Hapus</button>
-          </form>
-
-          </td>
-        </tr>
-      @empty
-        <div class="alert alert-danger mt-4">
-          Tidak ada data galeri
+                                    <form action="{{ route('galeribidangumum.destroy', $tampil->id) }}" method="POST" class="delete-form" style="margin: 0; display: inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" class="btn-act btn-act-delete" onclick="confirmDelete(this)" title="Hapus">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px; color: #9ca3af;">
+                                <i class="bi bi-inbox" style="font-size: 48px; display: block; margin-bottom: 10px;"></i>
+                                Tidak ada data galeri
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
-      @endforelse
+    </section>
+</main>
 
-          </tbody>
-        </table>
-
-      </div>
-    </div>
-  </main><!-- End #main -->
-
-
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
-      class="bi bi-arrow-up-short"></i></a>
-
-  <!-- Vendor JS Files -->
-  <script src="backend/assets/vendor/apexcharts/apexcharts.min.js"></script>
-  <script src="backend/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="backend/assets/vendor/chart.js/chart.umd.js"></script>
-  <script src="backend/assets/vendor/echarts/echarts.min.js"></script>
-  <script src="backend/assets/vendor/quill/quill.min.js"></script>
-  <script src="backend/assets/vendor/simple-datatables/simple-datatables.js"></script>
-  <script src="backend/assets/vendor/tinymce/tinymce.min.js"></script>
-  <script src="backend/assets/vendor/php-email-form/validate.js"></script>
-
-  <!-- Template Main JS File -->
-  <script src="backend/assets/js/main.js"></script>
-
-  <script type="text/javascript">
-    Dropzone.autoDiscover = false;
-    var myDropzone = new Dropzone('#pdf', {
-      maxFilesize: 1,
-      acceptedFiles: ".pdf",
-      addRemoveLinks: true,
-      autoProcessQueue: false,
-      init: function () {
-        $("button").click(function (e) {
-          e.preventDefault();
-          myDropzone.processQueue();
-        });
-
-        this.on('sending', function (file, xhr, formData) {
-          var data = $('#pdf').serializeArray();
-          $.each(data, function (key, el) {
-            formData.append(el.name, el.value);
-          });
-        });
-      }
-    });
-  </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-  <script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
     function confirmDelete(button) {
-      Swal.fire({
-        title: 'Yakin hapus data?',
-        text: "Data yang dihapus tidak bisa dikembalikan.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Ya, Hapus!',
-        cancelButtonText: 'Batal'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // Cari form terdekat dan submit
-          button.closest('form').submit();
-        }
-      });
+        Swal.fire({
+            title: 'Yakin hapus data?',
+            text: "Data yang dihapus tidak bisa dikembalikan.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal',
+            customClass: {
+                popup: 'logout-popup',
+                title: 'logout-title',
+                confirmButton: 'logout-confirm-btn',
+                cancelButton: 'logout-cancel-btn'
+            },
+            buttonsStyling: false,
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                button.closest('form').submit();
+            }
+        });
     }
-  </script>
 
-</body>
+    function submitFilter() {
+        const bulan = document.getElementById('bulan').value;
+        const tahun = document.getElementById('tahun').value;
+        
+        if (!bulan && !tahun) {
+            alert('Silakan pilih bulan atau tahun terlebih dahulu');
+            return;
+        }
+        
+        // Ambil semua baris tabel
+        const tableRows = document.querySelectorAll('.table-ttd tbody tr');
+        let visibleCount = 0;
+        
+        tableRows.forEach(row => {
+            const tanggalCell = row.querySelectorAll('td')[3]; // Kolom tanggal adalah index 3
+            
+            if (!tanggalCell) return;
+            
+            const tanggalText = tanggalCell.textContent.trim();
+            let isVisible = true;
+            
+            // Parse tanggal dari format "YYYY-MM-DD HH:MM:SS"
+            const tanggalParts = tanggalText.split(' ')[0].split('-');
+            const rowTahun = tanggalParts[0];
+            const rowBulan = tanggalParts[1];
+            
+            // Filter berdasarkan bulan dan tahun
+            if (bulan && tahun) {
+                // Jika kedua dipilih
+                isVisible = (rowBulan === bulan && rowTahun === tahun);
+            } else if (bulan) {
+                // Jika hanya bulan dipilih
+                isVisible = (rowBulan === bulan);
+            } else if (tahun) {
+                // Jika hanya tahun dipilih
+                isVisible = (rowTahun === tahun);
+            }
+            
+            // Tampilkan atau sembunyikan baris
+            if (isVisible) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        
+        // Jika tidak ada data yang cocok, tampilkan pesan
+        if (visibleCount === 0) {
+            // Cek apakah sudah ada pesan "tidak ada data"
+            const existingMessage = document.querySelector('.no-data-message');
+            if (!existingMessage) {
+                const tbody = document.querySelector('.table-ttd tbody');
+                const messageRow = document.createElement('tr');
+                messageRow.className = 'no-data-message';
+                messageRow.innerHTML = '<td colspan="6" style="text-align: center; padding: 40px; color: #9ca3af;"><i class="bi bi-inbox" style="font-size: 48px; display: block; margin-bottom: 10px;"></i>Tidak ada data yang sesuai dengan filter</td>';
+                tbody.appendChild(messageRow);
+            }
+        } else {
+            // Hapus pesan "tidak ada data" jika ada
+            const existingMessage = document.querySelector('.no-data-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+        }
+    }
 
-{{--
+    function resetFilter() {
+        // Tampilkan semua baris tabel
+        const tableRows = document.querySelectorAll('.table-ttd tbody tr');
+        tableRows.forEach(row => {
+            row.style.display = '';
+        });
+        
+        // Hapus pesan "tidak ada data" jika ada
+        const existingMessage = document.querySelector('.no-data-message');
+        if (existingMessage) {
+            existingMessage.remove();
+        }
+        
+        // Reset form
+        document.getElementById('bulan').value = '';
+        document.getElementById('tahun').value = '';
+    }
 
-</html> --}}
-{{-- @endsection --}}
+    function cetakGaleri() {
+        const bulan = document.getElementById('bulan').value;
+        const tahun = document.getElementById('tahun').value;
+        
+        if (!bulan && !tahun) {
+            alert('Silakan pilih bulan atau tahun terlebih dahulu untuk mencetak galeri');
+            return;
+        }
+        
+        // Buat URL untuk cetak PDF
+        let url = '{{ route("galeribidangumum.filter") }}?';
+        
+        if (bulan && tahun) {
+            // Format: YYYY-MM untuk cetak perbulan
+            url += 'search=' + tahun + '-' + bulan;
+        } else if (tahun) {
+            // Cetak pertahun
+            url += 'search2=' + tahun;
+        } else if (bulan) {
+            // Jika hanya bulan dipilih, gunakan tahun sekarang
+            const currentYear = new Date().getFullYear();
+            url += 'search=' + currentYear + '-' + bulan;
+        }
+        
+        // Redirect ke halaman cetak PDF
+        window.location.href = url;
+    }
+</script>
+
+@endsection
