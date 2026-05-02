@@ -4,7 +4,7 @@
 
 <main id="main" class="main">
     <section class="section">
-        <h1 class="page-heading">Galeri Bidang Umum</h1>
+        <h1 class="page-heading">Galeri Bidang Umumm</h1>
         
         @if ($message = Session::get('success'))
             <div class="alert alert-success" role="alert">
