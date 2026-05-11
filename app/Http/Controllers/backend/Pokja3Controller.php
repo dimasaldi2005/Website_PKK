@@ -15,37 +15,48 @@ class Pokja3Controller extends Controller
 {
     public function index()
     {
-        // Cek guard yang sedang login
+        $modelPertama = 0;
+        $modelKedua = 0;
+        $modelKetiga = 0;
+        $modelKeempat = 0;
+
+        // 1. JIKA YANG LOGIN ADMIN WEB
         if (Auth::guard('web')->check()) {
-            // Jika guard web (admin)
-            $modelPertama = Pangan::whereIn('status', ['Disetujui1', 'Disetujui2'])->count();
-            $modelKedua = Sandang::whereIn('status', ['Disetujui1', 'Disetujui2'])->count();
-            $modelKetiga = Perumahan::whereIn('status', ['Disetujui1', 'Disetujui2'])->count();
-            $modelKeempat = LaporanPokja3::whereIn('status', ['Disetujui1', 'Disetujui2'])->count();
-        } elseif (Auth::guard('pengguna')->check()) {
-            // Jika guard pengguna (mobile)
+            // Admin melihat semua data yang masuk di sistem
+            $semuaStatusAdmin = ['proses', 'Proses', 'PROSES', 'Disetujui1', 'disetujui1', 'DISETUJUI1', 'Disetujui2', 'disetujui2', 'DISETUJUI2'];
+            
+            $modelPertama = Pangan::whereIn('status', $semuaStatusAdmin)->count();
+            $modelKedua = Sandang::whereIn('status', $semuaStatusAdmin)->count();
+            $modelKetiga = Perumahan::whereIn('status', $semuaStatusAdmin)->count();
+            $modelKeempat = LaporanPokja3::whereIn('status', $semuaStatusAdmin)->count();
+            
+        } 
+        // 2. JIKA YANG LOGIN PENGGUNA MOBILE (KECAMATAN)
+        elseif (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) { // Kecamatan (role 2)
-                // Ambil semua desa (role 1) di kecamatan tersebut
+            if ($user->id_role == 2) { // Role Kecamatan
+                // Ambil ID semua desa (role 1) di kecamatan tersebut
                 $desaIds = Pengguna::where('id_subdistrict', $user->id_subdistrict)
                     ->where('id_role', 1)
                     ->pluck('id');
 
+                $statusKecamatan = ['proses', 'Proses', 'PROSES', 'Disetujui1', 'disetujui1', 'DISETUJUI1'];
+
                 $modelPertama = Pangan::whereIn('id_user', $desaIds)
-                    ->whereIn('status', ['Disetujui1', 'proses'])
+                    ->whereIn('status', $statusKecamatan)
                     ->count();
 
                 $modelKedua = Sandang::whereIn('id_user', $desaIds)
-                    ->whereIn('status', ['Disetujui1', 'proses'])
+                    ->whereIn('status', $statusKecamatan)
                     ->count();
 
                 $modelKetiga = Perumahan::whereIn('id_user', $desaIds)
-                    ->whereIn('status', ['Disetujui1', 'proses'])
+                    ->whereIn('status', $statusKecamatan)
                     ->count();
 
                 $modelKeempat = LaporanPokja3::whereIn('id_user', $desaIds)
-                    ->whereIn('status', ['Disetujui1', 'proses'])
+                    ->whereIn('status', $statusKecamatan)
                     ->count();
             }
         }

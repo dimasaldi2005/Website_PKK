@@ -12,6 +12,8 @@ class DecGotongRoyongController extends Controller
 {
     public function index()
     {
+        $data2 = collect(); // Default data kosong
+
         // Cek guard yang sedang login
         if (Auth::guard('web')->check()) {
             // Jika admin web, tampilkan semua data yang sudah disetujui
@@ -39,29 +41,26 @@ class DecGotongRoyongController extends Controller
                     ->select('laporan_gotong_royong.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
                     ->orderBy('id_pokja1_bidang2', 'desc')
                     ->get();
-            } else {
-                // Role lainnya tidak diizinkan mengakses
-                abort(403, 'Unauthorized action.');
             }
-        } else {
-            // Jika tidak login, redirect ke login
-            return redirect()->route('login');
         }
 
         return view('backend.decgotongroyong', compact('data2'));
     }
+
     public function destroy(string $id_pokja1_bidang2)
     {
         $data2 = GotongRoyong::find($id_pokja1_bidang2);
 
-        // Cek guard yang sedang login
-        if (Auth::guard('web')->check()) {
-            // Admin web bisa menghapus
-            $data2->delete();
-            return redirect()->route('decgotongroyong.index')->with(['success' => 'Berhasil Menghapus Laporan']);
-        } elseif (Auth::guard('pengguna')->check()) {
-            // Pengguna mobile tidak bisa menghapus
-            abort(403, 'Unauthorized action.');
+        if ($data2) {
+            // Hanya Admin web yang bisa menghapus
+            if (Auth::guard('web')->check()) {
+                $data2->delete();
+                return redirect()->route('decgotongroyong.index')->with(['success' => 'Berhasil Menghapus Laporan']);
+            } elseif (Auth::guard('pengguna')->check()) {
+                abort(403, 'Unauthorized action.');
+            }
         }
+
+        return redirect()->route('decgotongroyong.index')->with(['error' => 'Data tidak ditemukan']);
     }
 }

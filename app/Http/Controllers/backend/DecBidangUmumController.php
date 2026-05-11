@@ -12,37 +12,35 @@ class DecBidangUmumController extends Controller
 {
     public function index()
     {
-        // Cek guard terlebih dahulu
+        $data = collect(); // Mengembalikan collection kosong secara default
+
+        // 1. JIKA YANG LOGIN ADMIN WEB
         if (Auth::guard('web')->check()) {
-            // Jika guard web (admin), tampilkan data dengan status 'Disetujui2'
             $data = DB::table('laporan_umum')
-                ->join('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                ->leftJoin('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                 ->select('laporan_umum.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                ->where('laporan_umum.status', 'Disetujui2')
+                ->whereIn('laporan_umum.status', ['Disetujui2', 'disetujui2', 'DISETUJUI2'])
                 ->orderBy('id_laporan_umum', 'desc')
                 ->get();
-        } elseif (Auth::guard('pengguna')->check()) {
-            // Jika guard pengguna (mobile)
+        } 
+        // 2. JIKA YANG LOGIN PENGGUNA MOBILE (KECAMATAN)
+        elseif (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) {
-                // Jika role kecamatan (2), tampilkan data desa (role 1) di kecamatan tersebut dengan status 'Disetujui1'
+            if ($user->id_role == 2) { // Role Kecamatan
                 $data = DB::table('laporan_umum')
-                    ->join('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
-                    ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                    ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->leftJoin('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
+                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                     ->select('laporan_umum.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                    ->where('laporan_umum.status', 'Disetujui1')
+                    ->whereIn('laporan_umum.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
                     ->where('users_mobile.id_role', 1) // Desa
                     ->orderBy('id_laporan_umum', 'desc')
                     ->get();
             }
-        } else {
-            // Default jika tidak ada guard yang cocok
-            $data = collect(); // Mengembalikan collection kosong
         }
 
         return view('backend.decbidangumum', compact('data'));
@@ -51,8 +49,12 @@ class DecBidangUmumController extends Controller
     public function destroy(string $id_laporan_umum)
     {
         $data = BidangUmum::find($id_laporan_umum);
-        $data->delete();
-
-        return redirect()->route('decbidangumum.index')->with(['success' => 'Berhasil Menghapus Laporan']);
+        
+        if ($data) {
+            $data->delete();
+            return redirect()->route('decbidangumum.index')->with(['success' => 'Berhasil Menghapus Laporan']);
+        }
+        
+        return redirect()->route('decbidangumum.index')->with(['error' => 'Data tidak ditemukan']);
     }
 }

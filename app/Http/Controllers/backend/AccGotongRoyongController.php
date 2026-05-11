@@ -3,44 +3,50 @@
 namespace App\Http\Controllers\backend;
 
 use Illuminate\Http\Request;
-use App\Models\GotongRoyong;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Pengguna;
 
 class AccGotongRoyongController extends Controller
 {
     public function index()
     {
-        // Cek guard yang login
-        if (Auth::guard('web')->check()) {
-            // Jika admin web, tampilkan data dengan status Disetujui1 dan Disetujui2
-            $got1 = GotongRoyong::whereIn('status', ['Disetujui1'])->count();
-            $got2 = GotongRoyong::whereIn('status', ['Disetujui2'])->count();
-        } elseif (Auth::guard('pengguna')->check()) {
+        $got1 = 0;
+        $got2 = 0;
+
+        // 1. JIKA YANG LOGIN PENGGUNA MOBILE (KECAMATAN)
+        if (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) { // Kecamatan (role 2)
-                // Ambil data desa (role 1) di kecamatan yang sama
-                $desaIds = Pengguna::where('id_subdistrict', $user->id_subdistrict)
-                    ->where('id_role', 1)
-                    ->pluck('id');
+            if ($user->id_role == 2) { // Role Kecamatan
+                // Menghitung yang masih 'proses' di desa naungannya
+                $got1 = DB::table('laporan_gotong_royong')
+                    ->join('users_mobile', 'laporan_gotong_royong.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_gotong_royong.status', ['proses', 'Proses', 'PROSES'])
+                    ->count();
 
-                // Tampilkan data dengan status proses dan Disetujui1 untuk desa tersebut
-                $got1 = GotongRoyong::whereIn('id_user', $desaIds)
-                    ->whereIn('status', ['proses'])
+                // Menghitung yang 'Disetujui1' (Sudah di-ACC Kecamatan)
+                $got2 = DB::table('laporan_gotong_royong')
+                    ->join('users_mobile', 'laporan_gotong_royong.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_gotong_royong.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
                     ->count();
-                $got2 = GotongRoyong::whereIn('id_user', $desaIds)
-                    ->whereIn('status', ['Disetujui1'])
-                    ->count();
-            } else {
-                // Untuk role lainnya (jika ada)
-                $got1 = 0;
-                $got2 = 0;
             }
-        } else {
-            $got1 = 0;
-            $got2 = 0;
+        } 
+        // 2. JIKA YANG LOGIN ADMIN WEB
+        else if (Auth::guard('web')->check()) {
+            // Admin menghitung SEMUA yang belum di-ACC final (baik yang baru masuk 'proses' maupun 'Disetujui1' dari kecamatan)
+            $got1 = DB::table('laporan_gotong_royong')
+                ->whereIn('status', ['proses', 'Proses', 'PROSES', 'Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                ->count();
+
+            // Admin menghitung yang sudah selesai di-ACC Admin ('Disetujui2')
+            $got2 = DB::table('laporan_gotong_royong')
+                ->whereIn('status', ['Disetujui2', 'disetujui2', 'DISETUJUI2'])
+                ->count();
         }
 
         return view('backend.accgotongroyong', compact('got1', 'got2'));

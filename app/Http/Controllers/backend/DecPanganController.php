@@ -12,39 +12,35 @@ class DecPanganController extends Controller
 {
     public function index()
     {
+        $data2 = collect();
+
+        // 1. JIKA YANG LOGIN ADMIN WEB
         if (Auth::guard('web')->check()) {
-            // Jika yang login adalah admin (guard web)
             $data2 = DB::table('laporan_pangan')
-                ->join('users_mobile', 'laporan_pangan.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                ->leftJoin('users_mobile', 'laporan_pangan.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                 ->select('laporan_pangan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                ->where('laporan_pangan.status', 'Disetujui2')
+                ->whereIn('laporan_pangan.status', ['Disetujui2', 'disetujui2', 'DISETUJUI2'])
                 ->orderBy('id_pokja3_bidang1', 'desc')
                 ->get();
-        } elseif (Auth::guard('pengguna')->check()) {
-            // Jika yang login adalah pengguna (guard pengguna)
+        } 
+        // 2. JIKA YANG LOGIN PENGGUNA MOBILE (KECAMATAN)
+        elseif (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) { // Kecamatan
+            if ($user->id_role == 2) { // Role Kecamatan
                 $data2 = DB::table('laporan_pangan')
-                    ->join('users_mobile', 'laporan_pangan.id_user', '=', 'users_mobile.id')
-                    ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                    ->join('village', 'users_mobile.id_village', '=', 'village.id')
-                    ->select(
-                        'laporan_pangan.*',
-                        'subdistrict.name as nama_kec',
-                        'village.name as nama_desa'
-                    )
+                    ->leftJoin('users_mobile', 'laporan_pangan.id_user', '=', 'users_mobile.id')
+                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->select('laporan_pangan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
                     ->where('users_mobile.id_role', 1) // Hanya desa
-                    ->where('laporan_pangan.status', 'Disetujui1')
+                    ->whereIn('laporan_pangan.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
                     ->orderBy('id_pokja3_bidang1', 'desc')
                     ->get();
             }
-        } else {
-            // Jika tidak ada yang login
-            $data2 = collect(); // Mengembalikan collection kosong
         }
 
         return view('backend.decpangan', compact('data2'));
@@ -54,12 +50,11 @@ class DecPanganController extends Controller
     {
         $data2 = Pangan::find($id_pokja3_bidang1);
 
-        if (!$data2) {
-            return redirect()->route('decpangan.index')->with(['error' => 'Data tidak ditemukan']);
+        if ($data2) {
+            $data2->delete();
+            return redirect()->route('decpangan.index')->with(['success' => 'Berhasil Menghapus Laporan']);
         }
 
-        $data2->delete();
-
-        return redirect()->route('decpangan.index')->with(['success' => 'Berhasil Menghapus Laporan']);
+        return redirect()->route('decpangan.index')->with(['error' => 'Data tidak ditemukan']);
     }
 }

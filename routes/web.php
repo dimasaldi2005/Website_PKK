@@ -19,6 +19,9 @@ use App\Http\Controllers\backend\GotongRoyongController;
 use App\Http\Controllers\backend\JumlahBeritaController;
 use App\Http\Controllers\backend\GaleriController;
 use App\Http\Controllers\Auth\OtpController;
+use App\Http\Controllers\backend\Pokja1ExportController;
+// TAMBAHAN UNTUK POKJA 4 EXPORT
+use App\Http\Controllers\backend\Pokja4ExportController;
 
 // Route::get('/', [HomeController::class, 'index'], function () {
 //     return view('/home');
@@ -97,6 +100,12 @@ Route::middleware(['auth:web,pengguna', 'prevent-back-history'])->group(function
     Route::resource('pokja2', App\Http\Controllers\backend\Pokja2Controller::class);
     Route::resource('pokja3', App\Http\Controllers\backend\Pokja3Controller::class);
     Route::resource('pokja4', App\Http\Controllers\backend\Pokja4Controller::class);
+    
+    // CUSTOM ROUTE EXPORT JSON LAMA (TETAP DIBIARKAN UNTUK JAGA-JAGA)
+    Route::get('/laporanpokja1/export-json', [App\Http\Controllers\backend\LaporanPokja1Controller::class, 'getExportData'])->name('laporanpokja1.exportJson');
+    Route::get('/laporanpokja4/export-json', [App\Http\Controllers\backend\LaporanPokja4Controller::class, 'getExportData'])->name('laporanpokja4.exportJson');
+    
+    // RESOURCE ROUTES
     Route::resource('laporanpokja1', App\Http\Controllers\backend\LaporanPokja1Controller::class);
     Route::resource('laporanpokja3', App\Http\Controllers\backend\LaporanPokja3Controller::class);
     Route::resource('laporanpokja4', App\Http\Controllers\backend\LaporanPokja4Controller::class);
@@ -155,8 +164,6 @@ Route::middleware(['auth:web,pengguna', 'prevent-back-history'])->group(function
     Route::resource('galerilaporanpokja3', App\Http\Controllers\backend\GaleriLaporanPokja3Controller::class);
     Route::resource('galerilaporanpokja4', App\Http\Controllers\backend\GaleriLaporanPokja4Controller::class);
 
-
-
     //admin akses
     Route::middleware(['admin'])->group(function () {
         Route::resource('ttd', App\Http\Controllers\backend\TtdController::class);
@@ -179,3 +186,16 @@ Route::get('/otp/verify', function () {
 Route::post('/otp/verify', [OtpController::class, 'verifyOtp'])->name('otp.verify');
 
 Route::post('/otp/reset', [OtpController::class, 'resetPassword'])->name('otp.reset');
+
+Route::resource('inovasi', App\Http\Controllers\backend\InovasiController::class);
+
+Route::post('/export-pokja1', [Pokja1ExportController::class, 'exportToSheet'])
+    ->name('export.pokja1');
+Route::get('/cetak-pokja1', [App\Http\Controllers\backend\Pokja1Controller::class, 'cetak'])->name('pokja1.cetak');
+Route::get('/pokja1/filter', [App\Http\Controllers\backend\Pokja1Controller::class, 'filter'])->name('pokja1.filter');
+
+// ----------------------------------------------------
+// ROUTE BARU UNTUK EXPORT POKJA 4 VIA CONTROLLER SERVER
+// ----------------------------------------------------
+Route::post('/export-pokja4', [Pokja4ExportController::class, 'exportToSheet'])
+    ->name('export.pokja4');

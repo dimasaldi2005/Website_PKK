@@ -19,35 +19,36 @@ class PanganController extends Controller
 {
     public function index()
     {
-        // Cek guard yang login
+        $data = collect();
+
+        // 1. JIKA YANG LOGIN ADMIN WEB
         if (Auth::guard('web')->check()) {
-            // Jika admin web, tampilkan semua data dengan status 'Disetujui1'
             $data = DB::table('laporan_pangan')
-                ->join('users_mobile', 'laporan_pangan.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                ->leftJoin('users_mobile', 'laporan_pangan.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                 ->select('laporan_pangan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                ->where('laporan_pangan.status', 'Disetujui1')
+                // Tampilkan Disetujui1 dan Proses agar Admin bisa memantau
+                ->whereIn('laporan_pangan.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1', 'proses', 'Proses', 'PROSES'])
                 ->orderBy('id_pokja3_bidang1', 'desc')
                 ->get();
-        } elseif (Auth::guard('users_mobile')->check()) {
-            $user = Auth::guard('users_mobile')->user();
+        } 
+        // 2. JIKA YANG LOGIN PENGGUNA MOBILE (KECAMATAN)
+        elseif (Auth::guard('pengguna')->check()) { // <-- Tadi salah tulis jadi users_mobile
+            $user = Auth::guard('pengguna')->user();
 
             if ($user->id_role == 2) { // Kecamatan
-                // Ambil data desa (role 1) di kecamatan tersebut dengan status 'proses'
                 $data = DB::table('laporan_pangan')
-                    ->join('users_mobile', 'laporan_pangan.id_user', '=', 'users_mobile.id')
-                    ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                    ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->leftJoin('users_mobile', 'laporan_pangan.id_user', '=', 'users_mobile.id')
+                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                     ->select('laporan_pangan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
                     ->where('users_mobile.id_role', 1) // Hanya desa
-                    ->where('laporan_pangan.status', 'Proses')
+                    ->whereIn('laporan_pangan.status', ['proses', 'Proses', 'PROSES'])
                     ->orderBy('id_pokja3_bidang1', 'desc')
                     ->get();
             }
-        } else {
-            $data = collect(); // Return empty collection jika tidak ada guard yang valid
         }
 
         return view('backend.pangan', compact('data'));
@@ -57,10 +58,13 @@ class PanganController extends Controller
     {
         $data = Pangan::find($id_pokja3_bidang1);
 
-        // Ambil data user terkait untuk menampilkan info kecamatan/desa
+        if (!$data) {
+            return redirect()->back()->with('error', 'Data tidak ditemukan!');
+        }
+
         $user = Pengguna::find($data->id_user);
-        $kecamatan = DB::table('subdistrict')->where('id', $user->id_subdistrict)->first();
-        $desa = DB::table('village')->where('id', $user->id_village)->first();
+        $kecamatan = $user ? DB::table('subdistrict')->where('id', $user->id_subdistrict)->first() : null;
+        $desa = $user ? DB::table('village')->where('id', $user->id_village)->first() : null;
 
         return view('backend.tampil_pangan', compact('data', 'kecamatan', 'desa'));
     }
@@ -69,27 +73,23 @@ class PanganController extends Controller
     {
         $data = Pangan::find($id_pokja3_bidang1);
 
-        // Tentukan status persetujuan berdasarkan guard
         $status = $request->status;
-        if ($status == 'Disetujui') {
-            if (Auth::guard('users_mobile')->check()) {
-                $status = 'Disetujui1'; // Status untuk pengguna mobile (kecamatan)
-            } else {
-                $status = 'Disetujui2'; // Status untuk web
-            }
+        if (strtolower($status) == 'disetujui') {
+            $status = Auth::guard('pengguna')->check() ? 'Disetujui1' : 'Disetujui2';
         }
 
+        // Pakai ?? agar saat tombol disetujui ditekan, data angkanya tidak terhapus (hilang)
         $data->update([
-            'beras' => $request->beras,
-            'non_beras' => $request->non_beras,
-            'peternakan' => $request->peternakan,
-            'perikanan' => $request->perikanan,
-            'warung_hidup' => $request->warung_hidup,
-            'lumbung_hidup' => $request->lumbung_hidup,
-            'toga' => $request->toga,
-            'tanaman_keras' => $request->tanaman_keras,
-            'status' => $status,
-            'catatan' => $request->catatan,
+            'beras'         => $request->beras ?? $data->beras,
+            'non_beras'     => $request->non_beras ?? $data->non_beras,
+            'peternakan'    => $request->peternakan ?? $data->peternakan,
+            'perikanan'     => $request->perikanan ?? $data->perikanan,
+            'warung_hidup'  => $request->warung_hidup ?? $data->warung_hidup,
+            'lumbung_hidup' => $request->lumbung_hidup ?? $data->lumbung_hidup,
+            'toga'          => $request->toga ?? $data->toga,
+            'tanaman_keras' => $request->tanaman_keras ?? $data->tanaman_keras,
+            'status'        => $status,
+            'catatan'       => $request->catatan,
         ]);
 
         return redirect()->route('pangan.index')->with(['success' => 'Berhasil Mengubah Status']);
@@ -97,273 +97,124 @@ class PanganController extends Controller
 
     public function filter(Request $request)
     {
-        // Tentukan status berdasarkan guard yang aktif
-        $status = Auth::guard('web')->check() ? 'Disetujui2' : 'Disetujui1';
+        $statusArray = Auth::guard('web')->check() ? ['Disetujui2', 'disetujui2', 'DISETUJUI2'] : ['Disetujui1', 'disetujui1', 'DISETUJUI1'];
 
-        if ($request->has('search')) {
-            // Query untuk laporan pangan
+        if ($request->has('search') || $request->has('search2')) {
+            
+            $searchTerm = $request->has('search') ? $request->search : $request->search2;
+            $isYearly = $request->has('search2');
+
+            // --- QUERY PANGAN ---
             $pangan = DB::table('laporan_pangan')
-                ->join('users_mobile', 'laporan_pangan.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('users_mobile', 'laporan_pangan.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
                 ->select('laporan_pangan.*', 'subdistrict.name as nama_kec')
-                ->where('laporan_pangan.created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('laporan_pangan.status', $status)
+                ->when($isYearly, function($q) use ($searchTerm){
+                    return $q->whereYear('laporan_pangan.created_at', $searchTerm);
+                }, function($q) use ($searchTerm){
+                    return $q->where('laporan_pangan.created_at', 'LIKE', '%' . $searchTerm . '%');
+                })
+                ->whereIn('laporan_pangan.status', $statusArray)
                 ->get();
 
-            $total1 = Pangan::where('created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('status', $status)
-                ->sum('beras');
-            $total2 = Pangan::where('created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('status', $status)
-                ->sum('non_beras');
-            $total3 = Pangan::where('created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('status', $status)
-                ->sum('peternakan');
-            $total31 = Pangan::where('created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('status', $status)
-                ->sum('perikanan');
-            $total4 = Pangan::where('created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('status', $status)
-                ->sum('warung_hidup');
-            $total5 = Pangan::where('created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('status', $status)
-                ->sum('lumbung_hidup');
-            $total6 = Pangan::where('created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('status', $status)
-                ->sum('toga');
-            $total7 = Pangan::where('created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('status', $status)
-                ->sum('tanaman_keras');
+            $total1 = $pangan->sum('beras');
+            $total2 = $pangan->sum('non_beras');
+            $total3 = $pangan->sum('peternakan');
+            $total31 = $pangan->sum('perikanan');
+            $total4 = $pangan->sum('warung_hidup');
+            $total5 = $pangan->sum('lumbung_hidup');
+            $total6 = $pangan->sum('toga');
+            $total7 = $pangan->sum('tanaman_keras');
 
-            // Query untuk laporan sandang
+            // --- QUERY SANDANG ---
             $sandang = DB::table('laporan_sandang')
-                ->join('users_mobile', 'laporan_sandang.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('users_mobile', 'laporan_sandang.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
                 ->select('laporan_sandang.*', 'subdistrict.name as nama_kec')
-                ->where('laporan_sandang.created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('laporan_sandang.status', $status)
+                ->when($isYearly, function($q) use ($searchTerm){
+                    return $q->whereYear('laporan_sandang.created_at', $searchTerm);
+                }, function($q) use ($searchTerm){
+                    return $q->where('laporan_sandang.created_at', 'LIKE', '%' . $searchTerm . '%');
+                })
+                ->whereIn('laporan_sandang.status', $statusArray)
                 ->get();
 
-            $total24 = Sandang::where('created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('status', $status)
-                ->sum('pangan');
-            $total25 = Sandang::where('created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('status', $status)
-                ->sum('sandang');
-            $total26 = Sandang::where('created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('status', $status)
-                ->sum('jasa');
+            $total24 = $sandang->sum('pangan');
+            $total25 = $sandang->sum('sandang');
+            $total26 = $sandang->sum('jasa');
 
-            // Query untuk laporan perumahan
+            // --- QUERY PERUMAHAN ---
             $perumahan = DB::table('laporan_perumahan')
-                ->join('users_mobile', 'laporan_perumahan.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('users_mobile', 'laporan_perumahan.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
                 ->select('laporan_perumahan.*', 'subdistrict.name as nama_kec')
-                ->where('laporan_perumahan.created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('laporan_perumahan.status', $status)
+                ->when($isYearly, function($q) use ($searchTerm){
+                    return $q->whereYear('laporan_perumahan.created_at', $searchTerm);
+                }, function($q) use ($searchTerm){
+                    return $q->where('laporan_perumahan.created_at', 'LIKE', '%' . $searchTerm . '%');
+                })
+                ->whereIn('laporan_perumahan.status', $statusArray)
                 ->get();
 
-            $total8 = Perumahan::where('created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('status', $status)
-                ->sum('layak_huni');
-            $total9 = Perumahan::where('created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('status', $status)
-                ->sum('tidak_layak');
+            $total8 = $perumahan->sum('layak_huni');
+            $total9 = $perumahan->sum('tidak_layak');
 
-            // Query untuk laporan pokja3
+            // --- QUERY POKJA 3 ---
             $laporanpokja3 = DB::table('laporan_kader_pokja3')
-                ->join('users_mobile', 'laporan_kader_pokja3.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('users_mobile', 'laporan_kader_pokja3.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
                 ->select('laporan_kader_pokja3.*', 'subdistrict.name as nama_kec')
-                ->where('laporan_kader_pokja3.created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('laporan_kader_pokja3.status', $status)
+                ->when($isYearly, function($q) use ($searchTerm){
+                    return $q->whereYear('laporan_kader_pokja3.created_at', $searchTerm);
+                }, function($q) use ($searchTerm){
+                    return $q->where('laporan_kader_pokja3.created_at', 'LIKE', '%' . $searchTerm . '%');
+                })
+                ->whereIn('laporan_kader_pokja3.status', $statusArray)
                 ->get();
 
-            $total10 = LaporanPokja3::where('created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('status', $status)
-                ->sum('pangan');
-            $total11 = LaporanPokja3::where('created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('status', $status)
-                ->sum('sandang');
-            $total12 = LaporanPokja3::where('created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('status', $status)
-                ->sum('tata_laksana_rumah');
+            $total10 = $laporanpokja3->sum('pangan');
+            $total11 = $laporanpokja3->sum('sandang');
+            $total12 = $laporanpokja3->sum('tata_laksana_rumah');
 
             // Cek data kosong
-            $allTablesEmpty = $pangan->isEmpty() && $sandang->isEmpty() && $perumahan->isEmpty() && $laporanpokja3->isEmpty();
-
-            if ($allTablesEmpty) {
+            if ($pangan->isEmpty() && $sandang->isEmpty() && $perumahan->isEmpty() && $laporanpokja3->isEmpty()) {
                 return back()->with('error', 'Tidak ada data laporan untuk periode tersebut');
             }
 
             $currentDate = Carbon::now();
             $formattedDate = $currentDate->isoFormat('dddd, D MMMM YYYY');
-            $created_at = $request->input('search');
-            $carbonDate = Carbon::parse($created_at);
-            $created_at = $carbonDate->isoFormat('MMMM YYYY');
-            $ketua = Ttd::where('jabatan', 'Ketua')->where('pokja', 'Kelompok Kerja III')->get();
-            $wakil = Ttd::where('jabatan', 'Ketua')->where('id_ttds', '12')->get();
-
-            return view('backend.cetak_bulan_pokja3', compact(
-                'pangan',
-                'sandang',
-                'perumahan',
-                'laporanpokja3',
-                'total1',
-                'total2',
-                'total3',
-                'total4',
-                'total5',
-                'total6',
-                'total7',
-                'total8',
-                'total9',
-                'total10',
-                'total11',
-                'total12',
-                'total24',
-                'total25',
-                'total26',
-                'total31',
-                'formattedDate',
-                'ketua',
-                'wakil',
-                'created_at'
-            ));
-        } elseif ($request->has('search2')) {
-            // Logika yang sama untuk filter tahun
-            $pangan = DB::table('laporan_pangan')
-                ->join('users_mobile', 'laporan_pangan.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->select('laporan_pangan.*', 'subdistrict.name as nama_kec')
-                ->where('laporan_pangan.created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('laporan_pangan.status', $status)
-                ->get();
-
-            $total1 = Pangan::where('created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('status', $status)
-                ->sum('beras');
-            $total2 = Pangan::where('created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('status', $status)
-                ->sum('non_beras');
-            $total3 = Pangan::where('created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('status', $status)
-                ->sum('peternakan');
-            $total31 = Pangan::where('created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('status', $status)
-                ->sum('perikanan');
-            $total4 = Pangan::where('created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('status', $status)
-                ->sum('warung_hidup');
-            $total5 = Pangan::where('created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('status', $status)
-                ->sum('lumbung_hidup');
-            $total6 = Pangan::where('created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('status', $status)
-                ->sum('toga');
-            $total7 = Pangan::where('created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('status', $status)
-                ->sum('tanaman_keras');
-
-            $sandang = DB::table('laporan_sandang')
-                ->join('users_mobile', 'laporan_sandang.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->select('laporan_sandang.*', 'subdistrict.name as nama_kec')
-                ->where('laporan_sandang.created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('laporan_sandang.status', $status)
-                ->get();
-
-            $total24 = Sandang::where('created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('status', $status)
-                ->sum('pangan');
-            $total25 = Sandang::where('created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('status', $status)
-                ->sum('sandang');
-            $total26 = Sandang::where('created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('status', $status)
-                ->sum('jasa');
-
-            $perumahan = DB::table('laporan_perumahan')
-                ->join('users_mobile', 'laporan_perumahan.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->select('laporan_perumahan.*', 'subdistrict.name as nama_kec')
-                ->where('laporan_perumahan.created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('laporan_perumahan.status', $status)
-                ->get();
-
-            $total8 = Perumahan::where('created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('status', $status)
-                ->sum('layak_huni');
-            $total9 = Perumahan::where('created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('status', $status)
-                ->sum('tidak_layak');
-
-            $laporanpokja3 = DB::table('laporan_kader_pokja3')
-                ->join('users_mobile', 'laporan_kader_pokja3.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->select('laporan_kader_pokja3.*', 'subdistrict.name as nama_kec')
-                ->where('laporan_kader_pokja3.created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('laporan_kader_pokja3.status', $status)
-                ->get();
-
-            $total10 = LaporanPokja3::where('created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('status', $status)
-                ->sum('pangan');
-            $total11 = LaporanPokja3::where('created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('status', $status)
-                ->sum('sandang');
-            $total12 = LaporanPokja3::where('created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('status', $status)
-                ->sum('tata_laksana_rumah');
-
-            // Cek data kosong
-            $allTablesEmpty = $pangan->isEmpty() && $sandang->isEmpty() && $perumahan->isEmpty() && $laporanpokja3->isEmpty();
-
-            if ($allTablesEmpty) {
-                return back()->with('error', 'Tidak ada data laporan untuk periode tersebut');
+            
+            $created_at = $searchTerm;
+            if (!$isYearly) {
+                try {
+                    $carbonDate = Carbon::parse($searchTerm);
+                    $created_at = $carbonDate->isoFormat('MMMM YYYY');
+                } catch (\Exception $e) {}
             }
 
-            $currentDate = Carbon::now();
-            $formattedDate = $currentDate->isoFormat('dddd, D MMMM YYYY');
-            $created_at = $request->input('search2');
             $ketua = Ttd::where('jabatan', 'Ketua')->where('pokja', 'Kelompok Kerja III')->get();
             $wakil = Ttd::where('jabatan', 'Ketua')->where('id_ttds', '12')->get();
 
-            return view('backend.cetak_tahun_pokja3', compact(
-                'pangan',
-                'sandang',
-                'perumahan',
-                'laporanpokja3',
-                'total1',
-                'total2',
-                'total3',
-                'total4',
-                'total5',
-                'total6',
-                'total7',
-                'total8',
-                'total9',
-                'total10',
-                'total11',
-                'total12',
-                'total24',
-                'total25',
-                'total26',
-                'total31',
-                'formattedDate',
-                'ketua',
-                'wakil',
-                'created_at'
+            $viewName = $isYearly ? 'backend.cetak_tahun_pokja3' : 'backend.cetak_bulan_pokja3';
+
+            return view($viewName, compact(
+                'pangan', 'sandang', 'perumahan', 'laporanpokja3',
+                'total1', 'total2', 'total3', 'total4', 'total5', 'total6', 'total7', 'total8', 'total9', 'total10',
+                'total11', 'total12', 'total24', 'total25', 'total26', 'total31',
+                'formattedDate', 'ketua', 'wakil', 'created_at'
             ));
-        } else {
-            return redirect()->back();
         }
+
+        return redirect()->back();
     }
 
     public function destroy(string $id_pokja3_bidang1)
     {
         $data = Pangan::find($id_pokja3_bidang1);
-        $data->delete();
-        return redirect()->route('pangan.index')->with(['success' => 'Berhasil Menghapus Laporan']);
+        if ($data) {
+            $data->delete();
+            return redirect()->route('pangan.index')->with(['success' => 'Berhasil Menghapus Laporan']);
+        }
+        return redirect()->route('pangan.index')->with(['error' => 'Data tidak ditemukan']);
     }
 }

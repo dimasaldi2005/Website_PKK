@@ -3,54 +3,67 @@
 namespace App\Http\Controllers\backend;
 
 use Illuminate\Http\Request;
-use App\Models\Kesehatan;
-use App\Models\KelestarianLingkunganHidup;
-use App\Models\PerencanaanSehat;
-use App\Models\LaporanPokja4;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Pengguna;
 
 class Pokja4Controller extends Controller
 {
     public function index()
     {
-        // Cek guard yang aktif
+        // Default biar aman
+        $modelPertama = 0;
+        $modelKedua = 0;
+        $modelKetiga = 0;
+        $modelKeempat = 0;
+        $modelKelima = 0;
+
+        // Kumpulkan semua status agar terbaca sebagai "Total Laporan"
+        $semuaStatus = ['Proses', 'proses', 'Disetujui1', 'Disetujui2'];
+
+        // Jika login guard pengguna (Mobile/Desa/Kecamatan)
         if (Auth::guard('pengguna')->check()) {
+
             $user = Auth::guard('pengguna')->user();
 
-            // Jika pengguna adalah kecamatan (role 2)
+            // Role 2: Kecamatan
             if ($user->id_role == 2) {
-                // Ambil data desa (role 1) di kecamatan yang sama
-                $desaIds = Pengguna::where('id_subdistrict', $user->id_subdistrict)
+                // Cari ID Desa yang ada di kecamatan ini
+                $desaIds = DB::table('users_mobile')
+                    ->where('id_subdistrict', $user->id_subdistrict)
                     ->where('id_role', 1)
                     ->pluck('id');
 
-                // Hitung data kesehatan dari desa-desa tersebut
-                $modelPertama = Kesehatan::whereIn('id_user', $desaIds)
-                    ->whereIn('status', ['Proses', 'Disetujui1'])
-                    ->count();
-
-                $modelKedua = KelestarianLingkunganHidup::whereIn('id_user', $desaIds)
-                    ->whereIn('status', ['Proses', 'Disetujui1'])
-                    ->count();
-
-                $modelKetiga = PerencanaanSehat::whereIn('id_user', $desaIds)
-                    ->whereIn('status', ['Proses', 'Disetujui1'])
-                    ->count();
-
-                $modelKeempat = LaporanPokja4::whereIn('id_user', $desaIds)
-                    ->whereIn('status', ['Proses', 'Disetujui1'])
-                    ->count();
+                $modelPertama = DB::table('laporan_bidang_kesehatan')->whereIn('id_user', $desaIds)->whereIn('status', $semuaStatus)->count();
+                $modelKedua   = DB::table('laporan_kelestarian_lingkungan_hidup')->whereIn('id_user', $desaIds)->whereIn('status', $semuaStatus)->count();
+                $modelKetiga  = DB::table('laporan_perencanaan_sehat')->whereIn('id_user', $desaIds)->whereIn('status', $semuaStatus)->count();
+                $modelKeempat = DB::table('laporan_kader_pokja4')->whereIn('id_user', $desaIds)->whereIn('status', $semuaStatus)->count();
+                $modelKelima  = DB::table('inovasi')->whereIn('id_user', $desaIds)->whereIn('status', $semuaStatus)->count();
+            
+            // Role 1: Desa
+            } elseif ($user->id_role == 1) {
+                $modelPertama = DB::table('laporan_bidang_kesehatan')->where('id_user', $user->id)->whereIn('status', $semuaStatus)->count();
+                $modelKedua   = DB::table('laporan_kelestarian_lingkungan_hidup')->where('id_user', $user->id)->whereIn('status', $semuaStatus)->count();
+                $modelKetiga  = DB::table('laporan_perencanaan_sehat')->where('id_user', $user->id)->whereIn('status', $semuaStatus)->count();
+                $modelKeempat = DB::table('laporan_kader_pokja4')->where('id_user', $user->id)->whereIn('status', $semuaStatus)->count();
+                $modelKelima  = DB::table('inovasi')->where('id_user', $user->id)->whereIn('status', $semuaStatus)->count();
             }
+
         } else {
-            // Jika guard web - tampilkan data Disetujui1 dan Disetujui2
-            $modelPertama = Kesehatan::whereIn('status', ['Disetujui1', 'Disetujui2'])->count();
-            $modelKedua = KelestarianLingkunganHidup::whereIn('status', ['Disetujui1', 'Disetujui2'])->count();
-            $modelKetiga = PerencanaanSehat::whereIn('status', ['Disetujui1', 'Disetujui2'])->count();
-            $modelKeempat = LaporanPokja4::whereIn('status', ['Disetujui1', 'Disetujui2'])->count();
+            // Guard web / admin (Menampilkan seluruh data se-kabupaten)
+            $modelPertama = DB::table('laporan_bidang_kesehatan')->whereIn('status', $semuaStatus)->count();
+            $modelKedua   = DB::table('laporan_kelestarian_lingkungan_hidup')->whereIn('status', $semuaStatus)->count();
+            $modelKetiga  = DB::table('laporan_perencanaan_sehat')->whereIn('status', $semuaStatus)->count();
+            $modelKeempat = DB::table('laporan_kader_pokja4')->whereIn('status', $semuaStatus)->count();
+            $modelKelima  = DB::table('inovasi')->whereIn('status', $semuaStatus)->count();
         }
 
-        return view('backend.pokja4', compact('modelPertama', 'modelKedua', 'modelKetiga', 'modelKeempat'));
+        return view('backend.pokja4', compact(
+            'modelPertama',
+            'modelKedua',
+            'modelKetiga',
+            'modelKeempat',
+            'modelKelima'
+        ));
     }
 }

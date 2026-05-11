@@ -12,37 +12,45 @@ class PerencanaanSehatController extends Controller
 {
     public function index()
     {
-        // Cek guard yang aktif
+        $data = collect();
+
         if (Auth::guard('pengguna')->check()) {
-            // Jika guard pengguna (mobile) - role kecamatan, tampilkan data proses
             $user = Auth::guard('pengguna')->user();
 
-            $data = DB::table('laporan_perencanaan_sehat')
-                ->join('users_mobile', 'laporan_perencanaan_sehat.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->join('village', 'users_mobile.id_village', '=', 'village.id')
+            $query = DB::table('laporan_perencanaan_sehat')
+                ->leftJoin('users_mobile', 'laporan_perencanaan_sehat.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                 ->select(
                     'laporan_perencanaan_sehat.*',
                     'subdistrict.name as nama_kec',
                     'village.name as nama_desa'
                 )
-                ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                ->where('users_mobile.id_role', 1)
-                ->where('laporan_perencanaan_sehat.status', 'Proses')
-                ->orderBy('laporan_perencanaan_sehat.id_pokja4_bidang3', 'desc')
-                ->get();
+                ->whereIn('laporan_perencanaan_sehat.status', ['Proses', 'proses'])
+                ->orderBy('laporan_perencanaan_sehat.id_pokja4_bidang3', 'desc');
+
+            if ($user->id_role == 2) {
+                // Kecamatan melihat data desa
+                $query->where('users_mobile.id_subdistrict', $user->id_subdistrict);
+            } else {
+                // Desa melihat datanya sendiri
+                $query->where('laporan_perencanaan_sehat.id_user', $user->id);
+            }
+
+            $data = $query->get();
+
         } else {
-            // Jika guard web - tampilkan data yang sudah Disetujui1
+            // FIX: Admin web diizinkan melihat data Proses & Disetujui1
             $data = DB::table('laporan_perencanaan_sehat')
-                ->join('users_mobile', 'laporan_perencanaan_sehat.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                ->leftJoin('users_mobile', 'laporan_perencanaan_sehat.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                 ->select(
                     'laporan_perencanaan_sehat.*',
                     'subdistrict.name as nama_kec',
                     'village.name as nama_desa'
                 )
-                ->where('laporan_perencanaan_sehat.status', 'Disetujui1')
+                ->whereIn('laporan_perencanaan_sehat.status', ['Proses', 'proses', 'Disetujui1'])
                 ->orderBy('laporan_perencanaan_sehat.id_pokja4_bidang3', 'desc')
                 ->get();
         }
@@ -52,22 +60,19 @@ class PerencanaanSehatController extends Controller
 
     public function edit(string $id_pokja4_bidang3)
     {
-        $data = PerencanaanSehat::find($id_pokja4_bidang3);
+        // FIX: Hapus find() diganti where()->first()
+        $data = PerencanaanSehat::where('id_pokja4_bidang3', $id_pokja4_bidang3)->first();
         return view('backend.tampil_perencanaan_sehat', compact('data'));
     }
 
     public function update(Request $request, string $id_pokja4_bidang3)
     {
-        $data = PerencanaanSehat::find($id_pokja4_bidang3);
+        $data = PerencanaanSehat::where('id_pokja4_bidang3', $id_pokja4_bidang3)->first();
+        if(!$data) return redirect()->back()->with('error', 'Data tidak ditemukan');
 
-        // Tentukan status persetujuan berdasarkan guard
         $status = $request->status;
-        if ($status == 'Disetujui') {
-            if (Auth::guard('pengguna')->check()) {
-                $status = 'Disetujui1'; // Status untuk pengguna mobile
-            } else {
-                $status = 'Disetujui2'; // Status untuk web
-            }
+        if ($status == 'Disetujui' || $status == 'disetujui') {
+            $status = Auth::guard('web')->check() ? 'Disetujui2' : 'Disetujui1';
         }
 
         $data->update([
@@ -85,8 +90,10 @@ class PerencanaanSehatController extends Controller
 
     public function destroy(string $id_pokja4_bidang3)
     {
-        $data = PerencanaanSehat::find($id_pokja4_bidang3);
-        $data->delete();
+        $data = PerencanaanSehat::where('id_pokja4_bidang3', $id_pokja4_bidang3)->first();
+        if($data) {
+            $data->delete();
+        }
         return redirect()->route('perencanaan_sehat.index')->with(['success' => 'Berhasil Menghapus Laporan']);
     }
 }

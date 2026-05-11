@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\backend;
 
 use Illuminate\Http\Request;
-use App\Models\Pangan;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,36 +11,43 @@ class AccPanganController extends Controller
 {
     public function index()
     {
-        // Inisialisasi query dasar
-        $query = Pangan::query();
+        $pang1 = 0;
+        $pang2 = 0;
+        $data = collect(); // Default data kosong agar compact('data') tidak error di blade
 
-        // Cek guard yang digunakan
-        if (Auth::guard('web')->check()) {
-            // Jika guard web (admin), tampilkan data dengan status Disetujui1 dan Disetujui2
-            $pang1 = Pangan::where('status', 'Disetujui1')->count();
-            $pang2 = Pangan::where('status', 'Disetujui2')->count();
-
-            $data = Pangan::whereIn('status', ['Disetujui1', 'Disetujui2'])
-                ->orderBy('created_at', 'desc')
-                ->get();
-        } elseif (Auth::guard('pengguna')->check()) {
-            // Jika guard pengguna (mobile)
+        // 1. JIKA YANG LOGIN PENGGUNA MOBILE (KECAMATAN)
+        if (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) {
-                // Jika role kecamatan (2), tampilkan data dari semua desa di kecamatan tersebut
-                $pang1 = Pangan::where('id_subdistrict', $user->id_subdistrict)
-                    ->where('status', 'proses')
-                    ->count();
-                $pang2 = Pangan::where('id_subdistrict', $user->id_subdistrict)
-                    ->where('status', 'Disetujui1')
+            if ($user->id_role == 2) { // Role Kecamatan
+                // Menghitung yang masih 'proses' di desa naungannya
+                $pang1 = DB::table('laporan_pangan')
+                    ->join('users_mobile', 'laporan_pangan.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_pangan.status', ['proses', 'Proses', 'PROSES'])
                     ->count();
 
-                $data = Pangan::where('id_subdistrict', $user->id_subdistrict)
-                    ->whereIn('status', ['proses', 'Disetujui1'])
-                    ->orderBy('created_at', 'desc')
-                    ->get();
+                // Menghitung yang 'Disetujui1' (Sudah di-ACC Kecamatan)
+                $pang2 = DB::table('laporan_pangan')
+                    ->join('users_mobile', 'laporan_pangan.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_pangan.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                    ->count();
             }
+        } 
+        // 2. JIKA YANG LOGIN ADMIN WEB
+        else if (Auth::guard('web')->check()) {
+            // Admin menghitung SEMUA yang belum di-ACC final
+            $pang1 = DB::table('laporan_pangan')
+                ->whereIn('status', ['proses', 'Proses', 'PROSES', 'Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                ->count();
+
+            // Admin menghitung yang sudah selesai di-ACC Admin
+            $pang2 = DB::table('laporan_pangan')
+                ->whereIn('status', ['Disetujui2', 'disetujui2', 'DISETUJUI2'])
+                ->count();
         }
 
         return view('backend.accpangan', compact('pang1', 'pang2', 'data'));

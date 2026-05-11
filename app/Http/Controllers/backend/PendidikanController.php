@@ -4,50 +4,49 @@ namespace App\Http\Controllers\backend;
 
 use Carbon\Carbon;
 use App\Models\Ttd;
-use App\Models\Ttds;
 use App\Models\Pendidikan;
-use App\Models\Pengembangan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
-use App\Models\Pengguna;
+use App\Models\Pengguna; // Pastikan ini ada
 
 class PendidikanController extends Controller
 {
     public function index()
     {
-        // Cek guard yang aktif
-        if (Auth::guard('pengguna')->check()) {
-            // Jika guard pengguna (mobile) - role kecamatan, tampilkan data proses
-            $user = Auth::guard('pengguna')->user();
+        $data = collect();
 
+        // 1. JIKA YANG LOGIN PENGGUNA MOBILE (KECAMATAN)
+        if (Auth::guard('pengguna')->check()) {
+            $user = Auth::guard('pengguna')->user();
+            
+            if ($user->id_role == 2) { // Role Kecamatan
+                // Ambil ID user desa di kecamatan yang sama
+                $desaIds = Pengguna::where('id_subdistrict', $user->id_subdistrict)
+                    ->where('id_role', 1)
+                    ->pluck('id');
+
+                $data = DB::table('laporan_pendidikan_n_keterampilan')
+                    ->leftJoin('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
+                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->select('laporan_pendidikan_n_keterampilan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                    ->whereIn('laporan_pendidikan_n_keterampilan.id_user', $desaIds)
+                    ->whereIn('laporan_pendidikan_n_keterampilan.status', ['proses', 'Proses', 'PROSES'])
+                    ->orderBy('laporan_pendidikan_n_keterampilan.id_pokja2_bidang1', 'desc')
+                    ->get();
+            }
+        } 
+        // 2. JIKA YANG LOGIN ADMIN WEB
+        else if (Auth::guard('web')->check()) {
             $data = DB::table('laporan_pendidikan_n_keterampilan')
-                ->join('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->join('village', 'users_mobile.id_village', '=', 'village.id')
-                ->select(
-                    'laporan_pendidikan_n_keterampilan.*',
-                    'subdistrict.name as nama_kec',
-                    'village.name as nama_desa'
-                )
-                ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                ->where('users_mobile.id_role', 1)
-                ->where('laporan_pendidikan_n_keterampilan.status', 'Proses')
-                ->orderBy('laporan_pendidikan_n_keterampilan.id_pokja2_bidang1', 'desc')
-                ->get();
-        } else {
-            // Jika guard web - tampilkan data yang sudah Disetujui1
-            $data = DB::table('laporan_pendidikan_n_keterampilan')
-                ->join('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->join('village', 'users_mobile.id_village', '=', 'village.id')
-                ->select(
-                    'laporan_pendidikan_n_keterampilan.*',
-                    'subdistrict.name as nama_kec',
-                    'village.name as nama_desa'
-                )
-                ->where('laporan_pendidikan_n_keterampilan.status', 'Disetujui1')
+                ->leftJoin('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                ->select('laporan_pendidikan_n_keterampilan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                // Tampilkan Disetujui1 dan proses agar Admin bisa memantau
+                ->whereIn('laporan_pendidikan_n_keterampilan.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1', 'proses', 'Proses'])
                 ->orderBy('laporan_pendidikan_n_keterampilan.id_pokja2_bidang1', 'desc')
                 ->get();
         }
@@ -58,11 +57,14 @@ class PendidikanController extends Controller
     public function edit(string $id_pokja2_bidang1)
     {
         $data = Pendidikan::find($id_pokja2_bidang1);
+        
+        if (!$data) {
+            return redirect()->back()->with('error', 'Data tidak ditemukan!');
+        }
 
-        // Ambil data user terkait untuk menampilkan info kecamatan/desa
         $user = Pengguna::find($data->id_user);
-        $kecamatan = DB::table('subdistrict')->where('id', $user->id_subdistrict)->first();
-        $desa = DB::table('village')->where('id', $user->id_village)->first();
+        $kecamatan = $user ? DB::table('subdistrict')->where('id', $user->id_subdistrict)->first() : null;
+        $desa = $user ? DB::table('village')->where('id', $user->id_village)->first() : null;
 
         return view('backend.tampil_pendidikan', compact('data', 'kecamatan', 'desa'));
     }
@@ -71,14 +73,9 @@ class PendidikanController extends Controller
     {
         $data = Pendidikan::find($id_pokja2_bidang1);
 
-        // Tentukan status persetujuan berdasarkan guard
         $status = $request->status;
-        if ($status == 'Disetujui') {
-            if (Auth::guard('pengguna')->check()) {
-                $status = 'Disetujui1'; // Status untuk pengguna mobile
-            } else {
-                $status = 'Disetujui2'; // Status untuk web
-            }
+        if (strtolower($status) == 'disetujui') {
+            $status = Auth::guard('pengguna')->check() ? 'Disetujui1' : 'Disetujui2';
         }
 
         $data->update([
@@ -114,26 +111,26 @@ class PendidikanController extends Controller
 
     public function filter(Request $request)
     {
-        // Tentukan status berdasarkan guard yang aktif
-        $status = Auth::guard('web')->check() ? 'Disetujui2' : 'Disetujui1';
+        // Ubah menjadi array agar whereIn bisa menangkap huruf kecil/besar di cetak PDF
+        $statusArray = Auth::guard('web')->check() ? ['Disetujui2', 'disetujui2'] : ['Disetujui1', 'disetujui1'];
 
         if ($request->has('search')) {
             // Query untuk laporan pendidikan dan keterampilan
             $pendidikan = DB::table('laporan_pendidikan_n_keterampilan')
-                ->join('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
                 ->select('laporan_pendidikan_n_keterampilan.*', 'subdistrict.name as nama_kec')
                 ->where('laporan_pendidikan_n_keterampilan.created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('laporan_pendidikan_n_keterampilan.status', $status)
+                ->whereIn('laporan_pendidikan_n_keterampilan.status', $statusArray)
                 ->get();
 
             // Query untuk laporan pengembangan kehidupan
             $pengembangan = DB::table('laporan_pengembangan_kehidupan')
-                ->join('users_mobile', 'laporan_pengembangan_kehidupan.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('users_mobile', 'laporan_pengembangan_kehidupan.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
                 ->select('laporan_pengembangan_kehidupan.*', 'subdistrict.name as nama_kec')
                 ->where('laporan_pengembangan_kehidupan.created_at', 'LIKE', '%' . $request->search . '%')
-                ->where('laporan_pengembangan_kehidupan.status', $status)
+                ->whereIn('laporan_pengembangan_kehidupan.status', $statusArray)
                 ->get();
 
             // Hitung total untuk pendidikan
@@ -174,78 +171,47 @@ class PendidikanController extends Controller
             $total33 = $pengembangan->sum('jumlah_peserta_hukum');
 
             // Cek data kosong
-            $allTablesEmpty = $pendidikan->isEmpty() && $pengembangan->isEmpty();
-
-            if ($allTablesEmpty) {
+            if ($pendidikan->isEmpty() && $pengembangan->isEmpty()) {
                 return back()->with('error', 'Tidak ada data laporan untuk periode tersebut');
             }
 
             $currentDate = Carbon::now();
             $formattedDate = $currentDate->isoFormat('dddd, D MMMM YYYY');
+            
             $created_at = $request->input('search');
-            $carbonDate = Carbon::parse($created_at);
-            $created_at = $carbonDate->isoFormat('MMMM YYYY');
+            try {
+                $carbonDate = Carbon::parse($created_at);
+                $created_at = $carbonDate->isoFormat('MMMM YYYY');
+            } catch (\Exception $e) {}
+
             $ketua = Ttd::where('jabatan', 'Ketua')->where('pokja', 'Kelompok Kerja II')->get();
             $wakil = Ttd::where('jabatan', 'Ketua')->where('id_ttds', '12')->get();
 
             return view('backend.cetak_bulan_pokja2', compact(
-                'pendidikan',
-                'pengembangan',
-                'total1',
-                'total2',
-                'total3',
-                'total4',
-                'total5',
-                'total6',
-                'total7',
-                'total8',
-                'total9',
-                'total10',
-                'total11',
-                'total12',
-                'total13',
-                'total14',
-                'total15',
-                'total16',
-                'total17',
-                'total18',
-                'total19',
-                'total20',
-                'total21',
-                'total22',
-                'total23',
-                'total24',
-                'total25',
-                'total26',
-                'total27',
-                'total28',
-                'total29',
-                'total30',
-                'total31',
-                'total32',
-                'total33',
-                'formattedDate',
-                'ketua',
-                'wakil',
-                'created_at'
+                'pendidikan', 'pengembangan', 'total1', 'total2', 'total3', 'total4', 'total5', 'total6', 'total7', 
+                'total8', 'total9', 'total10', 'total11', 'total12', 'total13', 'total14', 'total15', 'total16', 
+                'total17', 'total18', 'total19', 'total20', 'total21', 'total22', 'total23', 'total24', 'total25', 
+                'total26', 'total27', 'total28', 'total29', 'total30', 'total31', 'total32', 'total33', 
+                'formattedDate', 'ketua', 'wakil', 'created_at'
             ));
+
         } elseif ($request->has('search2')) {
             // Query untuk laporan pendidikan dan keterampilan (tahunan)
             $pendidikan = DB::table('laporan_pendidikan_n_keterampilan')
-                ->join('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
                 ->select('laporan_pendidikan_n_keterampilan.*', 'subdistrict.name as nama_kec')
-                ->where('laporan_pendidikan_n_keterampilan.created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('laporan_pendidikan_n_keterampilan.status', $status)
+                ->whereYear('laporan_pendidikan_n_keterampilan.created_at', $request->search2)
+                ->whereIn('laporan_pendidikan_n_keterampilan.status', $statusArray)
                 ->get();
 
             // Query untuk laporan pengembangan kehidupan (tahunan)
             $pengembangan = DB::table('laporan_pengembangan_kehidupan')
-                ->join('users_mobile', 'laporan_pengembangan_kehidupan.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('users_mobile', 'laporan_pengembangan_kehidupan.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
                 ->select('laporan_pengembangan_kehidupan.*', 'subdistrict.name as nama_kec')
-                ->where('laporan_pengembangan_kehidupan.created_at', 'LIKE', '%' . $request->search2 . '%')
-                ->where('laporan_pengembangan_kehidupan.status', $status)
+                ->whereYear('laporan_pengembangan_kehidupan.created_at', $request->search2)
+                ->whereIn('laporan_pengembangan_kehidupan.status', $statusArray)
                 ->get();
 
             // Hitung total untuk pendidikan
@@ -286,58 +252,23 @@ class PendidikanController extends Controller
             $total33 = $pengembangan->sum('jumlah_peserta_hukum');
 
             // Cek data kosong
-            $allTablesEmpty = $pendidikan->isEmpty() && $pengembangan->isEmpty();
-
-            if ($allTablesEmpty) {
+            if ($pendidikan->isEmpty() && $pengembangan->isEmpty()) {
                 return back()->with('error', 'Tidak ada data laporan untuk periode tersebut');
             }
 
             $currentDate = Carbon::now();
             $formattedDate = $currentDate->isoFormat('dddd, D MMMM YYYY');
             $created_at = $request->input('search2');
+            
             $ketua = Ttd::where('jabatan', 'Ketua')->where('pokja', 'Kelompok Kerja II')->get();
             $wakil = Ttd::where('jabatan', 'Ketua')->where('id_ttds', '12')->get();
 
             return view('backend.cetak_tahun_pokja2', compact(
-                'pendidikan',
-                'pengembangan',
-                'total1',
-                'total2',
-                'total3',
-                'total4',
-                'total5',
-                'total6',
-                'total7',
-                'total8',
-                'total9',
-                'total10',
-                'total11',
-                'total12',
-                'total13',
-                'total14',
-                'total15',
-                'total16',
-                'total17',
-                'total18',
-                'total19',
-                'total20',
-                'total21',
-                'total22',
-                'total23',
-                'total24',
-                'total25',
-                'total26',
-                'total27',
-                'total28',
-                'total29',
-                'total30',
-                'total31',
-                'total32',
-                'total33',
-                'formattedDate',
-                'ketua',
-                'wakil',
-                'created_at'
+                'pendidikan', 'pengembangan', 'total1', 'total2', 'total3', 'total4', 'total5', 'total6', 'total7', 
+                'total8', 'total9', 'total10', 'total11', 'total12', 'total13', 'total14', 'total15', 'total16', 
+                'total17', 'total18', 'total19', 'total20', 'total21', 'total22', 'total23', 'total24', 'total25', 
+                'total26', 'total27', 'total28', 'total29', 'total30', 'total31', 'total32', 'total33', 
+                'formattedDate', 'ketua', 'wakil', 'created_at'
             ));
         }
 
@@ -347,7 +278,10 @@ class PendidikanController extends Controller
     public function destroy(string $id_pokja2_bidang1)
     {
         $data = Pendidikan::find($id_pokja2_bidang1);
-        $data->delete();
-        return redirect()->route('pendidikan.index')->with(['success' => 'Berhasil Menghapus Laporan']);
+        if($data) {
+            $data->delete();
+            return redirect()->route('pendidikan.index')->with(['success' => 'Berhasil Menghapus Laporan']);
+        }
+        return redirect()->route('pendidikan.index')->with(['error' => 'Data tidak ditemukan']);
     }
 }

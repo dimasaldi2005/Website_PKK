@@ -3,7 +3,7 @@
 {{-- @section('content1') --}}
 
 <!DOCTYPE html>
-,<html lang="en">
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
@@ -37,6 +37,76 @@
 
   {{-- fontawesome --}}
   <link rel="stylesheet" type="text/css" href="{{ asset('fontawesome/css/all.min.css') }}">
+
+  <style>
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  background: white;
+}
+
+/* TABLE WIDTH */
+.table-responsive table {
+  min-width: 1500px;
+  white-space: nowrap;
+  border-collapse: collapse;
+}
+
+/* HEADER */
+.table-responsive thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f1f5f9; /* soft gray-blue */
+  color: #334155;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 10px 8px;
+  vertical-align: middle;
+  border-bottom: 2px solid #e2e8f0;
+  z-index: 2;
+}
+
+/* BODY */
+.table-responsive tbody td {
+  font-size: 12px;
+  padding: 10px 8px;
+  vertical-align: middle;
+  color: #475569;
+  background-color: white;
+}
+
+/* HOVER */
+.table-responsive tbody tr:hover td {
+  background-color: #f8fafc;
+}
+
+/* BORDER */
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #e2e8f0;
+}
+
+/* SCROLLBAR */
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+  </style>
 
 </head>
 
@@ -77,73 +147,99 @@
 
     <div class="card mt-2">
       <div class="card-body mt-2">
+        <div class="alert alert-info" role="alert">
+          <i class="bi bi-info-circle"></i> Scroll horizontal untuk melihat semua kolom
+        </div>
+        <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+         <thead>
+  <tr class="table-primary">
+    <th scope="col" rowspan="3" class="text-center align-middle">No</th>
+    @if (Auth::guard('web')->check())
+      <th scope="col" rowspan="3" class="text-center align-middle">Kecamatan</th>
+      <th scope="col" rowspan="3" class="text-center align-middle">Desa</th>
+    @elseif (Auth::guard('pengguna')->check())
+      <th scope="col" rowspan="3" class="text-center align-middle">Desa</th>
+    @endif
+    <th scope="col" colspan="3" class="text-center">JUMLAH KADER</th>
+    <th scope="col" colspan="2" class="text-center">MAKANAN POKOK</th>
+    <th scope="col" colspan="6" class="text-center">PEMANFAATAN PEKARANGAN/HATINYA PKK</th>
+    <th scope="col" colspan="3" class="text-center">JUMLAH INDUSTRI RUMAH TANGGA</th>
+    <th scope="col" colspan="2" class="text-center">JUMLAH RUMAH</th>
+    <th scope="col" rowspan="3" class="text-center align-middle">Status</th>
+    <th scope="col" rowspan="3" class="text-center align-middle">Tanggal</th>
+    <th scope="col" rowspan="3" class="text-center align-middle">Aksi</th>
+  </tr>
+  <tr class="table-primary">
+    <th scope="col" class="text-center">Pangan</th>
+    <th scope="col" class="text-center">Sandang</th>
+    <th scope="col" class="text-center">Tata Laksana RT</th>
+    <th scope="col" class="text-center">Beras</th>
+    <th scope="col" class="text-center">Non Beras</th>
+    <th scope="col" class="text-center">Peternakan</th>
+    <th scope="col" class="text-center">Perikanan</th>
+    <th scope="col" class="text-center">Warung Hidup</th>
+    <th scope="col" class="text-center">Lumbung Hidup</th>
+    <th scope="col" class="text-center">Toga</th>
+    <th scope="col" class="text-center">Tanaman Keras</th>
+    <th scope="col" class="text-center">Pangan</th>
+    <th scope="col" class="text-center">Sandang</th>
+    <th scope="col" class="text-center">Jasa</th>
+    <th scope="col" class="text-center">Sehat & Layak Huni</th>
+    <th scope="col" class="text-center">Tidak Sehat & Tidak Layak Huni</th>
+  </tr>
 
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">No</th>
-              @if (Auth::guard('web')->check())
-          <th class="text-center" scope="col">Kecamatan</th>
-          <th class="text-center" scope="col">Desa</th>
-        @elseif (Auth::guard('pengguna')->check())
-          <th class="text-center" scope="col">Desa</th>
-        @endif
-              <th class="text-center" scope="col">Beras</th>
-              <th class="text-center" scope="col">Non Beras</th>
-              <th class="text-center" scope="col">Peternakan</th>
-              <th class="text-center" scope="col">Perikanan</th>
-              <th class="text-center" scope="col">Warung Hidup</th>
-              <th class="text-center" scope="col">Lumbung Hidup</th>
-              <th class="text-center" scope="col">Toga</th>
-              <th class="text-center" scope="col">Tanaman Keras</th>
-              <th scope="col">Status</th>
-              <th scope="col">Tanggal</th>
-              <th scope="col">Aksi</th>
-            </tr>
-          </thead>
+</thead>
           <tbody>
             @php
-        $no = 1;
-      @endphp
+              $no = 1;
+            @endphp
             @forelse ($data2 as $sehat1)
-          <tr>
-            <th scope="row">{{ $no++ }}</th>
-            @if (Auth::guard('web')->check())
-          <td class="text-center">{{ $sehat1->nama_kec }}</td>
-          <td class="text-center">{{ $sehat1->nama_desa }}</td>
-        @elseif (Auth::guard('pengguna')->check())
-          <td class="text-center">{{ $sehat1->nama_desa }}</td>
-        @endif
-            <td class="text-center">{{ $sehat1->beras }}</td>
-            <td class="text-center">{{ $sehat1->non_beras }}</td>
-            <td class="text-center">{{ $sehat1->peternakan }}</td>
-            <td class="text-center">{{ $sehat1->perikanan }}</td>
-            <td class="text-center">{{ $sehat1->warung_hidup }}</td>
-            <td class="text-center">{{ $sehat1->lumbung_hidup }}</td>
-            <td class="text-center">{{ $sehat1->toga }}</td>
-            <td class="text-center">{{ $sehat1->tanaman_keras }}</td>
-            <td>{{ $sehat1->status }}</td>
-            <td>{{ $sehat1->created_at }}</td>
-            <td>
-
-            <form action="{{ route('declaporanpokja3.destroy', $sehat1->id_pokja3_bidang1)}}" method="POST"
-              class="d-inline delete-form">
-            @csrf
-            @method('DELETE')
-            <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(this)">Hapus</button>
-            </form>
-
-            </td>
-          </tr>
-      @empty
-        <div class="alert alert-danger mt-4">
-          Tidak ada data laporan pangan
-        </div>
-      @endforelse
-
+              <tr>
+                <th scope="row">{{ $no++ }}</th>
+                <td class="text-center">{{ $sehat1->nama_kec }}</td>
+                <td class="text-center">{{ $sehat1->nama_desa }}</td>
+                <td class="text-center">{{ $sehat1->kader_pangan ?? '-' }}</td>
+                <td class="text-center">{{ $sehat1->kader_sandang ?? '-' }}</td>
+                <td class="text-center">{{ $sehat1->kader_tata_laksana_rt ?? '-' }}</td>
+                <td class="text-center">{{ $sehat1->beras }}</td>
+                <td class="text-center">{{ $sehat1->non_beras }}</td>
+                <td class="text-center">{{ $sehat1->peternakan }}</td>
+                <td class="text-center">{{ $sehat1->perikanan }}</td>
+                <td class="text-center">{{ $sehat1->warung_hidup }}</td>
+                <td class="text-center">{{ $sehat1->lumbung_hidup }}</td>
+                <td class="text-center">{{ $sehat1->toga }}</td>
+                <td class="text-center">{{ $sehat1->tanaman_keras }}</td>
+                <td class="text-center">{{ $sehat1->industri_pangan ?? '-' }}</td>
+                <td class="text-center">{{ $sehat1->industri_sandang ?? '-' }}</td>
+                <td class="text-center">{{ $sehat1->industri_jasa ?? '-' }}</td>
+                <td class="text-center">{{ $sehat1->rumah_sehat_layak ?? '-' }}</td>
+                <td class="text-center">{{ $sehat1->rumah_tidak_sehat_tidak_layak ?? '-' }}</td>
+                <td>{{ $sehat1->status }}</td>
+                <td>{{ \Carbon\Carbon::parse($sehat1->created_at)->format('d/m/Y') }}</td>
+                <td class="text-center">
+                  <form action="{{ route('declaporanpokja3.destroy', $sehat1->id_pokja3_bidang1)}}" method="POST"
+                    class="d-inline delete-form">
+                    @csrf
+                    @method('DELETE')
+                    <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(this)">
+                      <i class="bi bi-trash"></i> Hapus
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            @empty
+              <tr>
+                <td colspan="21" class="text-center">
+                  <div class="alert alert-danger mt-4 mb-4">
+                    <i class="bi bi-exclamation-triangle"></i> Tidak ada data laporan pangan
+                  </div>
+                </td>
+              </tr>
+            @endforelse
           </tbody>
         </table>
-
+        </div>
       </div>
     </div>
 
@@ -212,7 +308,5 @@
   </script>
 </body>
 
-{{--
-
-</html> --}}
+</html>
 {{-- @endsection --}}
