@@ -76,3 +76,5 @@ Route::post('/report/perumahan', [ReportController::class, 'insertPerumahan']);
 // POKJA 4
 Route::post('/report/kesehatan', [ReportController::class, 'insertKesehatan']);
 Route::post('/report/lingkungan-hidup', [ReportController::class, 'insertLingkunganHidup']);
+Route::post('/report/perencanaan-sehat', [ReportController::class, 'insertPerencanaanSehat']);
+Route::post('/report/rekap-desa-bulanan', [ ReportController::class, 'insertRekapDesaBulanan']);
