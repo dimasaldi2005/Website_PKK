@@ -38,7 +38,7 @@ class Pokja4Controller extends Controller
                 $modelKedua   = DB::table('laporan_kelestarian_lingkungan_hidup')->whereIn('id_user', $desaIds)->whereIn('status', $semuaStatus)->count();
                 $modelKetiga  = DB::table('laporan_perencanaan_sehat')->whereIn('id_user', $desaIds)->whereIn('status', $semuaStatus)->count();
                 $modelKeempat = DB::table('laporan_kader_pokja4')->whereIn('id_user', $desaIds)->whereIn('status', $semuaStatus)->count();
-                $modelKelima  = DB::table('inovasi')->whereIn('id_user', $desaIds)->whereIn('status', $semuaStatus)->count();
+                $modelKelima  = DB::table('rekap_desa_bulanan')->whereIn('id_user', $desaIds)->whereIn('status', $semuaStatus)->count();
             
             // Role 1: Desa
             } elseif ($user->id_role == 1) {
@@ -46,7 +46,7 @@ class Pokja4Controller extends Controller
                 $modelKedua   = DB::table('laporan_kelestarian_lingkungan_hidup')->where('id_user', $user->id)->whereIn('status', $semuaStatus)->count();
                 $modelKetiga  = DB::table('laporan_perencanaan_sehat')->where('id_user', $user->id)->whereIn('status', $semuaStatus)->count();
                 $modelKeempat = DB::table('laporan_kader_pokja4')->where('id_user', $user->id)->whereIn('status', $semuaStatus)->count();
-                $modelKelima  = DB::table('inovasi')->where('id_user', $user->id)->whereIn('status', $semuaStatus)->count();
+                $modelKelima  = DB::table('rekap_desa_bulanan')->where('id_user', $user->id)->whereIn('status', $semuaStatus)->count();
             }
 
         } else {
@@ -55,7 +55,7 @@ class Pokja4Controller extends Controller
             $modelKedua   = DB::table('laporan_kelestarian_lingkungan_hidup')->whereIn('status', $semuaStatus)->count();
             $modelKetiga  = DB::table('laporan_perencanaan_sehat')->whereIn('status', $semuaStatus)->count();
             $modelKeempat = DB::table('laporan_kader_pokja4')->whereIn('status', $semuaStatus)->count();
-            $modelKelima  = DB::table('inovasi')->whereIn('status', $semuaStatus)->count();
+            $modelKelima  = DB::table('rekap_desa_bulanan')->whereIn('status', $semuaStatus)->count();
         }
 
         return view('backend.pokja4', compact(
