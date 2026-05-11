@@ -17,7 +17,7 @@ class GaleriBidangUmumController extends Controller
    public function index()
 {
     $data = Galeri::where('bidang', 'Laporan Umum')
-                  ->whereIn('status', ['Upload', 'Proses'])
+                  ->whereIn('status', ['Upload', 'Proses', 'upload', 'proses'])
                   ->get();
 
     return view('backend.galeribidangumum', compact('data'));

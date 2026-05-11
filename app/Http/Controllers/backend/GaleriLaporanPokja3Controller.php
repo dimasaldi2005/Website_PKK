@@ -11,7 +11,7 @@ class GaleriLaporanPokja3Controller extends Controller
 {
     public function index(){
        $data = Galeri::where('bidang', 'Kader Pokja 3')
-                  ->whereIn('status', ['Upload', 'Proses'])
+                  ->whereIn('status', ['Upload', 'Proses', 'upload', 'proses'])
                   ->get();
         return view('backend.galerilaporanpokja3', compact('data'));
     }
