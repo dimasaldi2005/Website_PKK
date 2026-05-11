@@ -119,7 +119,7 @@
     <div class="container" data-aos="fade-up">
 
       <div class="section-title animate-on-scroll" data-animation="fade-up">
-        <h2 class="gradient-text-alt">Galeri</h2>
+        <div class="section-badge">GALERI</div>
         <h3>Galeri PKK <span class="gradient-text">Kab Nganjuk</span></h3>
         <p>Dokumentasi acara PKK Nganjuk</p>
       </div>
@@ -178,9 +178,38 @@
 
   <!-- Modern Millennial Animations CSS -->
   <style>
+    /* ========== SECTION BADGE ========== */
+    .section-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #1C6EA4 0%, #2E8BC0 100%);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Poppins', sans-serif;
+      padding: 8px 24px;
+      border-radius: 50px;
+      margin-bottom: 16px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 12px rgba(28, 110, 164, 0.3);
+      animation: badgePulse 2s ease-in-out infinite;
+    }
+
+    @keyframes badgePulse {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 4px 12px rgba(28, 110, 164, 0.3);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 6px 16px rgba(28, 110, 164, 0.4);
+      }
+    }
+
     /* ========== SECTION TITLE CUSTOM COLORS ========== */
     .section-title h2 {
       color: #1C6EA4 !important;
+      margin-top: 12px;
     }
 
     .section-title h3 {
@@ -564,13 +593,15 @@
       bottom: 0;
       left: 0;
       right: 0;
-      padding: 20px;
+      padding: 0;
       display: flex;
       align-items: flex-end;
       pointer-events: none;
       opacity: 0;
       transform: translateY(20px);
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.85) 100%);
+      min-height: 120px;
     }
 
     .gallery-card:hover .gallery-overlay {
@@ -582,7 +613,7 @@
       background: transparent;
       backdrop-filter: none;
       border-radius: 0;
-      padding: 16px 20px;
+      padding: 24px 20px;
       box-shadow: none;
       width: 100%;
       transition: all 0.3s ease;
@@ -596,10 +627,10 @@
     }
 
     .gallery-title {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 600;
-      color: #1C6EA4;
-      margin: 0 0 4px 0;
+      color: #ffffff;
+      margin: 0 0 8px 0;
       line-height: 1.4;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -607,16 +638,19 @@
       overflow: hidden;
       text-overflow: ellipsis;
       font-family: 'Poppins', sans-serif;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      letter-spacing: 0.3px;
     }
 
     .gallery-date {
-      font-size: 12px;
-      font-weight: 400;
-      color: #1C6EA4;
+      font-size: 13px;
+      font-weight: 500;
+      color: #ffffff;
       margin: 0;
       font-family: 'Poppins', sans-serif;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      opacity: 0.95;
+      letter-spacing: 0.5px;
     }
 
     .gallery-empty {
@@ -705,16 +739,20 @@
         font-size: 16px;
       }
 
+      .gallery-overlay {
+        min-height: 100px;
+      }
+
       .gallery-caption-box {
-        padding: 12px 16px;
+        padding: 20px 16px;
       }
 
       .gallery-title {
-        font-size: 13px;
+        font-size: 14px;
       }
 
       .gallery-date {
-        font-size: 11px;
+        font-size: 12px;
       }
     }
 
@@ -728,7 +766,12 @@
       }
 
       .gallery-overlay {
-        padding: 15px;
+        min-height: 90px;
+        padding: 0;
+      }
+
+      .gallery-caption-box {
+        padding: 18px 14px;
       }
     }
   </style>
@@ -881,73 +924,85 @@
         <p>Program Kerja yang akan dikerjakan Ketua PKK Kabupaten Nganjuk.</p>
       </div>
 
-      <div class="row gy-3">
+      <div class="row gy-4">
 
         <!-- Card 1 -->
         <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
-          <div class="card">
-            <div class="card-img">
+          <div class="program-card">
+            <div class="program-card-img">
               <img src="{{ asset('frontend/assets/img/l.jpg') }}" class="img-fluid" alt="">
+              <div class="program-overlay"></div>
             </div>
-            <h3>
-              <a href="{{ route('pokja.index') }}" class="stretched-link">
-                Kelompok Kerja 1
-              </a>
-            </h3>
-            <p>
-              Membidangi Pembinaan Karakter dalam Keluarga...
-            </p>
+            <div class="program-content">
+              <h3>
+                <a href="{{ route('pokja.index') }}" class="stretched-link">
+                  Kelompok Kerja 1
+                </a>
+              </h3>
+              <p>
+                Membidangi Pembinaan Karakter dalam Keluarga...
+              </p>
+            </div>
           </div>
         </div>
 
         <!-- Card 2 -->
         <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-          <div class="card">
-            <div class="card-img">
+          <div class="program-card">
+            <div class="program-card-img">
               <img src="{{ asset('frontend/assets/img/p.jpeg') }}" class="img-fluid" alt="">
+              <div class="program-overlay"></div>
             </div>
-            <h3>
-              <a href="{{ route('pokjathu.index') }}" class="stretched-link">
-                Kelompok Kerja 2
-              </a>
-            </h3>
-            <p>
-              Membidangi Pendidikan & Peningkatan Ekonomi Keluarga...
-            </p>
+            <div class="program-content">
+              <h3>
+                <a href="{{ route('pokjathu.index') }}" class="stretched-link">
+                  Kelompok Kerja 2
+                </a>
+              </h3>
+              <p>
+                Membidangi Pendidikan & Peningkatan Ekonomi Keluarga...
+              </p>
+            </div>
           </div>
         </div>
 
         <!-- Card 3 -->
         <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
-          <div class="card">
-            <div class="card-img">
+          <div class="program-card">
+            <div class="program-card-img">
               <img src="{{ asset('frontend/assets/img/t.jpeg') }}" class="img-fluid" alt="">
+              <div class="program-overlay"></div>
             </div>
-            <h3>
-              <a href="{{ route('pokjatre.index') }}" class="stretched-link">
-                Kelompok Kerja 3
-              </a>
-            </h3>
-            <p>
-              Membidangi penguatan ketahanan keluarga...
-            </p>
+            <div class="program-content">
+              <h3>
+                <a href="{{ route('pokjatre.index') }}" class="stretched-link">
+                  Kelompok Kerja 3
+                </a>
+              </h3>
+              <p>
+                Membidangi penguatan ketahanan keluarga...
+              </p>
+            </div>
           </div>
         </div>
 
         <!-- Card 4 -->
         <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="500">
-          <div class="card">
-            <div class="card-img">
+          <div class="program-card">
+            <div class="program-card-img">
               <img src="{{ asset('frontend/assets/img/i.jpeg') }}" class="img-fluid" alt="">
+              <div class="program-overlay"></div>
             </div>
-            <h3>
-              <a href="{{ route('pokjafou.index') }}" class="stretched-link">
-                Kelompok Kerja 4
-              </a>
-            </h3>
-            <p>
-              Membidangi Kesehatan Keluarga dan Lingkungan...
-            </p>
+            <div class="program-content">
+              <h3>
+                <a href="{{ route('pokjafou.index') }}" class="stretched-link">
+                  Kelompok Kerja 4
+                </a>
+              </h3>
+              <p>
+                Membidangi Kesehatan Keluarga dan Lingkungan...
+              </p>
+            </div>
           </div>
         </div>
 
@@ -955,6 +1010,147 @@
     </div>
   </section>
   <!-- End Services -->
+
+  <!-- Modern Program Card Styles -->
+  <style>
+    .program-card {
+      background: #ffffff;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .program-card:hover {
+      transform: translateY(-12px);
+      box-shadow: 0 16px 48px rgba(28, 110, 164, 0.2);
+    }
+
+    .program-card-img {
+      width: 100%;
+      height: 240px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .program-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .program-card:hover .program-card-img img {
+      transform: scale(1.15);
+    }
+
+    .program-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(180deg, transparent 0%, rgba(28, 110, 164, 0.7) 100%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .program-card:hover .program-overlay {
+      opacity: 1;
+    }
+
+    .program-content {
+      padding: 28px 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .program-content h3 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 12px;
+      font-family: 'Poppins', sans-serif;
+      line-height: 1.4;
+    }
+
+    .program-content h3 a {
+      color: #2c3e50;
+      text-decoration: none;
+      transition: color 0.3s ease;
+      position: relative;
+    }
+
+    .program-content h3 a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 3px;
+      background: linear-gradient(135deg, #1C6EA4 0%, #2E8BC0 100%);
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 2px;
+    }
+
+    .program-card:hover .program-content h3 a {
+      color: #1C6EA4;
+    }
+
+    .program-card:hover .program-content h3 a::after {
+      width: 100%;
+    }
+
+    .program-content p {
+      font-size: 14px;
+      color: #7f8c8d;
+      line-height: 1.6;
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .program-card-img {
+        height: 220px;
+      }
+
+      .program-content {
+        padding: 24px 20px;
+      }
+
+      .program-content h3 {
+        font-size: 18px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .program-card {
+        border-radius: 20px;
+      }
+
+      .program-card-img {
+        height: 200px;
+      }
+
+      .program-content {
+        padding: 20px 18px;
+      }
+
+      .program-content h3 {
+        font-size: 17px;
+      }
+
+      .program-content p {
+        font-size: 13px;
+      }
+    }
+  </style>
 
 </main>
 <!-- End Main -->

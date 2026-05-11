@@ -12,7 +12,7 @@ class GaleriGotongRoyongController extends Controller
     public function index(){
      
         $data = Galeri::where('bidang', 'Gotong Royong')
-                  ->whereIn('status', ['Upload', 'Proses'])
+                  ->whereIn('status', ['Upload', 'Proses', 'upload', 'proses'])
                   ->get();
         return view('backend.galerigotongroyong', compact('data'));
     }

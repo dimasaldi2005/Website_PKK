@@ -11,7 +11,7 @@ class GaleriPerencanaanController extends Controller
 {
     public function index(){
        $data = Galeri::where('bidang', 'Perencanaan Sehat')
-                  ->whereIn('status', ['Upload', 'Proses'])
+                  ->whereIn('status', ['Upload', 'Proses', 'upload', 'proses'])
                   ->get();
         return view('backend.galeriperencanaan', compact('data'));
     }
