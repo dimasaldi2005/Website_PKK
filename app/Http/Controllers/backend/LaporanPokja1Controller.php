@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\backend;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\LaporanPokja1;
 use Illuminate\Support\Facades\DB;
@@ -10,86 +11,161 @@ use Illuminate\Support\Facades\Auth;
 
 class LaporanPokja1Controller extends Controller
 {
+    // --- 1. MENAMPILKAN TABEL DATA (INDEX) ---
     public function index()
     {
-        // Cek guard yang aktif
-        if (Auth::guard('pengguna')->check()) {
-            // Jika guard pengguna (mobile)
-            $user = Auth::guard('pengguna')->user();
+        $data = collect();
 
-            if ($user->id_role == 2) { // Kecamatan
-                // Ambil data desa (role 1) di kecamatan yang sama
+        // BLOK 1: MUTLAK HANYA UNTUK KABUPATEN
+        if (Auth::guard('web')->check()) { 
+            $data = DB::table('laporan_kader_pokja1')
+                ->leftJoin('users_mobile', 'laporan_kader_pokja1.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                ->select('laporan_kader_pokja1.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                // KABUPATEN HANYA BISA MELIHAT DATA YANG SUDAH LEWAT KECAMATAN
+                ->whereIn('laporan_kader_pokja1.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                ->orderBy('laporan_kader_pokja1.id_kader_pokja1', 'desc')
+                ->get();
+                
+            return view('backend.laporanpokja1', compact('data'));
+        }
+
+        // BLOK 2: MUTLAK HANYA UNTUK KECAMATAN & DESA
+        if (Auth::guard('pengguna')->check()) {
+            $user = Auth::guard('pengguna')->user();
+            
+            if ($user->id_role == 2) { // KECAMATAN
                 $data = DB::table('laporan_kader_pokja1')
-                    ->join('users_mobile', 'laporan_kader_pokja1.id_user', '=', 'users_mobile.id')
-                    ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                    ->join('village', 'users_mobile.id_village', '=', 'village.id')
-                    ->select(
-                        'laporan_kader_pokja1.*',
-                        'subdistrict.name as nama_kec',
-                        'village.name as nama_desa'
-                    )
+                    ->leftJoin('users_mobile', 'laporan_kader_pokja1.id_user', '=', 'users_mobile.id')
+                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->select('laporan_kader_pokja1.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                    ->where('users_mobile.id_role', 1) // Hanya desa
-                    ->whereIn('laporan_kader_pokja1.status', ['Proses'])
+                    // KECAMATAN HANYA BISA MELIHAT DATA MENTAH
+                    ->whereIn('laporan_kader_pokja1.status', ['proses', 'Proses', 'PROSES'])
                     ->orderBy('laporan_kader_pokja1.id_kader_pokja1', 'desc')
                     ->get();
             }
-        } else { // Guard web (admin)
-            $data = DB::table('laporan_kader_pokja1')
-                ->join('users_mobile', 'laporan_kader_pokja1.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->join('village', 'users_mobile.id_village', '=', 'village.id')
-                ->select(
-                    'laporan_kader_pokja1.*',
-                    'subdistrict.name as nama_kec',
-                    'village.name as nama_desa'
-                )
-                ->whereIn('laporan_kader_pokja1.status', ['Disetujui1'])
-                ->orderBy('laporan_kader_pokja1.id_kader_pokja1', 'desc')
-                ->get();
-        }
+            
+            return view('backend.laporanpokja1', compact('data'));
+        } 
 
+        // JIKA TIDAK LOGIN, KEMBALIKAN DATA KOSONG
         return view('backend.laporanpokja1', compact('data'));
     }
 
+    // --- 2. MENAMPILKAN FORM EDIT/REVIEW ---
     public function edit(string $id_kader_pokja1)
     {
-        $data = LaporanPokja1::where('id_kader_pokja1', $id_kader_pokja1)->first();
+        $data = LaporanPokja1::find($id_kader_pokja1);
+        if (!$data) { return redirect()->route('laporanpokja1.index')->with('error', 'Data tidak ditemukan'); }
         return view('backend.tampil_laporanpokja1', compact('data'));
     }
 
+    // --- 3. MEMPROSES PERUBAHAN STATUS/DATA (UPDATE) ---
     public function update(Request $request, string $id_kader_pokja1)
     {
         $data = LaporanPokja1::find($id_kader_pokja1);
+        if (!$data) { return redirect()->back()->with(['error' => 'Data tidak ditemukan!']); }
 
-        // ✅ Tentukan status persetujuan berdasarkan guard
         $status = $request->status;
-        if ($status == 'disetujui') {
-            if (Auth::guard('pengguna')->check()) {
-                $status = 'Disetujui1'; // Status untuk pengguna mobile
-            } else {
-                $status = 'Disetujui2'; // Status untuk web
-            }
+        $statusVariasi = ['disetujui', 'disetujui (admin)', 'disetujui (kecamatan)', 'disetujui1', 'disetujui2'];
+        
+        if (in_array(strtolower($status), $statusVariasi)) {
+            // Jika login pakai 'tim penggerak' -> Disetujui2, Jika 'aldi' -> Disetujui1
+            $status = Auth::guard('web')->check() ? 'Disetujui2' : 'Disetujui1';
         }
 
         $data->update([
-            'PKBN' => $request->PKBN,
-            'PKDRT' => $request->PKDRT,
-            'pola_asuh' => $request->pola_asuh,
-            'id_user' => $request->id_user,
-            'status' => $status, // <- gunakan hasil dari logika di atas
-            'catatan' => $request->catatan,
-            'tanggal' => $request->tanggal,
+            'PKBN'      => $request->PKBN ?? $data->PKBN,
+            'PKDRT'     => $request->PKDRT ?? $data->PKDRT,
+            'pola_asuh' => $request->pola_asuh ?? $data->pola_asuh,
+            'tanggal'   => $request->tanggal ?? $data->tanggal,
+            'status'    => $status,
+            'catatan'   => $request->catatan,
         ]);
 
         return redirect()->route('laporanpokja1.index')->with(['success' => 'Berhasil Mengubah Status']);
     }
 
-
+    // --- 4. MENGHAPUS DATA (DESTROY) ---
     public function destroy(string $id_kader_pokja1)
     {
         $data = LaporanPokja1::find($id_kader_pokja1);
-        $data->delete();
-        return redirect()->route('laporanpokja1.index')->with(['success' => 'Berhasil Menghapus Laporan']);
+        if($data){
+            $data->delete();
+            return redirect()->route('laporanpokja1.index')->with(['success' => 'Berhasil Menghapus Laporan']);
+        }
+        return redirect()->route('laporanpokja1.index')->with(['error' => 'Data tidak ditemukan']);
     }
+
+    // --- 5. FILTER / CETAK PDF ---
+    public function filter(Request $request)
+    {
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+
+        $gotongroyong = DB::table('laporan_gotong_royong')
+            ->leftJoin('users_mobile', 'laporan_gotong_royong.id_user', '=', 'users_mobile.id')
+            ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+            ->select('laporan_gotong_royong.*', 'subdistrict.name as nama_kec')
+            ->when($bulan, fn($q) => $q->whereMonth('tanggal', $bulan))
+            ->when($tahun, fn($q) => $q->whereYear('tanggal', $tahun))
+            ->whereIn('status', ['Disetujui2', 'disetujui2'])
+            ->get();
+
+        $penghayatan = DB::table('laporan_penghayatan_n_pengamalan')
+            ->leftJoin('users_mobile', 'laporan_penghayatan_n_pengamalan.id_user', '=', 'users_mobile.id')
+            ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+            ->select('laporan_penghayatan_n_pengamalan.*', 'subdistrict.name as nama_kec')
+            ->when($bulan, fn($q) => $q->whereMonth('created_at', $bulan)) 
+            ->when($tahun, fn($q) => $q->whereYear('created_at', $tahun))
+            ->whereIn('status', ['Disetujui2', 'disetujui2'])
+            ->get();
+
+        $laporanpokja1 = DB::table('laporan_kader_pokja1')
+            ->leftJoin('users_mobile', 'laporan_kader_pokja1.id_user', '=', 'users_mobile.id')
+            ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+            ->select('laporan_kader_pokja1.*', 'subdistrict.name as nama_kec')
+            ->when($bulan, fn($q) => $q->whereMonth('tanggal', $bulan))
+            ->when($tahun, fn($q) => $q->whereYear('tanggal', $tahun))
+            ->whereIn('status', ['Disetujui2', 'disetujui2'])
+            ->get();
+
+        $formattedDate = now()->format('d F Y');
+
+        return view('backend.cetak_pokja1', compact('gotongroyong', 'penghayatan', 'laporanpokja1', 'bulan', 'tahun', 'formattedDate'));
+    }
+
+    // --- 6. EXPORT KE GOOGLE SHEETS ---
+    public function getExportData(Request $request)
+    {
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+        $bidang = $request->bidang;
+        $data = [];
+
+        try {
+            if ($bidang == 'gotongroyong') {
+                $data = DB::table('laporan_gotong_royong')
+                    ->when($bulan, fn($q) => $q->whereMonth('tanggal', $bulan)) 
+                    ->when($tahun, fn($q) => $q->whereYear('tanggal', $tahun))
+                    ->whereIn('status', ['Disetujui2', 'disetujui2'])->get();
+            } elseif ($bidang == 'penghayatan') {
+                $data = DB::table('laporan_penghayatan_n_pengamalan') 
+                    ->when($bulan, fn($q) => $q->whereMonth('created_at', $bulan)) 
+                    ->when($tahun, fn($q) => $q->whereYear('created_at', $tahun))
+                    ->whereIn('status', ['Disetujui2', 'disetujui2'])->get();
+            } elseif ($bidang == 'kader') {
+                $data = DB::table('laporan_kader_pokja1')
+                    ->when($bulan, fn($q) => $q->whereMonth('tanggal', $bulan)) 
+                    ->when($tahun, fn($q) => $q->whereYear('tanggal', $tahun))
+                    ->whereIn('status', ['Disetujui2', 'disetujui2'])->get();
+            }
+            return response()->json(['status' => 'success', 'bidang' => $bidang, 'data' => $data]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error Laravel: ' . $e->getMessage()], 500);
+        }
+    }   
 }

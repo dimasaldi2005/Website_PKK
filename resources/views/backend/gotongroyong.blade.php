@@ -96,45 +96,44 @@
               <th scope="col">Aksi</th>
             </tr>
           </thead>
-          <tbody>
-            @php
-        $no = 1;
-      @endphp
+         <tbody>
+            @php $no = 1; @endphp
+            
             @forelse ($data as $got1)
-          <tr>
-            <th scope="row">{{ $no++ }}</th>
-            @if (Auth::guard('web')->check())
-          <td class="text-center">{{ $got1->nama_kec }}</td>
-          <td class="text-center">{{ $got1->nama_desa }}</td>
-        @elseif (Auth::guard('pengguna')->check())
-          <td class="text-center">{{ $got1->nama_desa }}</td>
-        @endif
-            <td class="text-center">{{ $got1->kerja_bakti }}</td>
-            <td class="text-center">{{ $got1->rukun_kematian }}</td>
-            <td class="text-center">{{ $got1->keagamaan }}</td>
-            <td class="text-center">{{ $got1->jimpitan }}</td>
-            <td class="text-center">{{ $got1->arisan }}</td>
-            <td>{{ $got1->status }}</td>
-            <td>{{ $got1->created_at }}</td>
-            <td>
-            <a href="{{ route('gotongroyong.edit', $got1->id_pokja1_bidang2) }}"
-              class="btn btn-sm btn-tambah">Review</a>
-
-            <form action="{{ route('gotongroyong.destroy', $got1->id_pokja1_bidang2)}}" method="POST"
-              class="d-inline delete-form">
-              @csrf
-              @method('DELETE')
-              <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(this)">Hapus</button>
-            </form>
-
-            </td>
-          </tr>
-      @empty
-        <div class="alert alert-danger mt-4">
-          Tidak ada data laporan gotong royong
-        </div>
-      @endforelse
-
+            <tr>
+              <th scope="row">{{ $no++ }}</th>
+              @if (Auth::guard('web')->check())
+                <td class="text-center">{{ $got1->nama_kec }}</td>
+                <td class="text-center">{{ $got1->nama_desa }}</td>
+              @elseif (Auth::guard('pengguna')->check())
+                <td class="text-center">{{ $got1->nama_desa }}</td>
+              @endif
+              <td class="text-center">{{ $got1->kerja_bakti }}</td>
+              <td class="text-center">{{ $got1->rukun_kematian }}</td>
+              <td class="text-center">{{ $got1->keagamaan }}</td>
+              <td class="text-center">{{ $got1->jimpitan }}</td>
+              <td class="text-center">{{ $got1->arisan }}</td>
+              <td>{{ $got1->status }}</td>
+              <td>{{ \Carbon\Carbon::parse($got1->created_at)->format('d-m-Y') }}</td>
+              <td>
+                <a href="{{ route('gotongroyong.edit', $got1->id_pokja1_bidang2) }}" class="btn btn-sm btn-primary">Review</a>
+                
+                <form action="{{ route('gotongroyong.destroy', $got1->id_pokja1_bidang2)}}" method="POST" class="d-inline delete-form">
+                  @csrf
+                  @method('DELETE')
+                  <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(this)">Hapus</button>
+                </form>
+              </td>
+            </tr>
+            @empty
+            <tr>
+              <td colspan="10" class="text-center">
+                <div class="alert alert-danger mt-2 mb-0">
+                  Tidak ada data laporan gotong royong
+                </div>
+              </td>
+            </tr>
+            @endforelse
           </tbody>
         </table>
 

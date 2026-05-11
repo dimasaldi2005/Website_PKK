@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\backend;
 
 use Illuminate\Http\Request;
-use App\Models\LaporanPokja1;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,31 +11,31 @@ class AccLaporanPokja1Controller extends Controller
 {
     public function index()
     {
-        // Jika yang login adalah pengguna mobile (guard pengguna)
-        if (Auth::guard('pengguna')->check()) {
-            $user = Auth::guard('pengguna')->user();
+        $lap1 = 0; $lap2 = 0;
 
-            // Jika role user adalah 2 (kecamatan), tampilkan data dari desa (role 1) di kecamatan yang sama
-            if ($user->id_role == 2) {
-                $lap1 = LaporanPokja1::whereIn('status', ['proses'])
-                    ->whereHas('user', function ($query) use ($user) {
-                        $query->where('id_subdistrict', $user->id_subdistrict)
-                            ->where('id_role', 1); // Desa
-                    })
+        // 1. CEK KABUPATEN DULU
+        if (Auth::guard('web')->check()) { 
+            // Kabupaten: Menunggu = Disetujui1 | Selesai = Disetujui2
+            $lap1 = DB::table('laporan_kader_pokja1')->whereIn('status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])->count();
+            $lap2 = DB::table('laporan_kader_pokja1')->whereIn('status', ['Disetujui2', 'disetujui2', 'DISETUJUI2'])->count();
+        }
+        // 2. CEK KECAMATAN
+        elseif (Auth::guard('pengguna')->check()) {
+            $user = Auth::guard('pengguna')->user();
+            if ($user->id_role == 2) { 
+                // Kecamatan: Menunggu = Proses | Selesai = Disetujui1
+                $lap1 = DB::table('laporan_kader_pokja1')
+                    ->leftJoin('users_mobile', 'laporan_kader_pokja1.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->whereIn('laporan_kader_pokja1.status', ['proses', 'Proses', 'PROSES'])
                     ->count();
 
-                $lap2 = LaporanPokja1::whereIn('status', ['disetujui1'])
-                    ->whereHas('user', function ($query) use ($user) {
-                        $query->where('id_subdistrict', $user->id_subdistrict)
-                            ->where('id_role', 1); // Desa
-                    })
+                $lap2 = DB::table('laporan_kader_pokja1')
+                    ->leftJoin('users_mobile', 'laporan_kader_pokja1.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->whereIn('laporan_kader_pokja1.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
                     ->count();
             }
-        }
-        // Jika yang login adalah admin web
-        else {
-            $lap1 = LaporanPokja1::whereIn('status', ['Proses'])->count();
-            $lap2 = LaporanPokja1::whereIn('status', ['Disetujui1'])->count();
         }
 
         return view('backend.acclaporanpokja1', compact('lap1', 'lap2'));

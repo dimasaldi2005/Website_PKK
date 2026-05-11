@@ -218,7 +218,7 @@
                       @if(Auth::guard('pengguna')->check())
               <option value="Disetujui1">Disetujui (Kecamatan)</option>
             @else
-              <option value="disetujui2">Disetujui (Admin)</option>
+              <option value="Disetujui2">Disetujui (Admin)</option>
             @endif
                     </select>
                   </div>

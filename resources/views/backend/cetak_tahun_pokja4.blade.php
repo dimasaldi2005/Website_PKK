@@ -1,279 +1,225 @@
+{{-- resources/views/backend/cetak_tahun_pokja4.blade.php --}}
+
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>Cetak Laporan Pertahun</title>
+    <meta charset="utf-8">
+    <title>Cetak Laporan Pokja 4</title>
+
     <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 8px;
-            border: 1px solid black;
-        }
-
-        body {
+        body{
             font-family: Arial, sans-serif;
+            font-size:12px;
+            margin:25px;
+            color:#000;
         }
 
-        .container {
-            width: 800px;
-            margin: 0 auto;
+        table{
+            width:100%;
+            border-collapse:collapse;
         }
 
-        .header {
-            margin-bottom: 20px;
+        th, td{
+            border:1px solid #000;
+            padding:6px;
+            text-align:center;
+            vertical-align:middle;
         }
 
-        .logo-container {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
+        .no-border td{
+            border:none !important;
+            padding:0;
         }
 
-        .logo {
-            max-width: 100px;
-            height: auto;
-            margin-right: 20px;
+        .header{
+            width:100%;
+            margin-bottom:20px;
         }
 
-        .header h1 {
-            font-size: 16px;
-            margin-bottom: 5px;
+        .logo{
+            width:75px;
         }
 
-        .header p {
-            font-size: 14px;
-            margin: 0;
+        .text-left{
+            text-align:left;
         }
 
-        .address {
-            margin-bottom: 20px;
+        .text-center{
+            text-align:center;
         }
 
-        .address p {
-            margin: 0;
+        .judul{
+            font-size:18px;
+            font-weight:bold;
+            margin-bottom:5px;
         }
 
-        .form-group {
-            margin-bottom: 14px;
+        .subjudul{
+            font-size:13px;
+            font-weight:bold;
         }
 
-        .form-group label {
-            display: inline-block;
-            width: 120px;
-            font-weight: bold;
+        .spasi{
+            height:15px;
         }
 
-        .form-group .value {
-            display: inline-block;
-            width: calc(100% - 150px);
-            vertical-align: top;
+        .ttd{
+            margin-top:40px;
         }
 
-        .separator {
-            margin-bottom: 10px;
-            border-top: 2px solid #000;
+        .ttd td{
+            border:none;
+            width:50%;
+            text-align:center;
+            vertical-align:top;
         }
 
-        .signature {
-            margin-top: 40px;
-            text-align: right;
+        .nama{
+            margin-top:70px;
+            text-decoration:underline;
+            font-weight:bold;
         }
 
-        .signature p {
-            margin-bottom: 5px;
-        }
-
-        .container-grid {
-            width: 100%;
-            border: none;
-            padding: 5px;
-            margin-top: 50px;
-            box-sizing: border-box;
-            display: grid;
-            grid-template-columns: 50% 50%;
-            grid-template-rows: 50% 50%;
-        }
     </style>
 </head>
 
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="logo-container">
-                <img class="logo" src="{{ asset('frontend/assets/img/favicon.png') }}" alt="Logo PKK">
-                <div>
-                    <h1>Pemberdayaan Kesejahteraan Keluarga</h1>
-                    <p>Kab. Nganjuk, Jawa Timur</p>
-                </div>
+<body onload="window.print()">
+
+{{-- HEADER --}}
+<table class="no-border header">
+    <tr>
+        <td style="width:90px;">
+            <img src="{{ asset('frontend/assets/img/favicon.png') }}" class="logo">
+        </td>
+
+        <td class="text-left">
+            <b>Pemberdayaan Kesejahteraan Keluarga</b><br>
+            Kab. Nganjuk, Jawa Timur
+        </td>
+
+        <td class="text-center">
+            <div class="judul">LAPORAN POKJA IV</div>
+
+            @if($jenis == 'bulan')
+                <div class="subjudul">Bulan {{ $bulan_nama }} Tahun {{ $tahun }}</div>
+            @elseif($jenis == 'tahun')
+                <div class="subjudul">Tahun {{ $tahun }}</div>
+            @elseif($jenis == 'bidang')
+                <div class="subjudul">{{ strtoupper($bidang) }} - {{ $bulan_nama }} {{ $tahun }}</div>
+            @endif
+        </td>
+    </tr>
+</table>
+
+
+{{-- TABEL DATA --}}
+<table>
+    <thead>
+        <tr>
+            <th width="5%">No</th>
+            <th>Kecamatan</th>
+            <th>Desa</th>
+
+            @if($bidang == 'semua' || $bidang == 'posyandu')
+                <th>Posyandu</th>
+            @endif
+
+            @if($bidang == 'semua' || $bidang == 'gizi')
+                <th>Gizi</th>
+            @endif
+
+            @if($bidang == 'semua' || $bidang == 'kesling')
+                <th>Kesling</th>
+            @endif
+
+            @if($bidang == 'semua' || $bidang == 'narkoba')
+                <th>Penyuluhan Narkoba</th>
+            @endif
+
+            @if($bidang == 'semua' || $bidang == 'phbs')
+                <th>PHBS</th>
+            @endif
+
+            @if($bidang == 'semua' || $bidang == 'kb')
+                <th>KB</th>
+            @endif
+        </tr>
+    </thead>
+
+    <tbody>
+        @php $no = 1; @endphp
+
+        @foreach($data as $row)
+        <tr>
+            <td>{{ $no++ }}</td>
+            <td class="text-left">{{ $row->nama_kec }}</td>
+            <td class="text-left">{{ $row->nama_desa }}</td>
+
+            @if($bidang == 'semua' || $bidang == 'posyandu')
+                <td>{{ $row->posyandu }}</td>
+            @endif
+
+            @if($bidang == 'semua' || $bidang == 'gizi')
+                <td>{{ $row->gizi }}</td>
+            @endif
+
+            @if($bidang == 'semua' || $bidang == 'kesling')
+                <td>{{ $row->kesling }}</td>
+            @endif
+
+            @if($bidang == 'semua' || $bidang == 'narkoba')
+                <td>{{ $row->penyuluhan_narkoba }}</td>
+            @endif
+
+            @if($bidang == 'semua' || $bidang == 'phbs')
+                <td>{{ $row->PHBS }}</td>
+            @endif
+
+            @if($bidang == 'semua' || $bidang == 'kb')
+                <td>{{ $row->KB }}</td>
+            @endif
+        </tr>
+        @endforeach
+
+        @if(count($data) == 0)
+        <tr>
+            <td colspan="20">Tidak ada data</td>
+        </tr>
+        @endif
+    </tbody>
+</table>
+
+
+{{-- TTD --}}
+<table class="ttd">
+    <tr>
+        <td>
+            Mengetahui,<br>
+            Ketua Pokja IV
+
+            <div class="nama">
+                @if(isset($ketua[0]))
+                    {{ $ketua[0]->nama }}
+                @else
+                    __________________
+                @endif
             </div>
-            <h2>Laporan Pertahun</h2>
-            <h4>Tahun : {{ $created_at }}</h4>
-        </div>
+        </td>   
 
-        <div class="separator"></div>
-        <div class="signature">
-            <p>Tanggal Cetak : {{ $formattedDate }}</p>
-        </div>
+        <td>
+            Nganjuk, {{ date('d-m-Y') }}<br>
+            Admin
 
-        <h3>Laporan Kesehatan</h3>
-        <table align="center">
-            <tr>
-                <td align="center"><b>NO</b></td>
-                <td align="center"><b>Kecamatan</b></td>
-                <td align="center"><b>Posyandu</b></td>
-                <td align="center"><b>Posyandu <br>Iterasi</b></td>
-                <td align="center"><b>KLP</b></td>
-                <td align="center"><b>Anggota</b></td>
-                <td align="center"><b>Kartu <br>Gratis</b></td>
-                {{-- <td align="center"><b>Kecamatan</b></td> --}}
-            </tr>
-            <tbody>
-                @php
-                    $no = 1;
-                  @endphp
-                @foreach($kesehatan as $item)
-                    <tr>
-                        <th scope="row" align="center">{{ $no++ }}</th>
-                        <td align="center">{{ $item->nama_kec}}</td>
-                        <td align="center">{{ $item->jumlah_posyandu}}</td>
-                        <td align="center">{{ $item->jumlah_posyandu_iterasi}}</td>
-                        <td align="center">{{ $item->jumlah_klp }}</td>
-                        <td align="center">{{ $item->jumlah_anggota }}</td>
-                        <td align="center">{{ $item->jumlah_kartu_gratis }}</td>
-                        {{-- <td align="center">{{ $item->jumlah_kartu_gratis }}</td> --}}
-                    </tr>
-                @endforeach
-                <tr>
-                    <td colspan="2" align="center">Total</td>
-                    <td align="center">{{ $total }}</td>
-                    <td align="center">{{ $total1 }}</td>
-                    <td align="center">{{ $total2 }}</td>
-                    <td align="center">{{ $total3 }}</td>
-                    <td align="center">{{ $total4 }}</td>
-                </tr>
-        </table>
-
-        <h3>Laporan Kelestarian Lingkungan Hidup</h3>
-        <table align="center">
-            <tr>
-                <td align="center"><b>NO</b></td>
-                <td align="center"><b>Kecamatan</b></td>
-                <td align="center"><b>Jamban</b></td>
-                <td align="center"><b>Spal</b></td>
-                <td align="center"><b>TPS</b></td>
-                <td align="center"><b>MCK</b></td>
-                <td align="center"><b>PDAM</b></td>
-                <td align="center"><b>Sumur</b></td>
-                <td align="center"><b>Dll</b></td>
-                <!-- <td align="center"><b>id_user</b></td> -->
-            </tr>
-            <tbody>
-                @php
-                    $no = 1;
-                  @endphp
-                @foreach($kelestarian as $item)
-                    <tr>
-                        <th align="center">{{ $no++ }}</th>
-                        <td align="center">{{ $item->nama_kec}}</td>
-                        <td align="center">{{ $item->jamban }}</td>
-                        <td align="center">{{ $item->spal}}</td>
-                        <td align="center">{{ $item->tps}}</td>
-                        <td align="center">{{ $item->mck }}</td>
-                        <td align="center">{{ $item->pdam }}</td>
-                        <td align="center">{{ $item->sumur }}</td>
-                        <td align="center">{{ $item->dll }}</td>
-                    </tr>
-                @endforeach
-                <tr>
-                    <td colspan="2" align="center">Total</td>
-                    <td align="center">{{ $total5 }}</td>
-                    <td align="center">{{ $total6 }}</td>
-                    <td align="center">{{ $total7 }}</td>
-                    <td align="center">{{ $total8 }}</td>
-                    <td align="center">{{ $total9 }}</td>
-                    <td align="center">{{ $total10 }}</td>
-                    <td align="center">{{ $total11 }}</td>
-                </tr>
-        </table>
-
-        <h3>Laporan Perencanaan Sehat</h3>
-        <table align="center">
-            <tr>
-                <td align="center"><b>NO</b></td>
-                <td align="center"><b>Kecamatan</b></td>
-                <td align="center"><b>Perempuan <br>Subur</b></td>
-                <td align="center"><b>Wanita <br>Subur</b></td>
-                <td align="center"><b>KB <br>Perempuan</b></td>
-                <td align="center"><b>KB <br>Wanita</b></td>
-                <td align="center"><b>KK <br>TBG</b></td>
-                <!-- <td align="center"><b>id_user</b></td> -->
-            </tr>
-            <tbody>
-                @php
-                    $no = 1;
-                  @endphp
-                @foreach($perencanaan as $item)
-                    <tr>
-                        <th align="center">{{ $no++ }}</th>
-                        <td align="center">{{ $item->nama_kec}}</td>
-                        <td align="center">{{ $item->J_Psubur }}</td>
-                        <td align="center">{{ $item->J_Wsubur}}</td>
-                        <td align="center">{{ $item->Kb_p}}</td>
-                        <td align="center">{{ $item->Kb_w }}</td>
-                        <td align="center">{{ $item->Kk_tbg }}</td>
-                    </tr>
-                @endforeach
-                <tr>
-                    <td colspan="2" align="center">Total</td>
-                    <td align="center">{{ $total12 }}</td>
-                    <td align="center">{{ $total13 }}</td>
-                    <td align="center">{{ $total14 }}</td>
-                    <td align="center">{{ $total15 }}</td>
-                    <td align="center">{{ $total16 }}</td>
-                </tr>
-        </table>
-
-        <div class="container-grid">
-            <div style="text-align: left;">
-                <div style="text-align: center;">
-                    @forelse($wakil as $wakill)
-                        <a>Mengetahui</a></br>
-                        <a>TIM PENGGERAK PKK KABUPATEN NGANJUK</a></br>
-                        <a>{{ $wakill->jabatan }}</a></br><br><br><br>
-                        <a>{{ $wakill->nama_terang }}</a>
-                    @empty
-                        tidak ada data
-                    @endforelse
-                </div>
+            <div class="nama">
+                @if(isset($wakil[0]))
+                    {{ $wakil[0]->nama }}
+                @else
+                    __________________
+                @endif
             </div>
+        </td>
+    </tr>
+</table>
 
-            <div style="text-align: right;">
-                <div style="text-align: center;">
-                    @forelse($ketua as $ketuaa)
-                                        <a>Nganjuk, <?php
-                        echo date('d F Y');
-                                              ?></a></br>
-                                        <a>{{ $ketuaa->pokja }}</a></br>
-                                        <a>{{ $ketuaa->jabatan }}</a></br><br><br><br>
-                                        <a>{{ $ketuaa->nama_terang }}</a>
-                    @empty
-                        tidak ada data
-                    @endforelse
-                </div>
-            </div>
-        </div>
-
-        <script>
-            window.onload = function () {
-                window.print();
-            };
-        </script>
-    </div>
 </body>
-
 </html>

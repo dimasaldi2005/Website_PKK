@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\backend;
 
 use Illuminate\Http\Request;
-use App\Models\Pendidikan;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,27 +11,42 @@ class AccPendidikanController extends Controller
 {
     public function index()
     {
-        // Cek guard yang digunakan
-        if (Auth::guard('web')->check()) {
-            // Jika guard web (admin)
-            $pend1 = Pendidikan::where('status', 'Disetujui1')->count();
-            $pend2 = Pendidikan::where('status', 'Disetujui2')->count();
-        } elseif (Auth::guard('pengguna')->check()) {
-            // Jika guard pengguna
+        $pend1 = 0;
+        $pend2 = 0;
+
+        // 1. JIKA YANG LOGIN PENGGUNA MOBILE (KECAMATAN)
+        if (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) { // Kecamatan
-                // Ambil data dari desa (role 1) di kecamatan yang sama
-                $pend1 = Pendidikan::whereHas('user', function ($query) use ($user) {
-                    $query->where('id_role', 1)
-                        ->where('id_subdistrict', $user->id_subdistrict);
-                })->where('status', 'proses')->count();
+            if ($user->id_role == 2) { // Role Kecamatan
+                // Menghitung yang masih 'proses' di desa naungannya
+                $pend1 = DB::table('laporan_pendidikan_n_keterampilan')
+                    ->join('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_pendidikan_n_keterampilan.status', ['proses', 'Proses', 'PROSES'])
+                    ->count();
 
-                $pend2 = Pendidikan::whereHas('user', function ($query) use ($user) {
-                    $query->where('id_role', 1)
-                        ->where('id_subdistrict', $user->id_subdistrict);
-                })->where('status', 'Disetujui1')->count();
+                // Menghitung yang 'Disetujui1' (Sudah di-ACC Kecamatan)
+                $pend2 = DB::table('laporan_pendidikan_n_keterampilan')
+                    ->join('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_pendidikan_n_keterampilan.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                    ->count();
             }
+        } 
+        // 2. JIKA YANG LOGIN ADMIN WEB
+        else if (Auth::guard('web')->check()) {
+            // Admin menghitung SEMUA yang belum di-ACC final
+            $pend1 = DB::table('laporan_pendidikan_n_keterampilan')
+                ->whereIn('status', ['proses', 'Proses', 'PROSES', 'Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                ->count();
+
+            // Admin menghitung yang sudah selesai di-ACC Admin
+            $pend2 = DB::table('laporan_pendidikan_n_keterampilan')
+                ->whereIn('status', ['Disetujui2', 'disetujui2', 'DISETUJUI2'])
+                ->count();
         }
 
         return view('backend.accpendidikan', compact('pend1', 'pend2'));

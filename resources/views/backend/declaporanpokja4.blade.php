@@ -66,7 +66,7 @@
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Daftar Laporan Kader Pokja 4</h1>
+      <h1>Daftar Laporan Jumlah Kader Pokja 4</h1>
     </div><!-- End Page Title -->
 
     @if ($message = Session::get('success'))

@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\backend;
 
 use Illuminate\Http\Request;
-use App\Models\KelestarianLingkunganHidup;
-use App\Models\Pengguna;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,30 +11,49 @@ class AccKelestarianController extends Controller
 {
     public function index()
     {
+        $kel1 = 0;
+        $kel2 = 0;
+
         // Cek guard yang aktif
         if (Auth::guard('pengguna')->check()) {
-            // Jika guard pengguna (mobile)
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) { // Kecamatan (role 2)
-                // Ambil semua user mobile dengan role 1 (Desa) di kecamatan yang sama
-                $desaUsers = Pengguna::where('id_subdistrict', $user->id_subdistrict)
+            if ($user->id_role == 2) { // Kecamatan
+                $desaUsers = DB::table('users_mobile')
+                    ->where('id_subdistrict', $user->id_subdistrict)
                     ->where('id_role', 1)
                     ->pluck('id');
 
-                // Hitung data kelestarian dari desa-desa tersebut
-                $kel1 = KelestarianLingkunganHidup::whereIn('id_user', $desaUsers)
-                    ->where('status', 'proses')
+                $kel1 = DB::table('laporan_kelestarian_lingkungan_hidup')
+                    ->whereIn('id_user', $desaUsers)
+                    ->whereIn('status', ['Proses', 'proses'])
                     ->count();
 
-                $kel2 = KelestarianLingkunganHidup::whereIn('id_user', $desaUsers)
+                $kel2 = DB::table('laporan_kelestarian_lingkungan_hidup')
+                    ->whereIn('id_user', $desaUsers)
+                    ->where('status', 'Disetujui1')
+                    ->count();
+            } else { // Desa
+                $kel1 = DB::table('laporan_kelestarian_lingkungan_hidup')
+                    ->where('id_user', $user->id)
+                    ->whereIn('status', ['Proses', 'proses'])
+                    ->count();
+
+                $kel2 = DB::table('laporan_kelestarian_lingkungan_hidup')
+                    ->where('id_user', $user->id)
                     ->where('status', 'Disetujui1')
                     ->count();
             }
-        } else {
-            // Jika guard web (admin) - tampilkan semua data
-            $kel1 = KelestarianLingkunganHidup::where('status', 'Disetujui1')->count();
-            $kel2 = KelestarianLingkunganHidup::where('status', 'Disetujui2')->count();
+        } elseif (Auth::guard('web')->check()) { 
+            // Admin web
+            // FIX: Tambahkan Proses agar admin melihat antrean awal
+            $kel1 = DB::table('laporan_kelestarian_lingkungan_hidup')
+                ->whereIn('status', ['Proses', 'proses', 'Disetujui1'])
+                ->count();
+                
+            $kel2 = DB::table('laporan_kelestarian_lingkungan_hidup')
+                ->where('status', 'Disetujui2')
+                ->count();
         }
 
         return view('backend.acckelestarian', compact('kel1', 'kel2'));
