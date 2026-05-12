@@ -68,4 +68,62 @@ class Pokja3Controller extends Controller
 
         return view('backend.pokja3', compact('modelPertama', 'modelKedua', 'modelKetiga', 'modelKeempat'));
     }
+    // ==========================================
+    // FUNGSI BARU: EXPORT JSON POKJA 3
+    // ==========================================
+    public function getExportData(Request $request)
+    {
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+        $bidang = $request->bidang;
+
+        // Pilih tabel berdasarkan bidang
+        $tabel = '';
+        if ($bidang == 'pangan') $tabel = 'laporan_pangan';
+        elseif ($bidang == 'sandang') $tabel = 'laporan_sandang';
+        elseif ($bidang == 'perumahan') $tabel = 'laporan_perumahan_n_tata_laksana';
+        elseif ($bidang == 'kader') $tabel = 'laporan_kader_pokja3';
+        else return response()->json(['status' => 'error', 'message' => 'Bidang tidak valid.']);
+
+        try {
+            $query = DB::table($tabel)
+                ->leftJoin('users_mobile', "$tabel.id_user", '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                ->select('subdistrict.name as nama_kecamatan', 'village.name as nama_desa', "$tabel.*");
+
+            // FILTER ROLE & STATUS (LOGIKA JURUS SAKTI)
+            if (Auth::guard('web')->check()) {
+                $statusAdmin = ['Disetujui1', 'disetujui1', 'DISETUJUI1', 'Disetujui2', 'disetujui2', 'DISETUJUI2'];
+                $query->whereIn("$tabel.status", $statusAdmin);
+            } elseif (Auth::guard('pengguna')->check()) {
+                $user = Auth::guard('pengguna')->user();
+                if ($user->id_role == 2) {
+                    $statusKecamatan = ['Proses', 'proses', 'PROSES', 'Disetujui1', 'disetujui1', 'DISETUJUI1'];
+                    $query->whereIn("$tabel.status", $statusKecamatan)
+                          ->where('users_mobile.id_subdistrict', $user->id_subdistrict);
+                } else {
+                    $query->where("$tabel.id_user", $user->id);
+                }
+            }
+
+            if (!empty($bulan)) $query->whereMonth("$tabel.created_at", $bulan);
+            if (!empty($tahun)) $query->whereYear("$tabel.created_at", $tahun);
+
+            $data = $query->get();
+
+            if ($data->isEmpty()) {
+                return response()->json(['status' => 'empty', 'message' => 'Tidak ada data laporan yang valid pada periode tersebut.']);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'bidang' => strtoupper($bidang),
+                'data' => $data
+            ]);
+
+        } catch (\Throwable $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    }
 }

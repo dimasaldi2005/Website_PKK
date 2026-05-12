@@ -4,7 +4,7 @@
 
 <style>
   * { font-family: 'Poppins', sans-serif !important; }
-  .page-heading { font-family: 'Poppins', sans-serif; font-size: 24px; font-weight: 600; color: #1e293b; margin-bottom: 20px; }
+  .page-heading { font-size: 24px; font-weight: 600; color: #1e293b; margin-bottom: 20px; }
   .pokja-card:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.12) !important; }
 </style>
 
@@ -15,26 +15,12 @@
     @if (session('error'))
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
       <strong>Perhatian!</strong> {{ session('error') }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     @endif
 
-    {{-- CARD CETAK --}}
-    <div class="row mb-3">
-      <div class="col-12">
-        <div class="form-card" style="background:white; border-radius:12px; padding:24px; box-shadow:0 1px 3px rgba(0,0,0,0.1);">
-          <h5 style="font-weight:600; font-size:16px; color:#2d3748; margin-bottom:6px;">Laporan Pokja 1</h5>
-          <p style="font-size:13px; color:#6b7280; margin-bottom:16px;">Cetak laporan berdasarkan bulan, tahun, bidang dan format file</p>
-          <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalLaporanPokja1">
-            <i class="bi bi-file-earmark-arrow-down me-1"></i> Cetak Laporan
-          </button>
-        </div>
-      </div>
-    </div>
-
     {{-- CARDS LAPORAN --}}
     <div class="row mb-3">
-
       {{-- PENGHAYATAN --}}
       <div class="col-md-4 mb-3">
         <a href="{{ route('accpenghayatan.index') }}" style="text-decoration:none;">
@@ -88,7 +74,19 @@
           </div>
         </a>
       </div>
+    </div>
 
+    {{-- CARD CETAK --}}
+    <div class="row">
+      <div class="col-12">
+        <div class="form-card" style="background:white; border-radius:12px; padding:24px; box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+          <h5 style="font-weight:600; font-size:16px; color:#2d3748; margin-bottom:6px;">Laporan Pokja 1</h5>
+          <p style="font-size:13px; color:#6b7280; margin-bottom:16px;">Cetak laporan berdasarkan bulan, tahun, bidang dan format file</p>
+          <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalLaporanPokja1">
+            <i class="bi bi-file-earmark-arrow-down me-1"></i> Cetak Laporan
+          </button>
+        </div>
+      </div>
     </div>
   </section>
 </main>
@@ -96,17 +94,17 @@
 {{-- MODAL CETAK LAPORAN POKJA 1 --}}
 <div class="modal fade" id="modalLaporanPokja1" tabindex="-1">
   <div class="modal-dialog">
-    <div class="modal-content">
+    <div class="modal-content" style="border-radius: 12px;">
       <div class="modal-header">
-        <h5 class="modal-title">Cetak Laporan Pokja 1</h5>
+        <h5 class="modal-title" style="font-weight: 600;">Cetak Laporan Pokja 1</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form id="formExportPokja1">
         @csrf
         <div class="modal-body">
           <div class="mb-3">
-            <label>Bulan <span class="text-danger">*</span></label>
-            <select name="bulan" class="form-select" required>
+            <label style="font-size: 13px; font-weight: 500;">Bulan <span class="text-muted" style="font-size: 11px;">(Opsional untuk tahunan)</span></label>
+            <select name="bulan" class="form-select">
               <option value="">-- Pilih Bulan --</option>
               <option value="1">Januari</option><option value="2">Februari</option>
               <option value="3">Maret</option><option value="4">April</option>
@@ -117,7 +115,7 @@
             </select>
           </div>
           <div class="mb-3">
-            <label>Tahun <span class="text-danger">*</span></label>
+            <label style="font-size: 13px; font-weight: 500;">Tahun <span class="text-danger">*</span></label>
             <select name="tahun" class="form-select" required>
               <option value="">-- Pilih Tahun --</option>
               @for ($year = now()->year; $year >= 2021; $year--)
@@ -126,7 +124,7 @@
             </select>
           </div>
           <div class="mb-3">
-            <label>Bidang <span class="text-danger">*</span></label>
+            <label style="font-size: 13px; font-weight: 500;">Bidang <span class="text-danger">*</span></label>
             <select name="bidang" class="form-select" required>
               <option value="">-- Pilih Bidang --</option>
               <option value="penghayatan">Penghayatan & Pengamalan Pancasila</option>
@@ -135,24 +133,23 @@
             </select>
           </div>
           <div class="mb-3">
-            <label>Format <span class="text-danger">*</span></label>
+            <label style="font-size: 13px; font-weight: 500;">Format <span class="text-danger">*</span></label>
             <select name="format" id="formatExportPokja1" class="form-select" required>
               <option value="">-- Pilih Format --</option>
               <option value="pdf">📄 PDF (Download)</option>
               <option value="excel">📊 Google Sheets (Online)</option>
             </select>
-            <small class="text-muted"><i class="bi bi-info-circle"></i> Pilih Google Sheets untuk menyimpan data langsung ke spreadsheet online</small>
           </div>
-          <div class="alert alert-primary mt-3" id="infoLinkSheet" style="display:none; border-left:4px solid #0d6efd;">
-            <h6 class="alert-heading fw-bold mb-1" style="font-size:14px;"><i class="bi bi-link-45deg"></i> Link Spreadsheet Tujuan</h6>
-            <p class="mb-2" style="font-size:13px;">Semua data bidang Pokja 1 akan terekspor ke dalam tab di link berikut:</p>
-            <a href="https://docs.google.com/spreadsheets/d/1sW8NzwzGyx9iBfTyjX7gZ17rFpg8PWgAU7OM4QMVUjo/edit?usp=sharing" target="_blank" class="btn btn-sm btn-light text-primary" style="font-size:12px; font-weight:600;">
+          <div class="alert alert-primary mt-3" id="infoLinkSheet" style="display:none; border-left:4px solid #0d6efd; background-color: #f0f7ff;">
+            <h6 class="alert-heading fw-bold mb-1" style="font-size:13px;"><i class="bi bi-link-45deg"></i> Link Spreadsheet Tujuan</h6>
+            <p class="mb-2" style="font-size:12px; color:#475569;">Data akan diekspor ke dalam tab di Google Sheets berikut:</p>
+            <a href="https://docs.google.com/spreadsheets/d/1sW8NzwzGyx9iBfTyjX7gZ17rFpg8PWgAU7OM4QMVUjo/edit?usp=sharing" target="_blank" class="btn btn-sm btn-light text-primary" style="font-size:12px; font-weight:600; border: 1px solid #cce3fd;">
               <i class="bi bi-box-arrow-up-right"></i> Buka Spreadsheet Pokja 1
             </a>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Batal</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
           <button type="submit" class="btn btn-success" id="btnExportPokja1"><i class="bi bi-download"></i> <span id="btnTextPokja1">Export</span></button>
         </div>
       </form>
@@ -160,9 +157,12 @@
   </div>
 </div>
 
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  const APPS_SCRIPT_URL_POKJA1 = "https://script.google.com/macros/s/AKfycbxV-t515AuxJz2iN5wmuQfPDpJhC8t9Rb12oNu_fcQ9aGumvebosvG8SDhz2hcYDZkj/exec";
+  // URL DEPLOY GOOGLE APPS SCRIPT POKJA 1
+  const APPS_SCRIPT_URL_POKJA1 = "https://script.google.com/macros/s/AKfycbzjXVgFoo8OzY1POERpnrjyi-bX_GiaIxPUv2RkZkb0HoBgxrDIoO-njc67ezlfJvKR/exec";
+  const SHEET_HREF = "https://docs.google.com/spreadsheets/d/1sW8NzwzGyx9iBfTyjX7gZ17rFpg8PWgAU7OM4QMVUjo/edit?usp=sharing";
 
   document.getElementById("formatExportPokja1").addEventListener("change", function() {
     document.getElementById("infoLinkSheet").style.display = this.value === "excel" ? "block" : "none";
@@ -175,6 +175,7 @@
     const btnText = document.getElementById("btnTextPokja1");
     const form = e.target;
     const formData = new FormData(form);
+    
     const bulan = formData.get('bulan');
     const tahun = formData.get('tahun');
     const bidang = formData.get('bidang');
@@ -182,43 +183,81 @@
     if (!format) { Swal.fire({ icon: 'warning', title: 'Pilih Format!', text: 'Silakan pilih format export terlebih dahulu' }); return; }
 
     if (format === "pdf") {
-      const params = new URLSearchParams(formData).toString();
-      window.location.href = "{{ route('gotongroyong.filter') }}?" + params;
-    } else if (format === "excel") {
+      let params = new URLSearchParams();
+      params.append('bidang', bidang);
+      if (bulan && tahun) {
+          params.append('search', `${tahun}-${bulan.toString().padStart(2, '0')}`);
+      } else if (tahun) {
+          params.append('search2', tahun);
+      }
+      window.location.href = "{{ route('gotongroyong.filter') }}?" + params.toString();
+    } 
+    else if (format === "excel") {
       const confirmExport = await Swal.fire({
         title: 'Mulai Ekspor?',
-        html: `Data akan ditimpa/diperbarui ke dalam <b>Google Sheets POKJA 1</b>.`,
+        html: `Data akan ditimpa/diperbarui ke dalam <b>Google Sheets Pokja 1</b>.<br><br>
+               <a href="${SHEET_HREF}" target="_blank" style="text-decoration: none; color: #0d6efd; font-weight: 600; background: #f8f9fa; padding: 5px 10px; border-radius: 5px;">
+                 <i class="bi bi-box-arrow-up-right"></i> Pratinjau Spreadsheet
+               </a>`,
         icon: 'question', showCancelButton: true,
         confirmButtonColor: '#198754', cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Ya, Ekspor!', cancelButtonText: 'Batal', reverseButtons: true
+        confirmButtonText: '<i class="bi bi-send"></i> Ya, Ekspor!', cancelButtonText: 'Batal', reverseButtons: true
       });
+      
       if (!confirmExport.isConfirmed) return;
 
       btn.disabled = true;
       btnText.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Memproses...';
-      Swal.fire({ title: 'Mengekspor data...', text: 'Sedang mengambil data...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+      Swal.fire({ title: 'Mengekspor data...', text: 'Sedang mengambil data dari Database...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
 
       try {
-        const urlTarget = `{{ route('laporanpokja1.exportJson') }}?bulan=${bulan}&tahun=${tahun}&bidang=${bidang}`;
+        // FIX: Route sekarang mengarah ke Pokja1Controller, bukan LaporanPokja1Controller lama
+        const urlTarget = `{{ route('pokja1.exportJson') }}?bulan=${bulan}&tahun=${tahun}&bidang=${bidang}`;
         const dbResponse = await fetch(urlTarget);
-        if (!dbResponse.ok) throw new Error(`Status: ${dbResponse.status}`);
+        
+        // FIX: Debugger Canggih, tidak sekadar nampilin "Status 500" lagi
+        if (!dbResponse.ok) {
+            const textError = await dbResponse.text();
+            let realErrorMsg = `Status HTTP: ${dbResponse.status}`;
+            try {
+                const jsonError = JSON.parse(textError);
+                if(jsonError.message) realErrorMsg = jsonError.message;
+            } catch(e) {
+                realErrorMsg = `Laravel Error 500. Pastikan tabel di database tidak ada yang typo.`;
+            }
+            throw new Error(realErrorMsg);
+        }
+        
         const dbResult = await dbResponse.json();
+        
         if (!dbResult.data || dbResult.data.length === 0) {
-          Swal.fire('Data Kosong', 'Tidak ada laporan yang Disetujui pada bulan dan tahun tersebut.', 'info');
+          Swal.fire('Data Kosong', 'Tidak ada laporan yang Disetujui pada periode tersebut.', 'info');
           btn.disabled = false; btnText.textContent = 'Export'; return;
         }
+
+        Swal.update({ text: `Ditemukan ${dbResult.data.length} baris data. Mengirim ke Google Sheets...` });
+
         const googleResponse = await fetch(APPS_SCRIPT_URL_POKJA1, {
           method: 'POST', redirect: 'follow',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(dbResult)
         });
-        const result = JSON.parse(await googleResponse.text());
-        if (result.status === "success") {
-          Swal.fire({ icon: 'success', title: 'Berhasil!', html: `✅ ${result.message}`, confirmButtonText: 'Tutup' })
-            .then(() => { form.reset(); document.getElementById("infoLinkSheet").style.display = "none"; bootstrap.Modal.getInstance(document.getElementById('modalLaporanPokja1'))?.hide(); });
-        } else { throw new Error(result.message); }
+        
+        const textResult = await googleResponse.text();
+        
+        try {
+            const result = JSON.parse(textResult);
+            if (result.status === "success") {
+              Swal.fire({ icon: 'success', title: 'Berhasil!', html: `✅ ${result.message}<br><br><a href="${SHEET_HREF}" target="_blank" class="btn btn-sm btn-outline-primary">Buka Laporan Pokja 1</a>`, confirmButtonText: 'Tutup' })
+                .then(() => { form.reset(); document.getElementById("infoLinkSheet").style.display = "none"; bootstrap.Modal.getInstance(document.getElementById('modalLaporanPokja1'))?.hide(); });
+            } else { throw new Error(result.message); }
+        } catch(e) {
+            let debugHTML = textResult.substring(0, 150).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            throw new Error(`Google Apps Script Error. Pastikan Deploy as Web App di-set ke 'Anyone'.<br><br><small style="color:red;">${debugHTML}...</small>`);
+        }
+
       } catch (error) {
-        Swal.fire({ icon: 'error', title: 'Gagal!', html: `<code>${error.message}</code>` });
+        Swal.fire({ icon: 'error', title: 'Gagal Mengirim!', html: `<div style="text-align:left;">Terjadi kesalahan:<br><br><code style="color:#d63384;">${error.message}</code></div>` });
       } finally {
         btn.disabled = false; btnText.textContent = 'Export';
       }

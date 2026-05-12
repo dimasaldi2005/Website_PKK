@@ -129,4 +129,61 @@ class BidangUmumController extends Controller
         BidangUmum::where('id_laporan_umum', $id)->delete();
         return redirect()->route('bidangumum.index')->with('success', 'Berhasil Menghapus Laporan');
     }
+    // ==========================================
+    // FUNGSI BARU: EXPORT JSON BIDANG UMUM
+    // ==========================================
+    public function getExportData(Request $request)
+    {
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+
+        // Ambil data yang masih Proses maupun sudah Disetujui
+        $statusTarget = ['Proses', 'proses', 'PROSES', 'Disetujui1', 'Disetujui2', 'disetujui1', 'disetujui2', 'DISETUJUI1', 'DISETUJUI2'];
+
+        try {
+            $query = DB::table('laporan_umum')
+                ->leftJoin('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                ->select('subdistrict.name as nama_kecamatan', 'village.name as nama_desa', 'laporan_umum.*')
+                ->whereIn('laporan_umum.status', $statusTarget);
+
+            // Filter Role (Keamanan Data)
+            if (Auth::guard('web')->check()) {
+                // Admin: Biarkan query utuh (Tembus semua wilayah)
+            } elseif (Auth::guard('pengguna')->check()) {
+                $user = Auth::guard('pengguna')->user();
+                if ($user->id_role == 2) {
+                    $query->where('users_mobile.id_subdistrict', $user->id_subdistrict);
+                } else {
+                    $query->where('laporan_umum.id_user', $user->id);
+                }
+            }
+
+            // Filter Waktu
+            if (!empty($bulan)) $query->whereMonth('laporan_umum.created_at', $bulan);
+            if (!empty($tahun)) $query->whereYear('laporan_umum.created_at', $tahun);
+
+            $data = $query->get();
+
+            if ($data->isEmpty()) {
+                return response()->json([
+                    'status' => 'empty', 
+                    'message' => 'Tidak ada data laporan pada periode tersebut.'
+                ]);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'bidang' => 'BIDANG UMUM',
+                'data' => $data
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error', 
+                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
