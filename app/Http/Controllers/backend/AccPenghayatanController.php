@@ -20,12 +20,12 @@ class AccPenghayatanController extends Controller
         // =========================
         if (Auth::guard('web')->check()) {
 
-            // MENUNGGU ACC KABUPATEN
-            $peng1 = Penghayatan::where('status', 'Disetujui1')
+            // MENUNGGU ACC KABUPATEN (Hanya melihat yang sudah di-ACC Kecamatan)
+            $peng1 = Penghayatan::whereIn('status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
                 ->count();
 
             // SUDAH FINAL
-            $peng2 = Penghayatan::where('status', 'Disetujui2')
+            $peng2 = Penghayatan::whereIn('status', ['Disetujui2', 'disetujui2', 'DISETUJUI2'])
                 ->count();
         }
 
@@ -38,19 +38,19 @@ class AccPenghayatanController extends Controller
 
             if ($user->id_role == 2) {
 
+                // JURUS ANTI-0: Hapus where('id_role', 1) agar sistem tidak bingung
                 $desaUsers = Pengguna::where(
                         'id_subdistrict',
                         $user->id_subdistrict
                     )
-                    ->where('id_role', 1)
                     ->pluck('id');
 
-                // MENUNGGU PERSETUJUAN
+                // MENUNGGU PERSETUJUAN (Hanya melihat laporan mentah dari desa)
                 $peng1 = Penghayatan::whereIn(
                         'id_user',
                         $desaUsers
                     )
-                    ->where('status', 'Proses')
+                    ->whereIn('status', ['proses', 'Proses', 'PROSES'])
                     ->count();
 
                 // SUDAH DISETUJUI
@@ -58,7 +58,7 @@ class AccPenghayatanController extends Controller
                         'id_user',
                         $desaUsers
                     )
-                    ->where('status', 'Disetujui1')
+                    ->whereIn('status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
                     ->count();
             }
         }
@@ -68,4 +68,4 @@ class AccPenghayatanController extends Controller
             compact('peng1', 'peng2')
         );
     }
-}
+}   

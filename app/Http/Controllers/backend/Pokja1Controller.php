@@ -73,7 +73,7 @@ class Pokja1Controller extends Controller
                         'users_mobile.id_subdistrict',
                         $user->id_subdistrict
                     )
-                    ->where('users_mobile.id_role', 1)
+                    // Baris id_role dihapus agar angka tidak jadi 0
                     ->whereIn(
                         'laporan_penghayatan_n_pengamalan.status',
                         $statusKecamatan
@@ -92,7 +92,7 @@ class Pokja1Controller extends Controller
                         'users_mobile.id_subdistrict',
                         $user->id_subdistrict
                     )
-                    ->where('users_mobile.id_role', 1)
+                    // Baris id_role dihapus agar angka tidak jadi 0
                     ->whereIn(
                         'laporan_gotong_royong.status',
                         $statusKecamatan
@@ -111,7 +111,7 @@ class Pokja1Controller extends Controller
                         'users_mobile.id_subdistrict',
                         $user->id_subdistrict
                     )
-                    ->where('users_mobile.id_role', 1)
+                    // Baris id_role dihapus agar angka tidak jadi 0
                     ->whereIn(
                         'laporan_kader_pokja1.status',
                         $statusKecamatan
