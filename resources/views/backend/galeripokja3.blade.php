@@ -12,8 +12,8 @@
             <div class="col-md-6 mb-3">
                 <a href="{{ route('galeripangan.index') }}" style="text-decoration: none;">
                     <div class="form-card gallery-card" style="padding: 16px; transition: all 0.3s; cursor: pointer; min-height: 140px; display: flex; flex-direction: column;">
-                        <div style="background-color: #0369a1; width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; flex-shrink: 0;">
-                            <i class="bi bi-bookmark-fill" style="font-size: 20px; color: white;"></i>
+                        <div style="background-color: #fef9c3; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; flex-shrink: 0;">
+                            <i class="bi bi-basket2-fill" style="font-size: 22px; color: #ca8a04;"></i>
                         </div>
                         <h5 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 13px; color: #2d3748; margin-bottom: 6px; line-height: 1.3; flex-grow: 1;">Program Pangan</h5>
                         <p style="font-family: 'Poppins', sans-serif; font-size: 11px; color: #6b7280; margin: 0;">{{ $pertama }} Data Galeri</p>
@@ -25,8 +25,8 @@
             <div class="col-md-6 mb-3">
                 <a href="{{ route('galerisandang.index') }}" style="text-decoration: none;">
                     <div class="form-card gallery-card" style="padding: 16px; transition: all 0.3s; cursor: pointer; min-height: 140px; display: flex; flex-direction: column;">
-                        <div style="background-color: #0369a1; width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; flex-shrink: 0;">
-                            <i class="bi bi-bookmark-fill" style="font-size: 20px; color: white;"></i>
+                        <div style="background-color: #fce7f3; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; flex-shrink: 0;">
+                            <i class="bi bi-bag-heart-fill" style="font-size: 22px; color: #db2777;"></i>
                         </div>
                         <h5 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 13px; color: #2d3748; margin-bottom: 6px; flex-grow: 1;">Program Sandang</h5>
                         <p style="font-family: 'Poppins', sans-serif; font-size: 11px; color: #6b7280; margin: 0;">{{ $kedua }} Data Galeri</p>
@@ -38,8 +38,8 @@
             <div class="col-md-6 mb-3">
                 <a href="{{ route('galeriperumahan.index') }}" style="text-decoration: none;">
                     <div class="form-card gallery-card" style="padding: 16px; transition: all 0.3s; cursor: pointer; min-height: 140px; display: flex; flex-direction: column;">
-                        <div style="background-color: #0369a1; width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; flex-shrink: 0;">
-                            <i class="bi bi-bookmark-fill" style="font-size: 20px; color: white;"></i>
+                        <div style="background-color: #ffedd5; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; flex-shrink: 0;">
+                            <i class="bi bi-house-fill" style="font-size: 22px; color: #ea580c;"></i>
                         </div>
                         <h5 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 13px; color: #2d3748; margin-bottom: 6px; line-height: 1.3; flex-grow: 1;">Program Perumahan Dan Tata Laksana Rumah Tangga</h5>
                         <p style="font-family: 'Poppins', sans-serif; font-size: 11px; color: #6b7280; margin: 0;">{{ $ketiga }} Data Galeri</p>
@@ -51,8 +51,8 @@
             <div class="col-md-6 mb-3">
                 <a href="{{ route('galerilaporanpokja3.index') }}" style="text-decoration: none;">
                     <div class="form-card gallery-card" style="padding: 16px; transition: all 0.3s; cursor: pointer; min-height: 140px; display: flex; flex-direction: column;">
-                        <div style="background-color: #0369a1; width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; flex-shrink: 0;">
-                            <i class="bi bi-bookmark-fill" style="font-size: 20px; color: white;"></i>
+                        <div style="background-color: #e0f2fe; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; flex-shrink: 0;">
+                            <i class="bi bi-person-badge-fill" style="font-size: 22px; color: #0284c7;"></i>
                         </div>
                         <h5 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 13px; color: #2d3748; margin-bottom: 6px; flex-grow: 1;">Kader Pokja 3</h5>
                         <p style="font-family: 'Poppins', sans-serif; font-size: 11px; color: #6b7280; margin: 0;">{{ $keempat }} Data Galeri</p>

@@ -1,43 +1,26 @@
-{{-- @extends('backend/layouts.template')
+@extends('backend.layouts.template')
 
-@section('content') --}}
+@section('content1')
 
-<!DOCTYPE html>
-<html lang="en">
+<style>
+    * {
+      font-family: 'Poppins', sans-serif !important;
+    }
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    .page-heading {
+      font-family: 'Poppins', sans-serif;
+      font-size: 24px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 20px;
+    }
 
-  <title>Laporan Bidang Umum</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
-
-  <link href="{{ asset('backend/assets/img/favicon.png') }}" rel="icon">
-  <link href="{{ asset('backend/assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
-
-  <link href="https://fonts.gstatic.com" rel="preconnect">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
-
-  <link href="{{ asset('backend/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('backend/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-  <link href="{{ asset('backend/assets/vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('backend/assets/vendor/quill/quill.snow.css') }}" rel="stylesheet">
-  <link href="{{ asset('backend/assets/vendor/quill/quill.bubble.css') }}" rel="stylesheet">
-  <link href="{{ asset('backend/assets/vendor/remixicon/remixicon.css') }}" rel="stylesheet">
-  <link href="{{ asset('backend/assets/vendor/simple-datatables/style.css') }}" rel="stylesheet">
-
-  <link href="{{ asset('backend/assets/css/style.css') }}" rel="stylesheet">
-
-  {{-- fontawesome --}}
-  <link rel="stylesheet" type="text/css" href="{{ asset('fontawesome/css/all.min.css') }}">
-
-  <style>
     .table-responsive {
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       border-radius: 10px;
       box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+      background: white;
     }
 
     /* TABLE */
@@ -45,6 +28,7 @@
       min-width: 1800px;
       white-space: nowrap;
       margin-bottom: 0;
+      font-family: 'Poppins', sans-serif;
     }
 
     /* HEADER */
@@ -52,9 +36,7 @@
       position: sticky;
       top: 0;
       background: #f8fafc;
-      /* soft light gray */
       color: #334155;
-      /* slate */
       z-index: 2;
       font-size: 11px;
       font-weight: 600;
@@ -63,19 +45,23 @@
       border: 1px solid #e2e8f0;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      font-family: 'Poppins', sans-serif;
     }
 
     /* BODY */
-    .table-responsive tbody td {
+    .table-responsive tbody td,
+    .table-responsive tbody th {
       font-size: 12px;
       padding: 10px 8px;
       vertical-align: middle;
       background-color: white;
       color: #475569;
+      font-family: 'Poppins', sans-serif;
     }
 
     /* HOVER */
-    .table-responsive tbody tr:hover td {
+    .table-responsive tbody tr:hover td,
+    .table-responsive tbody tr:hover th {
       background-color: #f1f5f9;
     }
 
@@ -109,72 +95,177 @@
       font-size: 12px;
       font-weight: 700;
       color: #1e293b;
+      font-family: 'Poppins', sans-serif;
     }
 
     .header-sub-title {
       font-size: 10px;
       font-weight: 600;
       color: #64748b;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* BADGE */
+    .badge {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+    }
+
+    /* BUTTON */
+    .btn {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-info {
+      background-color: #0369a1;
+      border-color: #0369a1;
+    }
+
+    .btn-info:hover {
+      background-color: #075985;
+      border-color: #075985;
+    }
+
+    .btn-danger {
+      background-color: #ef4444;
+      border-color: #ef4444;
+    }
+
+    .btn-danger:hover {
+      background-color: #dc2626;
+      border-color: #dc2626;
+    }
+
+    /* ALERT */
+    .alert {
+      font-family: 'Poppins', sans-serif;
+      border-radius: 8px;
+      border: none;
+    }
+
+    .alert-info {
+      background-color: #dbeafe;
+      color: #1e40af;
+    }
+
+    .alert-success {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+
+    .alert-danger {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+
+    /* CARD */
+    .card {
+      border-radius: 12px;
+      border: none;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body {
+      padding: 24px;
     }
   </style>
 
-</head>
+<main id="main" class="main">
+    <section class="section">
+      <h1 class="page-heading">Daftar Laporan Bidang Umum</h1>
+      
+      @if ($message = Session::get('success'))
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>
+        {{ $message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      @endif
 
-<body>
+      <!-- Filter Card -->
+      <div class="form-card" style="margin-bottom: 20px; padding: 20px 32px; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+        <form action="{{ route('bidangumum.index') }}" method="GET" id="filterForm">
+          <!-- Baris Atas: Pilih Bulan dan Tahun -->
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <!-- Pilih Bulan -->
+            <div class="d-flex align-items-center gap-2">
+              <label for="bulan" class="form-label" style="margin-bottom: 0; font-size: 14px; color: #6b7280; white-space: nowrap; font-weight: 500; font-family: 'Poppins', sans-serif;">Pilih Bulan</label>
+              <select name="bulan" id="bulan" class="form-control" style="height: 40px; width: 180px; font-size: 13px; border: 1px solid #cbd5e0; border-radius: 6px; padding: 8px 12px; color: #4a5568; font-family: 'Poppins', sans-serif;">
+                <option value="">-- Pilih Bulan --</option>
+                <option value="01">Januari</option>
+                <option value="02">Februari</option>
+                <option value="03">Maret</option>
+                <option value="04">April</option>
+                <option value="05">Mei</option>
+                <option value="06">Juni</option>
+                <option value="07">Juli</option>
+                <option value="08">Agustus</option>
+                <option value="09">September</option>
+                <option value="10">Oktober</option>
+                <option value="11">November</option>
+                <option value="12">Desember</option>
+              </select>
+            </div>
 
-  <header id="header" class="header fixed-top d-flex align-items-center">
+            <!-- Pilih Tahun -->
+            <div class="d-flex align-items-center gap-2">
+              <label for="tahun" class="form-label" style="margin-bottom: 0; font-size: 14px; color: #6b7280; white-space: nowrap; font-weight: 500; font-family: 'Poppins', sans-serif;">Pilih Tahun</label>
+              <select name="tahun" id="tahun" class="form-control" style="height: 40px; width: 180px; font-size: 13px; border: 1px solid #cbd5e0; border-radius: 6px; padding: 8px 12px; color: #4a5568; font-family: 'Poppins', sans-serif;">
+                <option value="">-- Pilih Tahun --</option>
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+              </select>
+            </div>
+          </div>
 
-    <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
-        <img src="{{asset('backend/assets/img/pkk.png')}}" alt="">
-        <span class="d-none d-lg-block">PKK NGANJUK</span>
-      </a>
-      <i class="bi bi-list toggle-sidebar-btn"></i>
-    </div>
-    <nav class="header-nav ms-auto">
-    </nav>
-  </header>
-  @include('backend.includes.sidebar')
+          <!-- Baris Bawah: Tombol Refresh dan Filter (Kanan) -->
+          <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn d-flex align-items-center justify-content-center" onclick="resetFilter()" style="background-color: #9ca3af; color: white; border: none; height: 40px; padding: 0 24px; border-radius: 6px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px;">
+              Refresh
+            </button>
+            <button type="button" class="btn d-flex align-items-center justify-content-center gap-2" onclick="submitFilter()" style="background-color: #0369a1; color: white; border: none; height: 40px; padding: 0 24px; border-radius: 6px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px;">
+              <i class="bi bi-funnel-fill" style="font-size: 14px;"></i>
+              <span>Filter</span>
+            </button>
+          </div>
+        </form>
+      </div>
 
+      <div class="card mt-3">
+        <div class="card-body">
 
-  <main id="main" class="main">
-    <div class="pagetitle">
-      <h1>Daftar Laporan Bidang Umum</h1>
-    </div>@if ($message = Session::get('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      <i class="bi bi-check-circle me-1"></i>
-      {{ $message }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    @endif
-
-    <div class="card mt-2">
-      <div class="card-body">
-
-        <div class="alert alert-info d-flex align-items-center mt-3" role="alert">
-          <i class="bi bi-info-circle-fill me-2"></i>
-          <div>Scroll horizontal untuk melihat semua kolom</div>
-        </div>
+          <div class="alert alert-info d-flex align-items-center" role="alert">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            <div>Scroll horizontal untuk melihat semua kolom</div>
+          </div>
 
         <div class="table-responsive mt-3">
           <table class="table table-bordered table-hover">
             <thead>
               <tr>
-                <th scope="col" rowspan="3" class="text-center align-middle">No</th>
+                <th scope="col" rowspan="3" class="text-center align-middle" style="width: 60px;">No</th>
                 @if (Auth::guard('web')->check())
-                <th scope="col" rowspan="3" class="text-center align-middle">Kecamatan</th>
-                <th scope="col" rowspan="3" class="text-center align-middle">Desa</th>
+                <th scope="col" rowspan="3" class="text-center align-middle" style="width: 120px;">Kecamatan</th>
+                <th scope="col" rowspan="3" class="text-center align-middle" style="width: 120px;">Desa</th>
                 @elseif (Auth::guard('pengguna')->check())
-                <th scope="col" rowspan="3" class="text-center align-middle">Desa</th>
+                <th scope="col" rowspan="3" class="text-center align-middle" style="width: 120px;">Desa</th>
                 @endif
                 <th scope="col" colspan="4" class="text-center header-group-title">JUMLAH KELOMPOK</th>
                 <th scope="col" colspan="2" class="text-center header-group-title">JUMLAH</th>
                 <th scope="col" colspan="2" class="text-center header-group-title">JUMLAH JIWA</th>
                 <th scope="col" colspan="6" class="text-center header-group-title">JUMLAH KADER</th>
                 <th scope="col" colspan="4" class="text-center header-group-title">JUMLAH TENAGA SEKRETARIAT</th>
-                <th scope="col" rowspan="3" class="text-center align-middle">Status</th>
-                <th scope="col" rowspan="3" class="text-center align-middle">Tanggal</th>
-                <th scope="col" rowspan="3" class="text-center align-middle">Aksi</th>
+                <th scope="col" rowspan="3" class="text-center align-middle" style="width: 100px;">Status</th>
+                <th scope="col" rowspan="3" class="text-center align-middle" style="width: 140px;">Tanggal</th>
+                <th scope="col" rowspan="3" class="text-center align-middle" style="width: 160px;">Aksi</th>
               </tr>
               <tr>
                 <th scope="col" class="text-center header-sub-title">Dusun/<br>Lingkungan</th>
@@ -252,30 +343,28 @@
                   <span class="badge bg-secondary">{{ $umum->status }}</span>
                   @endif
                 </td>
-                <td class="text-center">{{ \Carbon\Carbon::parse($umum->created_at)->format('d/m/Y H:i') }}</td>
+                <td class="text-center" style="font-size: 11px;">{{ \Carbon\Carbon::parse($umum->created_at)->format('d/m/Y H:i') }}</td>
                 <td class="text-center">
+                  <div style="display: inline-flex; gap: 6px; align-items: center;">
+                    <a href="{{ route('bidangumum.edit', $umum->id_laporan_umum) }}" class="btn btn-sm btn-info text-white" data-bs-toggle="tooltip" data-bs-placement="top" title="Review Data">
+                      <i class="bi bi-pencil-square"></i>
+                    </a>
 
-                  <a href="{{ route('bidangumum.edit', $umum->id_laporan_umum) }}" class="btn btn-sm btn-info text-white me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Review Data">
-                    <i class="bi bi-search"></i> Review
-                  </a>
-
-                  <form action="{{ route('bidangumum.destroy', $umum->id_laporan_umum)}}" method="POST" class="d-inline delete-form">
-                    @csrf
-                    @method('DELETE')
-                    <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(this)" data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus Data">
-                      <i class="bi bi-trash"></i>
-                    </button>
-                  </form>
-
+                    <form action="{{ route('bidangumum.destroy', $umum->id_laporan_umum)}}" method="POST" class="d-inline delete-form" style="margin: 0;">
+                      @csrf
+                      @method('DELETE')
+                      <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(this)" data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus Data">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </form>
+                  </div>
                 </td>
               </tr>
               @empty
               <tr>
-                <td colspan="24" class="text-center py-5">
-                  <div class="alert alert-danger mb-0">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                    Tidak ada data laporan bidang umum
-                  </div>
+                <td colspan="24" class="text-center" style="padding: 40px;">
+                  <i class="bi bi-inbox" style="font-size: 48px; display: block; margin-bottom: 10px; color: #9ca3af;"></i>
+                  <span style="color: #9ca3af; font-size: 14px;">Tidak ada data laporan bidang umum</span>
                 </td>
               </tr>
               @endforelse
@@ -285,26 +374,114 @@
 
       </div>
     </div>
-  </main><a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+  </section>
+</main>
 
-  <script src="{{ asset('backend/assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
-  <script src="{{ asset('backend/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ asset('backend/assets/vendor/chart.js/chart.umd.js') }}"></script>
-  <script src="{{ asset('backend/assets/vendor/echarts/echarts.min.js') }}"></script>
-  <script src="{{ asset('backend/assets/vendor/quill/quill.min.js') }}"></script>
-  <script src="{{ asset('backend/assets/vendor/simple-datatables/simple-datatables.js') }}"></script>
-  <script src="{{ asset('backend/assets/vendor/tinymce/tinymce.min.js') }}"></script>
-  <script src="{{ asset('backend/assets/vendor/php-email-form/validate.js') }}"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-  <script src="{{ asset('backend/assets/js/main.js') }}"></script>
-
-  <script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
     // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl)
     })
+
+    function submitFilter() {
+      const bulan = document.getElementById('bulan').value;
+      const tahun = document.getElementById('tahun').value;
+      
+      if (!bulan && !tahun) {
+        Swal.fire({
+          icon: 'info',
+          title: 'Pilih Filter',
+          text: 'Silakan pilih bulan atau tahun terlebih dahulu',
+          confirmButtonColor: '#0369a1',
+          confirmButtonText: 'OK',
+          customClass: {
+            popup: 'swal-popup',
+            title: 'swal-title',
+            confirmButton: 'swal-info-btn'
+          },
+          buttonsStyling: false
+        });
+        return;
+      }
+      
+      // Ambil semua baris tabel
+      const tableRows = document.querySelectorAll('.table-responsive tbody tr');
+      let visibleCount = 0;
+      
+      tableRows.forEach(row => {
+        // Cari kolom tanggal (kolom kedua dari belakang)
+        const cells = row.querySelectorAll('td');
+        if (cells.length === 0) return;
+        
+        const tanggalCell = cells[cells.length - 2];
+        
+        if (!tanggalCell) return;
+        
+        const tanggalText = tanggalCell.textContent.trim();
+        let isVisible = true;
+        
+        // Parse tanggal dari format "DD/MM/YYYY HH:MM"
+        const tanggalParts = tanggalText.split(' ')[0].split('/');
+        if (tanggalParts.length === 3) {
+          const rowBulan = tanggalParts[1];
+          const rowTahun = tanggalParts[2];
+          
+          // Filter berdasarkan bulan dan tahun
+          if (bulan && tahun) {
+            isVisible = (rowBulan === bulan && rowTahun === tahun);
+          } else if (bulan) {
+            isVisible = (rowBulan === bulan);
+          } else if (tahun) {
+            isVisible = (rowTahun === tahun);
+          }
+        }
+        
+        // Tampilkan atau sembunyikan baris
+        if (isVisible) {
+          row.style.display = '';
+          visibleCount++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+      
+      // Jika tidak ada data yang cocok, tampilkan pesan
+      if (visibleCount === 0) {
+        const existingMessage = document.querySelector('.no-data-message');
+        if (!existingMessage) {
+          const tbody = document.querySelector('.table-responsive tbody');
+          const messageRow = document.createElement('tr');
+          messageRow.className = 'no-data-message';
+          messageRow.innerHTML = '<td colspan="24" class="text-center" style="padding: 40px;"><i class="bi bi-inbox" style="font-size: 48px; display: block; margin-bottom: 10px; color: #9ca3af;"></i><span style="color: #9ca3af; font-size: 14px;">Tidak ada data yang sesuai dengan filter</span></td>';
+          tbody.appendChild(messageRow);
+        }
+      } else {
+        const existingMessage = document.querySelector('.no-data-message');
+        if (existingMessage) {
+          existingMessage.remove();
+        }
+      }
+    }
+
+    function resetFilter() {
+      // Tampilkan semua baris tabel
+      const tableRows = document.querySelectorAll('.table-responsive tbody tr');
+      tableRows.forEach(row => {
+        row.style.display = '';
+      });
+      
+      // Hapus pesan "tidak ada data" jika ada
+      const existingMessage = document.querySelector('.no-data-message');
+      if (existingMessage) {
+        existingMessage.remove();
+      }
+      
+      // Reset form
+      document.getElementById('bulan').value = '';
+      document.getElementById('tahun').value = '';
+    }
 
     function confirmDelete(button) {
       Swal.fire({
@@ -312,10 +489,18 @@
         text: "Data yang dihapus tidak bisa dikembalikan.",
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#d33',
+        confirmButtonColor: '#ef4444',
         cancelButtonColor: '#6c757d',
         confirmButtonText: 'Ya, Hapus!',
-        cancelButtonText: 'Batal'
+        cancelButtonText: 'Batal',
+        customClass: {
+          popup: 'swal-popup',
+          title: 'swal-title',
+          confirmButton: 'swal-confirm-btn',
+          cancelButton: 'swal-cancel-btn'
+        },
+        buttonsStyling: false,
+        reverseButtons: true
       }).then((result) => {
         if (result.isConfirmed) {
           button.closest('form').submit();
@@ -324,7 +509,61 @@
     }
   </script>
 
-</body>
+  <style>
+    /* SweetAlert Custom Styles */
+    .swal-popup {
+      font-family: 'Poppins', sans-serif !important;
+      border-radius: 12px;
+    }
 
-</html>
-{{-- @endsection --}}
+    .swal-title {
+      font-family: 'Poppins', sans-serif !important;
+      font-weight: 600;
+      font-size: 20px;
+    }
+
+    .swal-confirm-btn {
+      background-color: #ef4444 !important;
+      color: white !important;
+      padding: 10px 24px !important;
+      border-radius: 6px !important;
+      font-family: 'Poppins', sans-serif !important;
+      font-weight: 600 !important;
+      font-size: 14px !important;
+    }
+
+    .swal-confirm-btn:hover {
+      background-color: #dc2626 !important;
+    }
+
+    .swal-cancel-btn {
+      background-color: #6c757d !important;
+      color: white !important;
+      padding: 10px 24px !important;
+      border-radius: 6px !important;
+      font-family: 'Poppins', sans-serif !important;
+      font-weight: 600 !important;
+      font-size: 14px !important;
+    }
+
+    .swal-cancel-btn:hover {
+      background-color: #5a6268 !important;
+    }
+
+    .swal-info-btn {
+      background-color: #0369a1 !important;
+      color: white !important;
+      padding: 10px 24px !important;
+      border-radius: 6px !important;
+      font-family: 'Poppins', sans-serif !important;
+      font-weight: 600 !important;
+      font-size: 14px !important;
+    }
+
+    .swal-info-btn:hover {
+      background-color: #075985 !important;
+    }
+  </style>
+</script>
+
+@endsection

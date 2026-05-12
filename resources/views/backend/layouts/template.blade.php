@@ -28,7 +28,11 @@
   <link rel="stylesheet" href="{{ asset('fontawesome/css/all.min.css') }}">
 
   <style>
-    * { font-family: "Nunito", sans-serif !important; }
+    * { font-family: "Poppins", sans-serif !important; }
+    i, .bi, [class^="bi-"], [class*=" bi-"],
+    [class^="fa"], [class*=" fa-"], .fas, .far, .fal, .fab {
+      font-family: unset !important;
+    }
     body { background: #f6f9ff; }
 
     /* Header styling */
@@ -76,7 +80,7 @@
 
     /* Sidebar Width - Make it wider */
     .sidebar {
-      width: 280px !important;
+      width: 300px !important;
       transition: all 0.3s ease;
       top: 70px !important;
       background: #fff !important;
@@ -117,7 +121,7 @@
 
     /* Adjust main content when sidebar is toggled */
     #main {
-      margin-left: 280px !important;
+      margin-left: 300px !important;
       margin-top: 70px !important;
       transition: all 0.3s ease;
       padding: 25px 35px !important;
@@ -158,7 +162,7 @@
       align-items: center;
       padding: 12px 20px;
       font-size: 15px;
-      font-weight: 600;
+      font-weight: 400;
       font-family: "Poppins", sans-serif !important;
       color: #4b5563;
       transition: all 0.3s;

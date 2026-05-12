@@ -1,225 +1,103 @@
-{{-- @extends('backend/layouts.template') --}}
+@extends('backend.layouts.template')
 
-{{-- @section('content1') --}}
+@section('content1')
 
-<!DOCTYPE html>
-,<html lang="en">
+<style>
+  * { font-family: 'Poppins', sans-serif !important; }
+  .page-heading { font-family: 'Poppins', sans-serif; font-size: 24px; font-weight: 600; color: #1e293b; margin-bottom: 20px; }
+  .pokja-card:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.12) !important; }
+</style>
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+<main id="main" class="main">
+  <section class="section">
+    <h1 class="page-heading">Laporan Pokja 2</h1>
 
-  <title>Laporan</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
-
-  <!-- Favicons -->
-  <link href="backend/assets/img/favicon.png" rel="icon">
-  <link href="backend/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.gstatic.com" rel="preconnect">
-  <link
-    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
-    rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
-  <link href="backend/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="backend/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="backend/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-  <link href="backend/assets/vendor/quill/quill.snow.css" rel="stylesheet">
-  <link href="backend/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
-  <link href="backend/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
-  <link href="backend/assets/vendor/simple-datatables/style.css" rel="stylesheet">
-
-  <!-- Template Main CSS File -->
-  <link href="backend/assets/css/style.css" rel="stylesheet">
-
-  {{-- fontawesome --}}
-  <link rel="stylesheet" type="text/css" href="{{ asset('fontawesome/css/all.min.css') }}">
-
-</head>
-
-<body>
-
-  <!-- ======= Header ======= -->
-  <header id="header" class="header fixed-top d-flex align-items-center">
-
-    <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
-        <img src="{{asset('backend/assets/img/pkk.png')}}" alt="">
-        <span class="d-none d-lg-block">PKK NGANJUK</span>
-      </a>
-      <i class="bi bi-list toggle-sidebar-btn"></i>
-    </div><!-- End Logo -->
-
-    <nav class="header-nav ms-auto">
-    </nav><!-- End Icons Navigation -->
-
-  </header><!-- End Header -->
-
-  <!-- ======= Sidebar ======= -->
-  @include('backend.includes.sidebar')
-
-
-  <main id="main" class="main">
-
-    {{-- error data kosong --}}
     @if (session('error'))
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
       <strong>Perhatian!</strong> {{ session('error') }}
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-  @endif
+    @endif
 
+    {{-- CARDS LAPORAN --}}
+    <div class="row mb-3">
 
-    <section class="section dashboard">
-      <div class="row">
-
-        <!-- Left side columns -->
-
-        <div class="row">
-
-          <!-- Sales Card -->
-          <div class="col-xxl-6 col-md-6">
-            <div class="card info-card sales-card">
-              <div class="card-body">
-                <h5 class="card-title">Cetak Perbulan</h5>
-
-                <form action="{{ route('pendidikan.filter') }}" method="GET">
-                  <a>Bulanan : </a><input type="month" name="search" value="Laporan Perbulan" class="input-laporan">
-                  <button type="submit" class="input-laporan-btn btn-sm">Cetak</button>
-                </form>
-                <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
-                <script type="text/javascript">
-                  $(function () {
-                    $("#date").datepicker({ dateFormat: 'yy' });
-                  });
-                </script>
+      {{-- PENDIDIKAN --}}
+      <div class="col-md-6 mb-3">
+        <a href="{{ route('accpendidikan.index') }}" style="text-decoration:none;">
+          <div class="form-card pokja-card" style="background:white; border-radius:16px; padding:24px; box-shadow:0 1px 4px rgba(0,0,0,0.08); transition:all 0.3s; cursor:pointer;">
+            <div class="d-flex align-items-center mb-3">
+              <div style="background:#ede9fe; width:56px; height:56px; border-radius:14px; display:flex; align-items:center; justify-content:center; margin-right:16px; flex-shrink:0;">
+                <i class="bi bi-mortarboard-fill" style="font-size:26px; color:#7c3aed;"></i>
               </div>
+              <h5 style="font-weight:600; font-size:14px; color:#1e293b; margin:0; line-height:1.4;">Pendidikan Dan Ketrampilan</h5>
             </div>
-          </div><!-- End Sales Card -->
-
-          <!-- Sales Card -->
-          <div class="col-xxl-6 col-md-6">
-            <div class="card info-card sales-card">
-              <div class="card-body">
-                <h5 class="card-title">Cetak Pertahun</h5>
-
-                <form action="{{ route('pendidikan.filter') }}" method="GET">
-                  <a>Tahunan : </a>
-                  <select name="search2" class="input-laporan mt-2">
-                    <option>-- Pilih --</option>
-                    @for ($year = now()->year; $year >= 2021; $year--)
-            <option value="{{ $year }}">{{ $year }}</option>
-          @endfor
-                  </select>
-
-                  <button type="submit" class="input-laporan-btn btn-sm">Cetak</button>
-                </form>
-
-              </div>
+            <div class="d-flex align-items-center gap-3">
+              <span style="font-size:28px; font-weight:600; color:#0369a1;">{{ $modelPertama ?? 0 }}</span>
+              <span style="font-size:13px; color:#94a3b8;">Jumlah total laporan</span>
             </div>
-          </div><!-- End Sales Card -->
-
-          <!-- Sales Card -->
-          <div class="col-xxl-6 col-md-6">
-            <div class="card info-card sales-card">
-              <a href="{{ route('accpendidikan.index') }}">
-
-                <div class="card-body">
-                  <h5 class="card-title">Pendidikan Dan Ketrampilan</h5>
-
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="fa-sharp fa-solid fa-book"></i>
-                    </div>
-                    <div class="ps-3">
-                      <h6>{{ $modelPertama }}</h6>
-                      <span class="text-muted small pt-2 ps-1">Jumlah total laporan</span>
-
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </div>
-          </div><!-- End Sales Card -->
-
-          <!-- Revenue Card -->
-          <div class="col-xxl-6 col-md-6">
-            <div class="card info-card sales-card">
-              <a href="{{ route('accpengembangan.index') }}">
-
-                <div class="card-body">
-                  <h5 class="card-title">Pengembangan Kehidupan Berkoperasi</h5>
-
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="fa-sharp fa-solid fa-book"></i>
-                    </div>
-                    <div class="ps-3">
-                      <h6>{{ $modelKedua }}</h6>
-                      <span class="text-muted small pt-2 ps-1">Jumlah total laporan</span>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </div>
-          </div><!-- End Revenue Card -->
-
-          <div class="col-md-12 mx-auto mt-2">
           </div>
+        </a>
+      </div>
 
+      {{-- PENGEMBANGAN --}}
+      <div class="col-md-6 mb-3">
+        <a href="{{ route('accpengembangan.index') }}" style="text-decoration:none;">
+          <div class="form-card pokja-card" style="background:white; border-radius:16px; padding:24px; box-shadow:0 1px 4px rgba(0,0,0,0.08); transition:all 0.3s; cursor:pointer;">
+            <div class="d-flex align-items-center mb-3">
+              <div style="background:#fef9c3; width:56px; height:56px; border-radius:14px; display:flex; align-items:center; justify-content:center; margin-right:16px; flex-shrink:0;">
+                <i class="bi bi-graph-up-arrow" style="font-size:26px; color:#ca8a04;"></i>
+              </div>
+              <h5 style="font-weight:600; font-size:14px; color:#1e293b; margin:0; line-height:1.4;">Pengembangan Kehidupan Berkoperasi</h5>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+              <span style="font-size:28px; font-weight:600; color:#0369a1;">{{ $modelKedua ?? 0 }}</span>
+              <span style="font-size:13px; color:#94a3b8;">Jumlah total laporan</span>
+            </div>
+          </div>
+        </a>
+      </div>
 
+    </div>
+
+    {{-- CETAK --}}
+    <div class="row mt-2">
+      <div class="col-md-6 mb-3">
+        <div class="form-card" style="background:white; border-radius:12px; padding:24px; box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+          <h5 style="font-weight:600; font-size:14px; margin-bottom:12px; color:#2d3748;">Cetak Perbulan</h5>
+          <form action="{{ route('pendidikan.filter') }}" method="GET">
+            <div class="d-flex align-items-end gap-2">
+              <div style="flex:1;">
+                <label style="font-size:12px; font-weight:500; color:#6b7280; margin-bottom:6px; display:block;">Bulan :</label>
+                <input type="month" name="search" class="form-control" style="height:38px; font-size:13px;">
+              </div>
+              <button type="submit" class="btn-kirim" style="margin-bottom:0; font-size:13px; padding:8px 20px;">Cetak</button>
+            </div>
+          </form>
         </div>
       </div>
-    </section>
+      <div class="col-md-6 mb-3">
+        <div class="form-card" style="background:white; border-radius:12px; padding:24px; box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+          <h5 style="font-weight:600; font-size:14px; margin-bottom:12px; color:#2d3748;">Cetak Pertahun</h5>
+          <form action="{{ route('pendidikan.filter') }}" method="GET">
+            <div class="d-flex align-items-end gap-2">
+              <div style="flex:1;">
+                <label style="font-size:12px; font-weight:500; color:#6b7280; margin-bottom:6px; display:block;">Tahun :</label>
+                <select name="search2" class="form-control" style="height:38px; font-size:13px;">
+                  <option value="">-- Pilih Tahun --</option>
+                  @for ($year = now()->year; $year >= 2021; $year--)
+                    <option value="{{ $year }}">{{ $year }}</option>
+                  @endfor
+                </select>
+              </div>
+              <button type="submit" class="btn-kirim" style="margin-bottom:0; font-size:13px; padding:8px 20px;">Cetak</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
 
-  </main><!-- End #main -->
+  </section>
+</main>
 
-
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
-      class="bi bi-arrow-up-short"></i></a>
-
-  <!-- Vendor JS Files -->
-  <script src="backend/assets/vendor/apexcharts/apexcharts.min.js"></script>
-  <script src="backend/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="backend/assets/vendor/chart.js/chart.umd.js"></script>
-  <script src="backend/assets/vendor/echarts/echarts.min.js"></script>
-  <script src="backend/assets/vendor/quill/quill.min.js"></script>
-  <script src="backend/assets/vendor/simple-datatables/simple-datatables.js"></script>
-  <script src="backend/assets/vendor/tinymce/tinymce.min.js"></script>
-  <script src="backend/assets/vendor/php-email-form/validate.js"></script>
-
-  <!-- Template Main JS File -->
-  <script src="backend/assets/js/main.js"></script>
-
-  <script type="text/javascript">
-    Dropzone.autoDiscover = false;
-    var myDropzone = new Dropzone('#pdf', {
-      maxFilesize: 1,
-      acceptedFiles: ".pdf",
-      addRemoveLinks: true,
-      autoProcessQueue: false,
-      init: function () {
-        $("button").click(function (e) {
-          e.preventDefault();
-          myDropzone.processQueue();
-        });
-
-        this.on('sending', function (file, xhr, formData) {
-          var data = $('#pdf').serializeArray();
-          $.each(data, function (key, el) {
-            formData.append(el.name, el.value);
-          });
-        });
-      }
-    });
-  </script>
-
-</body>
-
-{{--
-
-</html> --}}
-{{-- @endsection --}}
+@endsection

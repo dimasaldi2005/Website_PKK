@@ -71,17 +71,42 @@
     .table-responsive::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     .table-responsive::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
   </style>
+
+  <style>
+    * { font-family: "Poppins", sans-serif !important; }
+    body { background: #f6f9ff !important; }
+    .header { background: #fff !important; box-shadow: 0 2px 4px rgba(0,0,0,0.08) !important; height: 70px !important; padding: 0 20px !important; z-index: 998 !important; }
+    .header .logo { min-width: auto; padding: 0; margin-left: 15px; }
+    .header .logo img { max-height: 50px; width: 50px; border-radius: 50%; margin-right: 15px; flex-shrink: 0; }
+    .header .logo span { font-size: 15px; font-weight: 700; font-family: "Poppins", sans-serif !important; line-height: 1.3; color: #1a1a1a; white-space: nowrap; display: inline-block; }
+    .toggle-sidebar-btn { color: #1a1a1a !important; font-size: 24px !important; cursor: pointer !important; padding: 10px 15px !important; }
+    .sidebar { width: 300px !important; top: 70px !important; background: #fff !important; border-right: 1px solid #e5e7eb !important; z-index: 997 !important; }
+    .toggle-sidebar .sidebar { width: 80px !important; }
+    .toggle-sidebar .sidebar .nav-link span { display: none !important; }
+    .toggle-sidebar .sidebar .nav-link { justify-content: center !important; padding: 12px 0 !important; }
+    #main { margin-left: 300px !important; margin-top: 70px !important; padding: 25px 35px !important; background: #f6f9ff !important; min-height: calc(100vh - 70px) !important; }
+    .toggle-sidebar #main { margin-left: 80px !important; }
+    .sidebar-nav .nav-link:not(.collapsed) { background: #e8ecff; color: #4154f1; border-radius: 6px; }
+    .sidebar-nav .nav-link:not(.collapsed) i { color: #4154f1; }
+    .sidebar-nav .nav-item { margin-bottom: 4px; }
+    .sidebar-nav .nav-link { display: flex; align-items: center; padding: 12px 20px; font-size: 15px; font-weight: 400; font-family: "Poppins", sans-serif !important; color: #4b5563; transition: all 0.3s; }
+    .sidebar-nav .nav-link i { font-size: 18px; margin-right: 12px; color: #6b7280; }
+    .sidebar-nav .nav-link:hover { background: #f3f4f6; color: #4154f1; }
+    i, .bi, [class^="bi-"], [class*=" bi-"], [class^="fa"], [class*=" fa-"] { font-family: unset !important; }
+  </style>
 </head>
 
 <body>
 
-  <header id="header" class="header fixed-top d-flex align-items-center">
-    <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
-        <img src="{{asset('backend/assets/img/pkk.png')}}" alt="">
-        <span class="d-none d-lg-block">PKK NGANJUK</span>
-      </a>
+    <header id="header" class="header fixed-top d-flex align-items-center">
+    <div class="d-flex align-items-center w-100">
       <i class="bi bi-list toggle-sidebar-btn"></i>
+      <a href="{{ route('dashboard') }}" class="logo d-flex align-items-center" style="text-decoration:none;">
+        <img src="{{ asset('backend/assets/img/pkk.png') }}" alt="PKK">
+        <span class="d-none d-lg-block">
+          Pemberdayaan Kesejahteraan Keluarga<br>Kabupaten Nganjuk
+        </span>
+      </a>
     </div>
     <nav class="header-nav ms-auto"></nav>
   </header>

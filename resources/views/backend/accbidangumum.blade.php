@@ -65,16 +65,16 @@
             <!-- Menunggu Persetujuan -->
             <div class="col-md-6 mb-3">
                 <a href="{{ route('bidangumum.index') }}" style="text-decoration: none;">
-                    <div class="form-card" style="cursor: pointer; transition: all 0.3s;">
-                        <div class="d-flex align-items-center">
-                            <div style="background-color: #ef4444; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 20px;">
-                                <i class="fa-sharp fa-solid fa-xmark" style="font-size: 28px; color: white;"></i>
+                    <div class="form-card" style="cursor:pointer; transition:all 0.3s; border-radius:16px; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                        <div class="d-flex align-items-center mb-3">
+                            <div style="background:#fef2f2; width:56px; height:56px; border-radius:14px; display:flex; align-items:center; justify-content:center; margin-right:16px; flex-shrink:0;">
+                                <i class="bi bi-hourglass-split" style="font-size:26px; color:#ef4444;"></i>
                             </div>
-                            <div>
-                                <h5 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; color: #2d3748; margin-bottom: 5px;">Menunggu Persetujuan</h5>
-                                <h3 style="font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 32px; color: #1a1a1a; margin: 0;">{{ $got1 }}</h3>
-                                <p style="font-family: 'Poppins', sans-serif; font-size: 13px; color: #6b7280; margin: 0;">Jumlah total laporan</p>
-                            </div>
+                            <h5 style="font-weight:600; font-size:14px; color:#1e293b; margin:0; line-height:1.4;">Menunggu Persetujuan</h5>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <span style="font-size:28px; font-weight:600; color:#0369a1;">{{ $got1 }}</span>
+                            <span style="font-size:13px; color:#94a3b8;">Jumlah total laporan</span>
                         </div>
                     </div>
                 </a>
@@ -83,16 +83,16 @@
             <!-- Sudah Disetujui -->
             <div class="col-md-6 mb-3">
                 <a href="{{ route('decbidangumum.index') }}" style="text-decoration: none;">
-                    <div class="form-card" style="cursor: pointer; transition: all 0.3s;">
-                        <div class="d-flex align-items-center">
-                            <div style="background-color: #10b981; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 20px;">
-                                <i class="fa-solid fa-check" style="font-size: 28px; color: white;"></i>
+                    <div class="form-card" style="cursor:pointer; transition:all 0.3s; border-radius:16px; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                        <div class="d-flex align-items-center mb-3">
+                            <div style="background:#f0fdf4; width:56px; height:56px; border-radius:14px; display:flex; align-items:center; justify-content:center; margin-right:16px; flex-shrink:0;">
+                                <i class="bi bi-patch-check-fill" style="font-size:26px; color:#10b981;"></i>
                             </div>
-                            <div>
-                                <h5 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; color: #2d3748; margin-bottom: 5px;">Sudah Disetujui</h5>
-                                <h3 style="font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 32px; color: #1a1a1a; margin: 0;">{{ $got2 }}</h3>
-                                <p style="font-family: 'Poppins', sans-serif; font-size: 13px; color: #6b7280; margin: 0;">Jumlah total laporan</p>
-                            </div>
+                            <h5 style="font-weight:600; font-size:14px; color:#1e293b; margin:0; line-height:1.4;">Sudah Disetujui</h5>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <span style="font-size:28px; font-weight:600; color:#0369a1;">{{ $got2 }}</span>
+                            <span style="font-size:13px; color:#94a3b8;">Jumlah total laporan</span>
                         </div>
                     </div>
                 </a>

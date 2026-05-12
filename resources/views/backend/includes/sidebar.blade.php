@@ -53,30 +53,35 @@
                 <li>
                     <a href="{{ route('galeribidangumum.index') }}"
                         class="{{ request()->routeIs('galeribidangumum.*') ? 'active' : '' }}">
+                        <i class="bi bi-circle"></i>
                         <span>Bidang Umum</span>
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('galeripokja1.index') }}"
                         class="{{ request()->routeIs('galeripokja1.*') ? 'active' : '' }}">
+                        <i class="bi bi-circle"></i>
                         <span>Kelompok Kerja 1</span>
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('galeripokja2.index') }}"
                         class="{{ request()->routeIs('galeripokja2.*') ? 'active' : '' }}">
+                        <i class="bi bi-circle"></i>
                         <span>Kelompok Kerja 2</span>
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('galeripokja3.index') }}"
                         class="{{ request()->routeIs('galeripokja3.*') ? 'active' : '' }}">
+                        <i class="bi bi-circle"></i>
                         <span>Kelompok Kerja 3</span>
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('galeripokja4.index') }}"
                         class="{{ request()->routeIs('galeripokja4.*') ? 'active' : '' }}">
+                        <i class="bi bi-circle"></i>
                         <span>Kelompok Kerja 4</span>
                     </a>
                 </li>
@@ -97,30 +102,35 @@
                 <li>
                     <a href="{{ route('accbidangumum.index') }}"
                         class="{{ request()->routeIs('accbidangumum.*') ? 'active' : '' }}">
+                        <i class="bi bi-circle"></i>
                         <span>Bidang Umum</span>
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('pokja1.index') }}"
                         class="{{ request()->routeIs('pokja1.*') ? 'active' : '' }}">
+                        <i class="bi bi-circle"></i>
                         <span>Kelompok Kerja 1</span>
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('pokja2.index') }}"
                         class="{{ request()->routeIs('pokja2.*') ? 'active' : '' }}">
+                        <i class="bi bi-circle"></i>
                         <span>Kelompok Kerja 2</span>
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('pokja3.index') }}"
                         class="{{ request()->routeIs('pokja3.*') ? 'active' : '' }}">
+                        <i class="bi bi-circle"></i>
                         <span>Kelompok Kerja 3</span>
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('pokja4.index') }}"
                         class="{{ request()->routeIs('pokja4.*') ? 'active' : '' }}">
+                        <i class="bi bi-circle"></i>
                         <span>Kelompok Kerja 4</span>
                     </a>
                 </li>
