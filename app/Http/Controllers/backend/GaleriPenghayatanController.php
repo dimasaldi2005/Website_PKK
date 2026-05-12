@@ -38,7 +38,7 @@ class GaleriPenghayatanController extends Controller
         $data = Galeri::findOrFail($id);
 
         // Ganti dengan path sesuai lokasi file kamu
-        $filePath = public_path('frontend2/gallery2/' . $data->gambar);
+        $filePath = public_path('storage/gallery/' . $data->gambar);
 
         if (File::exists($filePath)) {
             File::delete($filePath);

@@ -12,32 +12,60 @@ class AccPenghayatanController extends Controller
 {
     public function index()
     {
-        // Cek guard yang aktif
-        if (Auth::guard('pengguna')->check()) {
-            // Jika guard pengguna (mobile)
+        $peng1 = 0;
+        $peng2 = 0;
+
+        // =========================
+        // WEB KABUPATEN
+        // =========================
+        if (Auth::guard('web')->check()) {
+
+            // MENUNGGU ACC KABUPATEN
+            $peng1 = Penghayatan::where('status', 'Disetujui1')
+                ->count();
+
+            // SUDAH FINAL
+            $peng2 = Penghayatan::where('status', 'Disetujui2')
+                ->count();
+        }
+
+        // =========================
+        // WEB KECAMATAN
+        // =========================
+        else if (Auth::guard('pengguna')->check()) {
+
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) { // Kecamatan (role 2)
-                // Ambil semua user mobile dengan role 1 (Desa) di kecamatan yang sama
-                $desaUsers = Pengguna::where('id_subdistrict', $user->id_subdistrict)
+            if ($user->id_role == 2) {
+
+                $desaUsers = Pengguna::where(
+                        'id_subdistrict',
+                        $user->id_subdistrict
+                    )
                     ->where('id_role', 1)
                     ->pluck('id');
 
-                // Hitung data penghayatan dari desa-desa tersebut
-                $peng1 = Penghayatan::whereIn('id_user', $desaUsers)
-                    ->where('status', 'proses')
+                // MENUNGGU PERSETUJUAN
+                $peng1 = Penghayatan::whereIn(
+                        'id_user',
+                        $desaUsers
+                    )
+                    ->where('status', 'Proses')
                     ->count();
 
-                $peng2 = Penghayatan::whereIn('id_user', $desaUsers)
+                // SUDAH DISETUJUI
+                $peng2 = Penghayatan::whereIn(
+                        'id_user',
+                        $desaUsers
+                    )
                     ->where('status', 'Disetujui1')
                     ->count();
             }
-        } else {
-            // Jika guard web (admin) - tampilkan semua data
-            $peng1 = Penghayatan::where('status', 'Disetujui1')->count();
-            $peng2 = Penghayatan::where('status', 'Disetujui2')->count();
         }
 
-        return view('backend.accpenghayatan', compact('peng1', 'peng2'));
+        return view(
+            'backend.accpenghayatan',
+            compact('peng1', 'peng2')
+        );
     }
 }

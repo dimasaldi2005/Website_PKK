@@ -13,8 +13,8 @@ class GaleriLaporanPokja1Controller extends Controller
     public function index()
     {
         $data = Galeri::where('bidang', 'Kader Pokja I')
-                  ->whereIn('status', ['Upload', 'Proses', 'upload', 'proses'])
-                  ->get();
+            ->whereIn('status', ['Upload', 'Proses', 'upload', 'proses'])
+            ->get();
         return view('backend.galerilaporanpokja1', compact('data'));
     }
 
@@ -39,8 +39,7 @@ class GaleriLaporanPokja1Controller extends Controller
     {
         $data = Galeri::findOrFail($id);
 
-        // Ganti dengan path sesuai lokasi file kamu
-        $filePath = public_path('frontend2/galley2/' . $data->gambar);
+        $filePath = storage_path('app/public/gallery/' . $data->gambar);
 
         if (File::exists($filePath)) {
             File::delete($filePath);
@@ -48,6 +47,10 @@ class GaleriLaporanPokja1Controller extends Controller
 
         $data->delete();
 
-        return redirect()->route('galeribidangumum.index')->with(['success' => 'Berhasil Menghapus Gambar dalam Galeri']);
+        return redirect()
+            ->route('galeribidangumum.index')
+            ->with([
+                'success' => 'Berhasil Menghapus Gambar dalam Galeri'
+            ]);
     }
 }

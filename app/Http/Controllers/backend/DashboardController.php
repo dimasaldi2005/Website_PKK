@@ -25,85 +25,159 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Hitung jumlah user berdasarkan guard yang login
+
+        // =========================================
+        // JUMLAH USER
+        // =========================================
+
         if (Auth::guard('pengguna')->check()) {
+
             $loggedInUser = Auth::guard('pengguna')->user();
 
-            if ($loggedInUser->id_role == 2) { // Kecamatan
-                // Hitung user desa (role 1) di kecamatan yang sama
+            // KECAMATAN
+            if ($loggedInUser->id_role == 2) {
+
                 $jmlh_user = Pengguna::where('id_role', 1)
-                    ->where('id_subdistrict', $loggedInUser->id_subdistrict)
+                    ->where(
+                        'id_subdistrict',
+                        $loggedInUser->id_subdistrict
+                    )
                     ->count();
-            } else { // Desa (role 1)
-                $jmlh_user = 1; // Hanya user itu sendiri
+            } else {
+
+                // DESA
+                $jmlh_user = 1;
             }
         } else {
-            // Jika guard web, hitung semua user mobile
+
+            // WEB KABUPATEN
             $jmlh_user = Pengguna::count();
         }
 
-        // Helper function untuk mendapatkan query yang difilter berdasarkan guard
-        $getFilteredQuery = function ($model) {
-            if (Auth::guard('pengguna')->check()) {
-                $user = Auth::guard('pengguna')->user();
-                $userId = $user->id;
-                $userRole = $user->id_role;
-                $subdistrictId = $user->id_subdistrict;
+        // =========================================
+        // FILTER QUERY
+        // =========================================
 
-                if ($userRole == 2) { // Kecamatan
-                    $desaIds = Pengguna::where('id_subdistrict', $subdistrictId)
+        $getFilteredQuery = function ($model) {
+
+            // =====================================
+            // WEB KECAMATAN
+            // =====================================
+
+            if (Auth::guard('pengguna')->check()) {
+
+                $user = Auth::guard('pengguna')->user();
+
+                // ROLE KECAMATAN
+                if ($user->id_role == 2) {
+
+                    $desaIds = Pengguna::where(
+                        'id_subdistrict',
+                        $user->id_subdistrict
+                    )
                         ->where('id_role', 1)
                         ->pluck('id');
-                    return $model->whereIn('id_user', $desaIds)
+
+                    return $model
+                        ->whereIn('id_user', $desaIds)
                         ->where(function ($query) {
-                            $query->where('status', 'proses')
+
+                            $query->where('status', 'Proses')
                                 ->orWhere('status', 'Disetujui1');
                         });
                 }
             }
 
-            // Untuk guard web
+            // =====================================
+            // WEB KABUPATEN
+            // =====================================
+
             return $model->where(function ($query) {
+
                 $query->where('status', 'Disetujui1')
                     ->orWhere('status', 'Disetujui2');
             });
         };
 
-        // Hitung bidang umum
+        // =========================================
+        // BIDANG UMUM
+        // =========================================
+
         $bidangumum = $getFilteredQuery(new BidangUmum())->count();
 
-        // Hitung bidang 1 (Gotong Royong, Penghayatan, Laporan Pokja1)
+        // =========================================
+        // POKJA 1
+        // =========================================
+
         $bidang11 = $getFilteredQuery(new GotongRoyong())->count();
         $bidang12 = $getFilteredQuery(new Penghayatan())->count();
         $laporan1 = $getFilteredQuery(new LaporanPokja1())->count();
-        $totalbidang1 = $bidang11 + $bidang12 + $laporan1;
 
-        // Hitung bidang 2 (Pendidikan, Pengembangan)
+        $totalbidang1 =
+            $bidang11 +
+            $bidang12 +
+            $laporan1;
+
+        // =========================================
+        // POKJA 2
+        // =========================================
+
         $bidang21 = $getFilteredQuery(new Pendidikan())->count();
         $bidang22 = $getFilteredQuery(new Pengembangan())->count();
-        $totalbidang2 = $bidang21 + $bidang22;
 
-        // Hitung bidang 3 (Pangan, Sandang, Perumahan, Laporan Pokja3)
+        $totalbidang2 =
+            $bidang21 +
+            $bidang22;
+
+        // =========================================
+        // POKJA 3
+        // =========================================
+
         $bidang31 = $getFilteredQuery(new Pangan())->count();
         $bidang32 = $getFilteredQuery(new Sandang())->count();
         $bidang33 = $getFilteredQuery(new Perumahan())->count();
         $laporan3 = $getFilteredQuery(new LaporanPokja3())->count();
-        $totalbidang3 = $bidang31 + $bidang32 + $bidang33 + $laporan3;
 
-        // Hitung bidang 4 (Kesehatan, Kelestarian, Perencanaan, Laporan Pokja4)
+        $totalbidang3 =
+            $bidang31 +
+            $bidang32 +
+            $bidang33 +
+            $laporan3;
+
+        // =========================================
+        // POKJA 4
+        // =========================================
+
         $bidang41 = $getFilteredQuery(new Kesehatan())->count();
-        $bidang42 = $getFilteredQuery(new KelestarianLingkunganHidup())->count();
-        $bidang43 = $getFilteredQuery(new PerencanaanSehat())->count();
-        $laporan4 = $getFilteredQuery(new LaporanPokja4())->count();
-        $totalbidang4 = $bidang41 + $bidang42 + $bidang43 + $laporan4;
 
-        return view('backend.dashboard', compact(
-            'jmlh_user',
-            'bidangumum',
-            'totalbidang1',
-            'totalbidang2',
-            'totalbidang3',
-            'totalbidang4'
-        ));
+        $bidang42 = $getFilteredQuery(
+            new KelestarianLingkunganHidup()
+        )->count();
+
+        $bidang43 = $getFilteredQuery(
+            new PerencanaanSehat()
+        )->count();
+
+        $laporan4 = $getFilteredQuery(
+            new LaporanPokja4()
+        )->count();
+
+        $totalbidang4 =
+            $bidang41 +
+            $bidang42 +
+            $bidang43 +
+            $laporan4;
+
+        return view(
+            'backend.dashboard',
+            compact(
+                'jmlh_user',
+                'bidangumum',
+                'totalbidang1',
+                'totalbidang2',
+                'totalbidang3',
+                'totalbidang4'
+            )
+        );
     }
 }

@@ -17,29 +17,8 @@
                     <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel" style="max-width: 800px; margin-top: 10px;">
                         <div class="carousel-inner" style="border-radius: 8px; overflow: hidden;">
                             <div class="carousel-item active" data-bs-interval="10000">
-                                <img src="{{ asset('frontend2/gallery2/' . $data->gambar) }}" class="d-block w-100" alt="Gallery Image">
+                                <img src="{{ asset('storage/gallery/' . $data->gambar) }}" class="d-block w-100" alt="Gallery Image">
                             </div>
-                            <div class="carousel-item" data-bs-interval="2000">
-                                <img src="{{ asset('frontend2/gallery2/' . $data->gambar) }}" class="d-block w-100" alt="Gallery Image">
-                            </div>
-                            <div class="carousel-item">
-                                <img src="{{ asset('frontend2/gallery2/' . $data->gambar) }}" class="d-block w-100" alt="Gallery Image">
-                            </div>
-                            <div class="carousel-item">
-                                <img src="{{ asset('frontend2/gallery2/' . $data->gambar) }}" class="d-block w-100" alt="Gallery Image">
-                            </div>
-                            <div class="carousel-item">
-                                <img src="{{ asset('frontend2/gallery2/' . $data->gambar) }}" class="d-block w-100" alt="Gallery Image">
-                            </div>
-                        </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
                     </div>
                 </div>
 

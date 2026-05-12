@@ -4,7 +4,7 @@
 
 <!-- Main -->
 <main id="main">
-  
+
   <!-- Page Title Section -->
   <section class="gallery-header">
     <div class="container">
@@ -16,7 +16,7 @@
   <!-- Gallery Content Section -->
   <section class="gallery-content">
     <div class="container">
-      
+
       <!-- Search Bar -->
       <div class="search-section">
         <h3 class="search-label">Search</h3>
@@ -33,17 +33,37 @@
 
       <!-- Gallery Grid -->
       <div class="gallery-grid">
+
         @forelse ($galerys as $tampil)
-        <div class="gallery-card" onclick="openModal('{{ asset('frontend2/gallery2/'.$tampil->gambar) }}', '{{ $tampil->deskripsi }}', '{{ \Carbon\Carbon::parse($tampil->tanggal)->format('Y-m-d H:i:s') }}')">
+
+        <div class="gallery-card"
+          data-image="{{ asset('storage/gallery/'.$tampil->gambar) }}"
+          data-title="{{ $tampil->deskripsi }}"
+          data-date="{{ \Carbon\Carbon::parse($tampil->tanggal)->format('Y-m-d H:i:s') }}"
+          onclick="openModal(
+        this.dataset.image,
+        this.dataset.title,
+        this.dataset.date
+    )">
+
           <div class="gallery-card-image">
-            <img src="{{ asset('frontend2/gallery2/'.$tampil->gambar) }}" alt="{{ $tampil->deskripsi }}">
+
+            <img
+              src="{{ asset('storage/gallery/'.$tampil->gambar) }}"
+              alt="{{ $tampil->deskripsi }}">
+
           </div>
+
         </div>
+
         @empty
+
         <div class="gallery-empty">
           <p>Data galeri belum tersedia.</p>
         </div>
+
         @endforelse
+
       </div>
 
       <!-- Pagination -->
@@ -253,6 +273,7 @@
     from {
       opacity: 0;
     }
+
     to {
       opacity: 1;
     }
@@ -274,6 +295,7 @@
       transform: translateY(50px);
       opacity: 0;
     }
+
     to {
       transform: translateY(0);
       opacity: 1;

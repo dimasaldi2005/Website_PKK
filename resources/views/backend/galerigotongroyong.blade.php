@@ -40,7 +40,7 @@
                         <tr>
                             <td>{{ $no++ }}</td>
                             <td>
-                                <img src="{{ asset('frontend2/gallery2/' . $tampil->gambar) }}" 
+                                <img src="{{ asset('storage/gallery/' . $tampil->gambar) }}" 
                                      alt="{{ $tampil->deskripsi }}" 
                                      class="rounded" 
                                      style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #e2e8f0;">

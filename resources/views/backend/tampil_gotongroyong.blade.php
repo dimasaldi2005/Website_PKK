@@ -143,10 +143,10 @@
                       <option value="">--Pilih--</option>
                       <option value="Revisi">Revisi</option>
                       @if(Auth::guard('pengguna')->check())
-              <option value="Disetujui1">Disetujui (Kecamatan)</option>
-            @else
-              <option value="Disetujui2">Disetujui (Admin)</option>
-            @endif
+                      <option value="Disetujui1">Disetujui (Kecamatan)</option>
+                      @else
+                      <option value="Disetujui2">Disetujui (Admin)</option>
+                      @endif
                     </select>
                   </div>
 

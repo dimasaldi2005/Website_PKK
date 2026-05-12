@@ -6,8 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Facades\File;
 
 class ReportController extends Controller
 {
@@ -15,7 +14,8 @@ class ReportController extends Controller
     public function insertGaleri(Request $request)
     {
         try {
-            // validasi
+
+            // VALIDASI
             $request->validate([
                 'gambar' => 'required|image|mimes:jpeg,jpg,png,gif',
                 'id_user' => 'required',
@@ -25,22 +25,53 @@ class ReportController extends Controller
                 'id_role' => 'required',
                 'id_organization' => 'required',
 
-                //  TAMBAHAN LOKASI
+                // TAMBAHAN LOKASI
                 'lokasi' => 'nullable|string',
                 'latitude' => 'nullable',
                 'longitude' => 'nullable',
             ]);
 
-            // generate UUID custom
+            // UUID
             $uuid = 'GAL-' . strtoupper(Str::random(6));
 
-            // upload file
-            $file = $request->file('gambar');
-            $fileName = uniqid() . '_' . $file->getClientOriginalName();
-            $file->storeAs('public/gallery', $fileName);
+            // =========================
+            // UPLOAD FILE
+            // =========================
 
-            // insert ke DB
+            $file = $request->file('gambar');
+
+            $fileName =
+                uniqid() .
+                '_' .
+                $file->getClientOriginalName();
+
+            // folder tujuan
+            $destinationPath =
+                public_path('storage/gallery');
+
+            // buat folder jika belum ada
+            if (!File::exists($destinationPath)) {
+
+                File::makeDirectory(
+                    $destinationPath,
+                    0777,
+                    true,
+                    true
+                );
+            }
+
+            // pindah file langsung ke public/storage/gallery
+            $file->move(
+                $destinationPath,
+                $fileName
+            );
+
+            // =========================
+            // INSERT DATABASE
+            // =========================
+
             DB::table('galerys')->insert([
+
                 'uuid' => $uuid,
                 'id_user' => $request->id_user,
                 'deskripsi' => $request->deskripsi,
@@ -48,21 +79,36 @@ class ReportController extends Controller
                 'pokja' => $request->pokja,
                 'bidang' => $request->bidang,
                 'status' => $request->status ?? 'Proses',
+
                 'created_at' => now(),
                 'updated_at' => now(),
+
                 'id_role' => $request->id_role,
                 'id_organization' => $request->id_organization,
 
-                //  TAMBAHAN LOKASI
+                // LOKASI
                 'lokasi' => $request->lokasi,
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
             ]);
 
-            // ambil data kembali (join)
+            // =========================
+            // AMBIL DATA
+            // =========================
+
             $data = DB::table('galerys')
-                ->leftJoin('role_users_mobile', 'galerys.id_role', '=', 'role_users_mobile.id')
-                ->leftJoin('role_organization', 'galerys.id_organization', '=', 'role_organization.id')
+                ->leftJoin(
+                    'role_users_mobile',
+                    'galerys.id_role',
+                    '=',
+                    'role_users_mobile.id'
+                )
+                ->leftJoin(
+                    'role_organization',
+                    'galerys.id_organization',
+                    '=',
+                    'role_organization.id'
+                )
                 ->where('galerys.uuid', $uuid)
                 ->select(
                     'galerys.*',
@@ -73,10 +119,18 @@ class ReportController extends Controller
                 )
                 ->first();
 
+            // =========================
+            // RESPONSE SUCCESS
+            // =========================
+
             return response()->json([
+
                 'statusCode' => 200,
+
                 'message' => 'Data galeri berhasil disimpan',
+
                 'data' => [
+
                     'id' => $data->id,
                     'uuid' => $data->uuid,
                     'id_user' => $data->id_user,
@@ -85,10 +139,10 @@ class ReportController extends Controller
                     'pokja' => $data->pokja,
                     'bidang' => $data->bidang,
                     'status' => $data->status,
+
                     'created_at' => $data->created_at,
                     'updated_at' => $data->updated_at,
 
-                    // 🔥 TAMBAHAN LOKASI
                     'lokasi' => $data->lokasi,
                     'latitude' => $data->latitude,
                     'longitude' => $data->longitude,
@@ -97,25 +151,43 @@ class ReportController extends Controller
                         'id' => $data->role_id,
                         'name' => $data->role_name
                     ],
+
                     'organization' => [
                         'id' => $data->organization_id,
                         'name' => $data->organization_name
                     ]
                 ],
+
                 'error' => null
             ]);
         } catch (\Exception $e) {
 
-            // hapus file kalau gagal
+            // HAPUS FILE JIKA GAGAL
             if (isset($fileName)) {
-                Storage::delete('public/gallery/' . $fileName);
+
+                $filePath =
+                    public_path(
+                        'storage/gallery/' . $fileName
+                    );
+
+                if (File::exists($filePath)) {
+
+                    File::delete($filePath);
+                }
             }
 
             return response()->json([
+
                 'statusCode' => 400,
+
                 'message' => 'Gagal menyimpan data',
+
                 'data' => null,
-                'error' => ['message' => $e->getMessage()]
+
+                'error' => [
+                    'message' => $e->getMessage()
+                ]
+
             ], 400);
         }
     }

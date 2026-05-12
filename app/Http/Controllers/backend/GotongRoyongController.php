@@ -15,56 +15,108 @@ class GotongRoyongController extends Controller
 {
     public function index()
     {
-        $data = collect();
+        // =========================
+        // WEB KABUPATEN
+        // =========================
+        if (Auth::guard('web')->check()) {
 
-        // 1. JIKA YANG LOGIN PENGGUNA MOBILE (KECAMATAN)
-        if (Auth::guard('pengguna')->check()) {
-            $user = Auth::guard('pengguna')->user();
-            
-            if ($user->id_role == 2) { // Role Kecamatan
-                // Ambil ID user desa di kecamatan yang sama (seperti di Penghayatan)
-                $desaUsers = Pengguna::where('id_subdistrict', $user->id_subdistrict)
-                    ->where('id_role', 1)
-                    ->pluck('id');
-
-                // Gunakan leftJoin agar data tidak hilang walau ada field yang kosong di database
-                $data = DB::table('laporan_gotong_royong')
-                    ->leftJoin('users_mobile', 'laporan_gotong_royong.id_user', '=', 'users_mobile.id')
-                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
-                    ->select('laporan_gotong_royong.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                    ->whereIn('laporan_gotong_royong.id_user', $desaUsers)
-                    ->whereIn('laporan_gotong_royong.status', ['proses', 'Proses', 'PROSES'])
-                    ->orderBy('laporan_gotong_royong.id_pokja1_bidang2', 'desc')
-                    ->get();
-            }
-        } 
-        // 2. JIKA YANG LOGIN ADMIN WEB
-        else if (Auth::guard('web')->check()) { 
             $data = DB::table('laporan_gotong_royong')
-                ->leftJoin('users_mobile', 'laporan_gotong_royong.id_user', '=', 'users_mobile.id')
-                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
-                ->select('laporan_gotong_royong.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                // SEMENTARA SAYA TAMBAHKAN 'proses' AGAR ADMIN BISA MELIHAT SEMUA DATA (Hapus 'proses' jika nanti sudah fix)
-                ->whereIn('laporan_gotong_royong.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1', 'proses', 'Proses'])
-                ->orderBy('laporan_gotong_royong.id_pokja1_bidang2', 'desc')
+                ->join(
+                    'users_mobile',
+                    'laporan_gotong_royong.id_user',
+                    '=',
+                    'users_mobile.id'
+                )
+                ->join(
+                    'subdistrict',
+                    'users_mobile.id_subdistrict',
+                    '=',
+                    'subdistrict.id'
+                )
+                ->join(
+                    'village',
+                    'users_mobile.id_village',
+                    '=',
+                    'village.id'
+                )
+                ->select(
+                    'laporan_gotong_royong.*',
+                    'subdistrict.name as nama_kec',
+                    'village.name as nama_desa'
+                )
+                ->where(
+                    'laporan_gotong_royong.status',
+                    'Disetujui1'
+                )
+                ->orderBy(
+                    'laporan_gotong_royong.id_pokja1_bidang2',
+                    'desc'
+                )
                 ->get();
         }
 
-        return view('backend.gotongroyong', compact('data'));
+        // =========================
+        // WEB KECAMATAN
+        // =========================
+        else if (Auth::guard('pengguna')->check()) {
+
+            $user = Auth::guard('pengguna')->user();
+
+            $data = DB::table('laporan_gotong_royong')
+                ->join(
+                    'users_mobile',
+                    'laporan_gotong_royong.id_user',
+                    '=',
+                    'users_mobile.id'
+                )
+                ->join(
+                    'subdistrict',
+                    'users_mobile.id_subdistrict',
+                    '=',
+                    'subdistrict.id'
+                )
+                ->join(
+                    'village',
+                    'users_mobile.id_village',
+                    '=',
+                    'village.id'
+                )
+                ->select(
+                    'laporan_gotong_royong.*',
+                    'subdistrict.name as nama_kec',
+                    'village.name as nama_desa'
+                )
+                ->where(
+                    'users_mobile.id_subdistrict',
+                    $user->id_subdistrict
+                )
+                ->where(
+                    'laporan_gotong_royong.status',
+                    'Proses'
+                )
+                ->orderBy(
+                    'laporan_gotong_royong.id_pokja1_bidang2',
+                    'desc'
+                )
+                ->get();
+        }
+
+        return view(
+            'backend.gotongroyong',
+            compact('data')
+        );
     }
 
     public function edit(string $id_pokja1_bidang2)
     {
         $data = GotongRoyong::find($id_pokja1_bidang2);
-        
+
         if (!$data) {
             return redirect()->back()->with('error', 'Data tidak ditemukan!');
         }
 
         $user = Pengguna::find($data->id_user);
-        
+
         // Gunakan nullable object handling
         $kecamatan = $user ? DB::table('subdistrict')->where('id', $user->id_subdistrict)->first() : null;
         $desa = $user ? DB::table('village')->where('id', $user->id_village)->first() : null;
@@ -76,7 +128,7 @@ class GotongRoyongController extends Controller
     {
         $data = GotongRoyong::find($id_pokja1_bidang2);
         $status = $request->status;
-        
+
         if (strtolower($status) == 'disetujui') {
             $status = Auth::guard('pengguna')->check() ? 'Disetujui1' : 'Disetujui2';
         }
@@ -101,7 +153,7 @@ class GotongRoyongController extends Controller
 
         // FILTER PENCARIAN
         if ($request->has('search') || $request->has('search2')) {
-            
+
             $searchTerm = $request->has('search') ? $request->search : $request->search2;
             $isYearly = $request->has('search2');
 
@@ -166,13 +218,14 @@ class GotongRoyongController extends Controller
             }
 
             $formattedDate = Carbon::now()->isoFormat('dddd, D MMMM YYYY');
-            
+
             // Format waktu untuk view
             $created_at = $searchTerm;
             if (!$isYearly) {
                 try {
                     $created_at = Carbon::parse($searchTerm)->isoFormat('MMMM YYYY');
-                } catch (\Exception $e) { }
+                } catch (\Exception $e) {
+                }
             }
 
             $ketua = Ttd::where('jabatan', 'Ketua')->where('pokja', 'Kelompok Kerja I')->get();
@@ -181,9 +234,29 @@ class GotongRoyongController extends Controller
             $viewName = $isYearly ? 'backend.cetak_tahun_pokja1' : 'backend.cetak_bulan_pokja1';
 
             return view($viewName, compact(
-                'gotongroyong', 'penghayatan', 'laporanpokja1', 'total5', 'total6', 'total7', 'total8', 'total9',
-                'total12', 'total13', 'total14', 'total15', 'total16', 'total17', 'total18', 'total19',
-                'total', 'total1', 'total2', 'created_at', 'formattedDate', 'ketua', 'wakil'
+                'gotongroyong',
+                'penghayatan',
+                'laporanpokja1',
+                'total5',
+                'total6',
+                'total7',
+                'total8',
+                'total9',
+                'total12',
+                'total13',
+                'total14',
+                'total15',
+                'total16',
+                'total17',
+                'total18',
+                'total19',
+                'total',
+                'total1',
+                'total2',
+                'created_at',
+                'formattedDate',
+                'ketua',
+                'wakil'
             ));
         }
 
@@ -193,7 +266,7 @@ class GotongRoyongController extends Controller
     public function destroy(string $id_pokja1_bidang2)
     {
         $data = GotongRoyong::find($id_pokja1_bidang2);
-        if($data){
+        if ($data) {
             $data->delete();
             return redirect()->route('gotongroyong.index')->with(['success' => 'Berhasil Menghapus Laporan']);
         }

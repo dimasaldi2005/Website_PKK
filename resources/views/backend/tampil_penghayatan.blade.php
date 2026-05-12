@@ -164,17 +164,40 @@
                   </div>
 
                   <div class="form-outline mb-4">
-                    <label for="status" class="form-label">Status</label>
-                    <select name="status" class="datepicker-trigger form-control hasDatepicker"
-                      onchange="exibeMsg(this.value);">
-                      <option value="">--Pilih--</option>
-                      <option value="Revisi">Revisi</option>
-                      @if(Auth::guard('pengguna')->check())
-              <option value="Disetujui1">Disetujui (Kecamatan)</option>
-            @else
-              <option value="Disetujui2">Disetujui (Admin)</option>
-            @endif
+
+                    <label for="status" class="form-label">
+                      Status
+                    </label>
+
+                    <select
+                      name="status"
+                      class="form-control"
+                      required>
+
+                      <option value="" disabled selected>
+                        --Pilih--
+                      </option>
+
+                      <option value="Revisi">
+                        Revisi
+                      </option>
+
+                      @if(Auth::guard('web')->check())
+
+                      <option value="Disetujui">
+                        Disetujui (Kabupaten)
+                      </option>
+
+                      @elseif(Auth::guard('pengguna')->check())
+
+                      <option value="Disetujui">
+                        Disetujui (Kecamatan)
+                      </option>
+
+                      @endif
+
                     </select>
+
                   </div>
 
                   <div class="form-outline mb-1 mt-3">
