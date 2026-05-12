@@ -120,17 +120,17 @@
                     Harap pilih status laporan.
                   </div>
 
-                  <div class="form-outline mb-4">
+                   <div class="form-outline mb-4">
                     <label for="status" class="form-label">Status</label>
                     <select name="status" class="datepicker-trigger form-control hasDatepicker"
                       onchange="exibeMsg(this.value);">
                       <option value="">--Pilih--</option>
                       <option value="Revisi">Revisi</option>
                       @if(Auth::guard('pengguna')->check())
-              <option value="Disetujui1">Disetujui (Kecamatan)</option>
-            @else
-              <option value="Disetujui2">Disetujui (Admin)</option>
-            @endif
+                      <option value="Disetujui1">Disetujui (Kecamatan)</option>
+                      @else
+                      <option value="Disetujui2">Disetujui (Admin)</option>
+                      @endif
                     </select>
                   </div>
 

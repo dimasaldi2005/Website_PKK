@@ -37,7 +37,7 @@
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       border-radius: 10px;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
     }
 
     /* TABLE */
@@ -51,8 +51,10 @@
     .table-responsive thead th {
       position: sticky;
       top: 0;
-      background: #f8fafc; /* soft light gray */
-      color: #334155; /* slate */
+      background: #f8fafc;
+      /* soft light gray */
+      color: #334155;
+      /* slate */
       z-index: 2;
       font-size: 11px;
       font-weight: 600;
@@ -128,8 +130,11 @@
         <span class="d-none d-lg-block">PKK NGANJUK</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
-    </div><nav class="header-nav ms-auto">
-    </nav></header>@include('backend.includes.sidebar')
+    </div>
+    <nav class="header-nav ms-auto">
+    </nav>
+  </header>
+  @include('backend.includes.sidebar')
 
 
   <main id="main" class="main">
@@ -145,7 +150,7 @@
 
     <div class="card mt-2">
       <div class="card-body">
-        
+
         <div class="alert alert-info d-flex align-items-center mt-3" role="alert">
           <i class="bi bi-info-circle-fill me-2"></i>
           <div>Scroll horizontal untuk melihat semua kolom</div>
@@ -157,10 +162,10 @@
               <tr>
                 <th scope="col" rowspan="3" class="text-center align-middle">No</th>
                 @if (Auth::guard('web')->check())
-                  <th scope="col" rowspan="3" class="text-center align-middle">Kecamatan</th>
-                  <th scope="col" rowspan="3" class="text-center align-middle">Desa</th>
+                <th scope="col" rowspan="3" class="text-center align-middle">Kecamatan</th>
+                <th scope="col" rowspan="3" class="text-center align-middle">Desa</th>
                 @elseif (Auth::guard('pengguna')->check())
-                  <th scope="col" rowspan="3" class="text-center align-middle">Desa</th>
+                <th scope="col" rowspan="3" class="text-center align-middle">Desa</th>
                 @endif
                 <th scope="col" colspan="4" class="text-center header-group-title">JUMLAH KELOMPOK</th>
                 <th scope="col" colspan="2" class="text-center header-group-title">JUMLAH</th>
@@ -206,73 +211,73 @@
                 <th scope="col" class="text-center" style="font-size: 9px;">L</th>
                 <th scope="col" class="text-center" style="font-size: 9px;">P</th>
               </tr>
-            </thead>  
+            </thead>
             <tbody>
               @php
-                $no = 1;
+              $no = 1;
               @endphp
               @forelse ($data as $umum)
-                <tr>
-                  <th scope="row" class="text-center">{{ $no++ }}</th>
-                  @if (Auth::guard('web')->check())
-                    <td class="text-center">{{ $umum->nama_kec }}</td>
-                    <td class="text-center">{{ $umum->nama_desa }}</td>
-                  @elseif (Auth::guard('pengguna')->check())
-                    <td class="text-center">{{ $umum->nama_desa }}</td>
+              <tr>
+                <th scope="row" class="text-center">{{ $no++ }}</th>
+                @if (Auth::guard('web')->check())
+                <td class="text-center">{{ $umum->nama_kec }}</td>
+                <td class="text-center">{{ $umum->nama_desa }}</td>
+                @elseif (Auth::guard('pengguna')->check())
+                <td class="text-center">{{ $umum->nama_desa }}</td>
+                @endif
+                <td class="text-center">{{ $umum->dusun_lingkungan ?? '-' }}</td>
+                <td class="text-center">{{ $umum->PKK_RW ?? '-' }}</td>
+                <td class="text-center">{{ $umum->PKK_RT ?? '-' }}</td>
+                <td class="text-center">{{ $umum->desa_wisma ?? '-' }}</td>
+                <td class="text-center">{{ $umum->KRT ?? '-' }}</td>
+                <td class="text-center">{{ $umum->KK ?? '-' }}</td>
+                <td class="text-center">{{ $umum->jiwa_laki ?? '0' }}</td>
+                <td class="text-center">{{ $umum->jiwa_perempuan ?? '0' }}</td>
+                <td class="text-center">{{ $umum->anggota_laki ?? '0' }}</td>
+                <td class="text-center">{{ $umum->anggota_perempuan ?? '0' }}</td>
+                <td class="text-center">{{ $umum->umum_laki ?? '0' }}</td>
+                <td class="text-center">{{ $umum->umum_perempuan ?? '0' }}</td>
+                <td class="text-center">{{ $umum->khusus_laki ?? '0' }}</td>
+                <td class="text-center">{{ $umum->khusus_perempuan ?? '0' }}</td>
+                <td class="text-center">{{ $umum->honorer_laki ?? '0' }}</td>
+                <td class="text-center">{{ $umum->honorer_perempuan ?? '0' }}</td>
+                <td class="text-center">{{ $umum->bantuan_laki ?? '0' }}</td>
+                <td class="text-center">{{ $umum->bantuan_perempuan ?? '0' }}</td>
+                <td class="text-center">
+                  @if(in_array(strtolower($umum->status), ['proses', 'revisi']))
+                  <span class="badge bg-warning text-dark">{{ $umum->status }}</span>
+                  @elseif(in_array(strtolower($umum->status), ['disetujui1', 'disetujui2']))
+                  <span class="badge bg-success">{{ $umum->status }}</span>
+                  @else
+                  <span class="badge bg-secondary">{{ $umum->status }}</span>
                   @endif
-                  <td class="text-center">{{ $umum->dusun_lingkungan ?? '-' }}</td>
-                  <td class="text-center">{{ $umum->PKK_RW ?? '-' }}</td>
-                  <td class="text-center">{{ $umum->PKK_RT ?? '-' }}</td>
-                  <td class="text-center">{{ $umum->desa_wisma ?? '-' }}</td>
-                  <td class="text-center">{{ $umum->KRT ?? '-' }}</td>
-                  <td class="text-center">{{ $umum->KK ?? '-' }}</td>
-                  <td class="text-center">{{ $umum->jiwa_laki ?? '0' }}</td>
-                  <td class="text-center">{{ $umum->jiwa_perempuan ?? '0' }}</td>
-                  <td class="text-center">{{ $umum->anggota_laki ?? '0' }}</td>
-                  <td class="text-center">{{ $umum->anggota_perempuan ?? '0' }}</td>
-                  <td class="text-center">{{ $umum->umum_laki ?? '0' }}</td>
-                  <td class="text-center">{{ $umum->umum_perempuan ?? '0' }}</td>
-                  <td class="text-center">{{ $umum->khusus_laki ?? '0' }}</td>
-                  <td class="text-center">{{ $umum->khusus_perempuan ?? '0' }}</td>
-                  <td class="text-center">{{ $umum->honorer_laki ?? '0' }}</td>
-                  <td class="text-center">{{ $umum->honorer_perempuan ?? '0' }}</td>
-                  <td class="text-center">{{ $umum->bantuan_laki ?? '0' }}</td>
-                  <td class="text-center">{{ $umum->bantuan_perempuan ?? '0' }}</td>
-                  <td class="text-center">
-                    @if(in_array(strtolower($umum->status), ['proses', 'revisi']))
-                      <span class="badge bg-warning text-dark">{{ $umum->status }}</span>
-                    @elseif(in_array(strtolower($umum->status), ['disetujui1', 'disetujui2']))
-                      <span class="badge bg-success">{{ $umum->status }}</span>
-                    @else
-                      <span class="badge bg-secondary">{{ $umum->status }}</span>
-                    @endif
-                  </td>
-                  <td class="text-center">{{ \Carbon\Carbon::parse($umum->created_at)->format('d/m/Y H:i') }}</td>
-                  <td class="text-center">
-                    
-                    <a href="{{ route('bidangumum.edit', $umum->id_laporan_umum) }}" class="btn btn-sm btn-info text-white me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Review Data">
-                      <i class="bi bi-search"></i> Review
-                    </a>
+                </td>
+                <td class="text-center">{{ \Carbon\Carbon::parse($umum->created_at)->format('d/m/Y H:i') }}</td>
+                <td class="text-center">
 
-                    <form action="{{ route('bidangumum.destroy', $umum->id_laporan_umum)}}" method="POST" class="d-inline delete-form">
-                      @csrf
-                      @method('DELETE')
-                      <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(this)" data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus Data">
-                        <i class="bi bi-trash"></i>
-                      </button>
-                    </form>
+                  <a href="{{ route('bidangumum.edit', $umum->id_laporan_umum) }}" class="btn btn-sm btn-info text-white me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Review Data">
+                    <i class="bi bi-search"></i> Review
+                  </a>
 
-                  </td>
-                </tr>
+                  <form action="{{ route('bidangumum.destroy', $umum->id_laporan_umum)}}" method="POST" class="d-inline delete-form">
+                    @csrf
+                    @method('DELETE')
+                    <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(this)" data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus Data">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </form>
+
+                </td>
+              </tr>
               @empty
-                <tr>
-                  <td colspan="24" class="text-center py-5">
-                    <div class="alert alert-danger mb-0">
-                      <i class="bi bi-exclamation-triangle-fill me-2"></i> 
-                      Tidak ada data laporan bidang umum
-                    </div>
-                  </td>
-                </tr>
+              <tr>
+                <td colspan="24" class="text-center py-5">
+                  <div class="alert alert-danger mb-0">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Tidak ada data laporan bidang umum
+                  </div>
+                </td>
+              </tr>
               @endforelse
             </tbody>
           </table>
@@ -297,7 +302,7 @@
   <script>
     // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl)
     })
 
@@ -320,5 +325,6 @@
   </script>
 
 </body>
+
 </html>
 {{-- @endsection --}}
