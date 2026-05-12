@@ -11,42 +11,62 @@ class Pokja2Controller extends Controller
 {
     public function index()
     {
-        $modelPertama = 0; // Pendidikan
-        $modelKedua = 0;   // Pengembangan
+        $modelPertama = 0; // Pendidikan & Keterampilan
+        $modelKedua = 0;   // Pengembangan Kehidupan Berkoprasi
 
-        // 1. JIKA YANG LOGIN ADMIN WEB
+        // =====================================
+        // 1. WEB KABUPATEN (ADMIN)
+        // =====================================
         if (Auth::guard('web')->check()) {
             
-            // Admin melihat semua data yang ada di sistem
+            // Admin Kabupaten memantau laporan yang sudah di-ACC Kecamatan (Disetujui1) dan Final (Disetujui2)
+            $statusAdmin = ['Disetujui1', 'disetujui1', 'DISETUJUI1', 'Disetujui2', 'disetujui2', 'DISETUJUI2'];
+
             $modelPertama = DB::table('laporan_pendidikan_n_keterampilan')
-                ->whereIn('status', ['proses', 'Proses', 'PROSES', 'Disetujui1', 'disetujui1', 'DISETUJUI1', 'Disetujui2', 'disetujui2', 'DISETUJUI2'])
+                ->whereIn('status', $statusAdmin)
                 ->count();
 
             $modelKedua = DB::table('laporan_pengembangan_kehidupan')
-                ->whereIn('status', ['proses', 'Proses', 'PROSES', 'Disetujui1', 'disetujui1', 'DISETUJUI1', 'Disetujui2', 'disetujui2', 'DISETUJUI2'])
+                ->whereIn('status', $statusAdmin)
                 ->count();
         } 
-        // 2. JIKA YANG LOGIN PENGGUNA MOBILE (KECAMATAN)
+        // =====================================
+        // 2. PENGGUNA MOBILE (KECAMATAN / DESA)
+        // =====================================
         elseif (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) { // Kecamatan (role 2)
+            if ($user->id_role == 2) { 
+                // --- KECAMATAN ---
                 
-                // Ambil ID semua desa di bawah kecamatan ini
+                // JURUS ANTI-0: Ambil semua ID user di wilayah kecamatan ini (Hapus filter id_role agar data tidak nyangkut)
                 $desaIds = DB::table('users_mobile')
                     ->where('id_subdistrict', $user->id_subdistrict)
-                    ->where('id_role', 1)
                     ->pluck('id');
+                
+                // Kecamatan memantau laporan yang masih 'Proses' dan yang sudah mereka ACC ('Disetujui1')
+                $statusKecamatan = ['proses', 'Proses', 'PROSES', 'Disetujui1', 'disetujui1', 'DISETUJUI1'];
 
-                // Hitung laporan khusus dari desa-desa tersebut
                 $modelPertama = DB::table('laporan_pendidikan_n_keterampilan')
                     ->whereIn('id_user', $desaIds)
-                    ->whereIn('status', ['proses', 'Proses', 'PROSES', 'Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                    ->whereIn('status', $statusKecamatan)
                     ->count();
 
                 $modelKedua = DB::table('laporan_pengembangan_kehidupan')
                     ->whereIn('id_user', $desaIds)
-                    ->whereIn('status', ['proses', 'Proses', 'PROSES', 'Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                    ->whereIn('status', $statusKecamatan)
+                    ->count();
+
+            } else {
+                // --- DESA ---
+                // Jika akun Desa yang login, tampilkan jumlah laporan miliknya sendiri
+                
+                $modelPertama = DB::table('laporan_pendidikan_n_keterampilan')
+                    ->where('id_user', $user->id)
+                    ->count();
+
+                $modelKedua = DB::table('laporan_pengembangan_kehidupan')
+                    ->where('id_user', $user->id)
                     ->count();
             }
         }

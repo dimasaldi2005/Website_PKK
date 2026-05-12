@@ -12,49 +12,46 @@ class DecBidangUmumController extends Controller
 {
     public function index()
     {
-        $data = collect(); // Mengembalikan collection kosong secara default
+        $data2 = collect();
 
-        // 1. JIKA YANG LOGIN ADMIN WEB
         if (Auth::guard('web')->check()) {
-            $data = DB::table('laporan_umum')
-                ->leftJoin('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
-                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+            // ADMIN: Lihat yang sudah Final (Disetujui2)
+            $data2 = DB::table('laporan_umum')
+                ->join('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
+                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->join('village', 'users_mobile.id_village', '=', 'village.id')
                 ->select('laporan_umum.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                ->whereIn('laporan_umum.status', ['Disetujui2', 'disetujui2', 'DISETUJUI2'])
-                ->orderBy('id_laporan_umum', 'desc')
-                ->get();
-        } 
-        // 2. JIKA YANG LOGIN PENGGUNA MOBILE (KECAMATAN)
-        elseif (Auth::guard('pengguna')->check()) {
+                ->where('laporan_umum.status', 'Disetujui2')
+                ->orderBy('id_laporan_umum', 'desc')->get();
+        } elseif (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
-
-            if ($user->id_role == 2) { // Role Kecamatan
-                $data = DB::table('laporan_umum')
-                    ->leftJoin('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
-                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+            if ($user->id_role == 2) { // KECAMATAN: Lihat yang sudah mereka ACC
+                $data2 = DB::table('laporan_umum')
+                    ->join('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
+                    ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->join('village', 'users_mobile.id_village', '=', 'village.id')
                     ->select('laporan_umum.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                    ->whereIn('laporan_umum.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                    ->where('users_mobile.id_role', 1) // Desa
-                    ->orderBy('id_laporan_umum', 'desc')
-                    ->get();
+                    ->where('laporan_umum.status', 'Disetujui1')
+                    ->orderBy('id_laporan_umum', 'desc')->get();
+            } else { // DESA: Lihat riwayat sendiri
+                $data2 = DB::table('laporan_umum')
+                    ->join('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
+                    ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->select('laporan_umum.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                    ->where('laporan_umum.id_user', $user->id)
+                    ->whereIn('laporan_umum.status', ['Disetujui1', 'Disetujui2'])
+                    ->orderBy('id_laporan_umum', 'desc')->get();
             }
         }
 
-        return view('backend.decbidangumum', compact('data'));
+        return view('backend.decbidangumum', compact('data2'));
     }
 
-    public function destroy(string $id_laporan_umum)
+    public function destroy($id)
     {
-        $data = BidangUmum::find($id_laporan_umum);
-        
-        if ($data) {
-            $data->delete();
-            return redirect()->route('decbidangumum.index')->with(['success' => 'Berhasil Menghapus Laporan']);
-        }
-        
-        return redirect()->route('decbidangumum.index')->with(['error' => 'Data tidak ditemukan']);
+        BidangUmum::where('id_laporan_umum', $id)->delete();
+        return redirect()->route('decbidangumum.index')->with('success', 'Riwayat Berhasil Dihapus');
     }
 }

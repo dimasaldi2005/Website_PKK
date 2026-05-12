@@ -14,39 +14,49 @@ class AccPerumahanController extends Controller
         $per1 = 0;
         $per2 = 0;
 
-        // 1. JIKA YANG LOGIN PENGGUNA MOBILE (KECAMATAN)
-        if (Auth::guard('pengguna')->check()) {
-            $user = Auth::guard('pengguna')->user();
-
-            if ($user->id_role == 2) { // Role Kecamatan
-                // Menghitung yang masih 'proses' di desa naungannya
-                $per1 = DB::table('laporan_perumahan')
-                    ->join('users_mobile', 'laporan_perumahan.id_user', '=', 'users_mobile.id')
-                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                    ->where('users_mobile.id_role', 1)
-                    ->whereIn('laporan_perumahan.status', ['proses', 'Proses', 'PROSES'])
-                    ->count();
-
-                // Menghitung yang 'Disetujui1' (Sudah di-ACC Kecamatan)
-                $per2 = DB::table('laporan_perumahan')
-                    ->join('users_mobile', 'laporan_perumahan.id_user', '=', 'users_mobile.id')
-                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                    ->where('users_mobile.id_role', 1)
-                    ->whereIn('laporan_perumahan.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
-                    ->count();
-            }
-        } 
-        // 2. JIKA YANG LOGIN ADMIN WEB
-        else if (Auth::guard('web')->check()) {
-            // Admin menghitung SEMUA yang belum di-ACC final
+        // =====================================
+        // 1. WEB KABUPATEN (ADMIN)
+        // =====================================
+        if (Auth::guard('web')->check()) {
+            // MENUNGGU ACC KABUPATEN (Hanya menghitung yang sudah di-ACC Kecamatan)
             $per1 = DB::table('laporan_perumahan')
-                ->whereIn('status', ['proses', 'Proses', 'PROSES', 'Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                ->whereIn('status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
                 ->count();
 
-            // Admin menghitung yang sudah selesai di-ACC Admin
+            // SUDAH FINAL (Sudah di-ACC Kabupaten/Admin)
             $per2 = DB::table('laporan_perumahan')
                 ->whereIn('status', ['Disetujui2', 'disetujui2', 'DISETUJUI2'])
                 ->count();
+        } 
+        
+        // =====================================
+        // 2. PENGGUNA MOBILE (KECAMATAN / DESA)
+        // =====================================
+        else if (Auth::guard('pengguna')->check()) {
+            $user = Auth::guard('pengguna')->user();
+
+            if ($user->id_role == 2) { // Role Kecamatan
+                // JURUS ANTI-0: Ambil semua ID user di bawah kecamatan ini
+                $desaUsers = DB::table('users_mobile')
+                    ->where('id_subdistrict', $user->id_subdistrict)
+                    ->pluck('id');
+
+                // MENUNGGU PERSETUJUAN (Data mentah "Proses" dari desa)
+                $per1 = DB::table('laporan_perumahan')
+                    ->whereIn('id_user', $desaUsers)
+                    ->whereIn('status', ['proses', 'Proses', 'PROSES'])
+                    ->count();
+
+                // SUDAH DISETUJUI (Data yang sudah di-ACC Kecamatan menjadi Disetujui1)
+                $per2 = DB::table('laporan_perumahan')
+                    ->whereIn('id_user', $desaUsers)
+                    ->whereIn('status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                    ->count();
+            } else {
+                // UNTUK ROLE DESA (Agar dashboard desa tidak 0)
+                $per1 = DB::table('laporan_perumahan')->where('id_user', $user->id)->whereIn('status', ['proses', 'Proses', 'PROSES'])->count();
+                $per2 = DB::table('laporan_perumahan')->where('id_user', $user->id)->whereIn('status', ['Disetujui1', 'Disetujui2'])->count();
+            }
         }
 
         return view('backend.accperumahan', compact('per1', 'per2'));

@@ -14,6 +14,7 @@ class DecLaporanPokja3Controller extends Controller
     {
         $data2 = collect();
 
+        // 1. WEB KABUPATEN (ADMIN)
         if (Auth::guard('web')->check()) {
             $data2 = DB::table('laporan_kader_pokja3')
                 ->leftJoin('users_mobile', 'laporan_kader_pokja3.id_user', '=', 'users_mobile.id')
@@ -23,7 +24,10 @@ class DecLaporanPokja3Controller extends Controller
                 ->whereIn('laporan_kader_pokja3.status', ['Disetujui2', 'disetujui2', 'DISETUJUI2'])
                 ->orderBy('id_kader_pokja3', 'desc')
                 ->get();
-        } elseif (Auth::guard('pengguna')->check()) {
+        } 
+        
+        // 2. PENGGUNA MOBILE (KECAMATAN / DESA)
+        elseif (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
 
             if ($user->id_role == 2) { // Kecamatan
@@ -33,8 +37,18 @@ class DecLaporanPokja3Controller extends Controller
                     ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                     ->select('laporan_kader_pokja3.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                    ->where('users_mobile.id_role', 1)
                     ->whereIn('laporan_kader_pokja3.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                    ->orderBy('id_kader_pokja3', 'desc')
+                    ->get();
+            } else {
+                // Desa
+                $data2 = DB::table('laporan_kader_pokja3')
+                    ->leftJoin('users_mobile', 'laporan_kader_pokja3.id_user', '=', 'users_mobile.id')
+                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->select('laporan_kader_pokja3.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                    ->where('laporan_kader_pokja3.id_user', $user->id)
+                    ->whereIn('laporan_kader_pokja3.status', ['Disetujui1', 'Disetujui2'])
                     ->orderBy('id_kader_pokja3', 'desc')
                     ->get();
             }
@@ -48,7 +62,7 @@ class DecLaporanPokja3Controller extends Controller
         $data2 = LaporanPokja3::find($id_kader_pokja3);
         if ($data2) {
             $data2->delete();
-            return redirect()->route('declaporanpokja3.index')->with(['success' => 'Berhasil Menghapus Laporan']);
+            return redirect()->route('declaporanpokja3.index')->with(['success' => 'Berhasil Menghapus Riwayat Laporan']);
         }
         return redirect()->route('declaporanpokja3.index')->with(['error' => 'Data tidak ditemukan']);
     }

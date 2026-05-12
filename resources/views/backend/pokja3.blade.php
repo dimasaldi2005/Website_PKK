@@ -161,7 +161,7 @@
               <a href="{{ route('accsandang.index') }}">
 
                 <div class="card-body">
-                  <h5 class="card-title">Program Sandang</h5>
+                  <h5 class="card-title">Program Industri Rumah Tangga</h5>
 
                   <div class="d-flex align-items-center">
                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">

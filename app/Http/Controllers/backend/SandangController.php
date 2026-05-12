@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\backend;
 
 use App\Models\Sandang;
-use App\Models\Pengguna; // Tambahan untuk lookup edit
+use App\Models\Pengguna;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -15,34 +15,50 @@ class SandangController extends Controller
     {
         $data = collect();
 
-        // 1. JIKA YANG LOGIN PENGGUNA MOBILE (KECAMATAN)
-        if (Auth::guard('pengguna')->check()) {
+        // =====================================
+        // 1. WEB KABUPATEN (Hanya Lihat Disetujui1)
+        // =====================================
+        if (Auth::guard('web')->check()) {
+            $data = DB::table('laporan_sandang')
+                ->join('users_mobile', 'laporan_sandang.id_user', '=', 'users_mobile.id')
+                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                ->select('laporan_sandang.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                // HANYA yang sudah di-ACC Kecamatan
+                ->where('laporan_sandang.status', 'Disetujui1')
+                ->orderBy('laporan_sandang.id_pokja3_bidang2', 'desc')
+                ->get();
+        } 
+        
+        // =====================================
+        // 2. PENGGUNA MOBILE (KECAMATAN / DESA)
+        // =====================================
+        else if (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) { // Role Kecamatan
+            if ($user->id_role == 2) { 
+                // --- LOGIKA KECAMATAN (Jurus Anti-0) ---
                 $data = DB::table('laporan_sandang')
-                    ->leftJoin('users_mobile', 'laporan_sandang.id_user', '=', 'users_mobile.id')
-                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->join('users_mobile', 'laporan_sandang.id_user', '=', 'users_mobile.id')
+                    ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->join('village', 'users_mobile.id_village', '=', 'village.id')
                     ->select('laporan_sandang.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                    ->where('users_mobile.id_role', 1) // Desa role
-                    ->whereIn('laporan_sandang.status', ['proses', 'Proses', 'PROSES'])
+                    // HANYA melihat laporan mentah dari desa
+                    ->where('laporan_sandang.status', 'Proses')
+                    ->orderBy('laporan_sandang.id_pokja3_bidang2', 'desc')
+                    ->get();
+            } else {
+                // --- LOGIKA DESA ---
+                $data = DB::table('laporan_sandang')
+                    ->join('users_mobile', 'laporan_sandang.id_user', '=', 'users_mobile.id')
+                    ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->select('laporan_sandang.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                    ->where('laporan_sandang.id_user', $user->id)
                     ->orderBy('laporan_sandang.id_pokja3_bidang2', 'desc')
                     ->get();
             }
-        } 
-        // 2. JIKA YANG LOGIN ADMIN WEB
-        else if (Auth::guard('web')->check()) {
-            $data = DB::table('laporan_sandang')
-                ->leftJoin('users_mobile', 'laporan_sandang.id_user', '=', 'users_mobile.id')
-                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
-                ->select('laporan_sandang.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                // Tampilkan Disetujui1 dan Proses agar Admin bisa memantau
-                ->whereIn('laporan_sandang.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1', 'proses', 'Proses', 'PROSES'])
-                ->orderBy('laporan_sandang.id_pokja3_bidang2', 'desc')
-                ->get();
         }
 
         return view('backend.sandang', compact('data'));
@@ -60,7 +76,6 @@ class SandangController extends Controller
         $kecamatan = $user ? DB::table('subdistrict')->where('id', $user->id_subdistrict)->first() : null;
         $desa = $user ? DB::table('village')->where('id', $user->id_village)->first() : null;
 
-        // Pass variabel kecamatan dan desa (seperti controller lain) jika dibutuhkan di view
         return view('backend.tampil_sandang', compact('data', 'kecamatan', 'desa'));
     }
 
@@ -68,13 +83,16 @@ class SandangController extends Controller
     {
         $data = Sandang::find($id_pokja3_bidang2);
 
-        // Tentukan status persetujuan
+        // Tentukan status persetujuan secara otomatis
         $status = $request->status;
-        if (strtolower($status) == 'disetujui') {
-            $status = Auth::guard('pengguna')->check() ? 'Disetujui1' : 'Disetujui2';
+        if ($status == 'Disetujui') {
+            if (Auth::guard('pengguna')->check()) {
+                $status = 'Disetujui1'; // Oleh Kecamatan
+            } else {
+                $status = 'Disetujui2'; // Oleh Admin Kabupaten
+            }
         }
 
-        // Pakai ?? agar data angka tidak menjadi NULL jika form approval tidak mengirim nilai
         $data->update([
             'pangan'     => $request->pangan ?? $data->pangan,
             'sandang'    => $request->sandang ?? $data->sandang,
@@ -84,7 +102,7 @@ class SandangController extends Controller
             'updated_at' => now(),
         ]);
 
-        return redirect()->route('sandang.index')->with(['success' => 'Berhasil Mengubah Status']);
+        return redirect()->route('sandang.index')->with(['success' => 'Status Laporan Sandang Berhasil Diperbarui']);
     }
 
     public function destroy(string $id_pokja3_bidang2)

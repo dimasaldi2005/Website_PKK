@@ -14,30 +14,49 @@ class DecSandangController extends Controller
     {
         $data2 = collect();
 
-        // 1. JIKA YANG LOGIN ADMIN WEB
+        // =====================================
+        // 1. WEB KABUPATEN (Lihat Riwayat Final)
+        // =====================================
         if (Auth::guard('web')->check()) {
             $data2 = DB::table('laporan_sandang')
                 ->leftJoin('users_mobile', 'laporan_sandang.id_user', '=', 'users_mobile.id')
                 ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
                 ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                 ->select('laporan_sandang.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                // KABUPATEN: Hanya melihat riwayat yang sudah selesai di-ACC Admin (Final)
                 ->whereIn('laporan_sandang.status', ['Disetujui2', 'disetujui2', 'DISETUJUI2'])
                 ->orderBy('id_pokja3_bidang2', 'desc')
                 ->get();
         } 
-        // 2. JIKA YANG LOGIN PENGGUNA MOBILE (KECAMATAN)
+        
+        // =====================================
+        // 2. PENGGUNA MOBILE (KECAMATAN / DESA)
+        // =====================================
         elseif (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) { // Role Kecamatan
+            if ($user->id_role == 2) { 
+                // --- KECAMATAN (Jurus Anti-0) ---
                 $data2 = DB::table('laporan_sandang')
                     ->leftJoin('users_mobile', 'laporan_sandang.id_user', '=', 'users_mobile.id')
                     ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
                     ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                     ->select('laporan_sandang.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                    ->where('users_mobile.id_role', 1) // Hanya desa
+                    // KECAMATAN: Melihat riwayat yang sudah mereka ACC (Disetujui1)
                     ->whereIn('laporan_sandang.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                    ->orderBy('id_pokja3_bidang2', 'desc')
+                    ->get();
+            } else {
+                // --- DESA ---
+                $data2 = DB::table('laporan_sandang')
+                    ->leftJoin('users_mobile', 'laporan_sandang.id_user', '=', 'users_mobile.id')
+                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->select('laporan_sandang.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                    ->where('laporan_sandang.id_user', $user->id)
+                    // DESA: Bisa melihat datanya yang sudah lolos seleksi awal maupun akhir
+                    ->whereIn('laporan_sandang.status', ['Disetujui1', 'Disetujui2'])
                     ->orderBy('id_pokja3_bidang2', 'desc')
                     ->get();
             }
@@ -52,7 +71,7 @@ class DecSandangController extends Controller
 
         if ($data2) {
             $data2->delete();
-            return redirect()->route('decsandang.index')->with(['success' => 'Berhasil Menghapus Laporan']);
+            return redirect()->route('decsandang.index')->with(['success' => 'Berhasil Menghapus Riwayat Laporan']);
         }
 
         return redirect()->route('decsandang.index')->with(['error' => 'Data tidak ditemukan']);

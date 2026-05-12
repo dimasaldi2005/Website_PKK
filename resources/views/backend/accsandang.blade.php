@@ -63,7 +63,7 @@
     <main id="main" class="main">
 
         <div class="pagetitle">
-            <h1>Laporan Program Sandang</h1>
+            <h1>Laporan Program Industri Rumah Tangga</h1>
           </div><!-- End Page Title -->
 
       <section class="section dashboard">

@@ -11,42 +11,32 @@ class AccBidangUmumController extends Controller
 {
     public function index()
     {
-        $got1 = 0;
-        $got2 = 0;
+        $got1 = 0; $got2 = 0;
 
-        // 1. JIKA YANG LOGIN PENGGUNA MOBILE (KECAMATAN)
-        if (Auth::guard('pengguna')->check()) {
-            $user = Auth::guard('pengguna')->user();
-
-            if ($user->id_role == 2) { // Role Kecamatan
-                // Menghitung yang masih 'proses' di desa naungannya
-                $got1 = DB::table('laporan_umum')
-                    ->join('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
-                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                    ->where('users_mobile.id_role', 1)
-                    ->whereIn('laporan_umum.status', ['proses', 'Proses', 'PROSES'])
-                    ->count();
-
-                // Menghitung yang 'Disetujui1' (Sudah di-ACC Kecamatan)
-                $got2 = DB::table('laporan_umum')
-                    ->join('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
-                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                    ->where('users_mobile.id_role', 1)
-                    ->whereIn('laporan_umum.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
-                    ->count();
-            }
+        // =====================================
+        // 1. WEB KABUPATEN (ADMIN)
+        // =====================================
+        if (Auth::guard('web')->check()) {
+            // MENUNGGU (Sudah di-ACC Kecamatan / Disetujui1)
+            $got1 = DB::table('laporan_umum')->where('status', 'Disetujui1')->count();
+            // SELESAI (Final / Disetujui2)
+            $got2 = DB::table('laporan_umum')->where('status', 'Disetujui2')->count();
         } 
-        // 2. JIKA YANG LOGIN ADMIN WEB
-        else if (Auth::guard('web')->check()) {
-            // Admin menghitung SEMUA yang belum di-ACC final
-            $got1 = DB::table('laporan_umum')
-                ->whereIn('status', ['proses', 'Proses', 'PROSES', 'Disetujui1', 'disetujui1', 'DISETUJUI1'])
-                ->count();
-
-            // Admin menghitung yang sudah selesai di-ACC Admin
-            $got2 = DB::table('laporan_umum')
-                ->whereIn('status', ['Disetujui2', 'disetujui2', 'DISETUJUI2'])
-                ->count();
+        // =====================================
+        // 2. PENGGUNA MOBILE (KECAMATAN / DESA)
+        // =====================================
+        else if (Auth::guard('pengguna')->check()) {
+            $user = Auth::guard('pengguna')->user();
+            if ($user->id_role == 2) { // KECAMATAN
+                $desaIds = DB::table('users_mobile')->where('id_subdistrict', $user->id_subdistrict)->pluck('id');
+                // MENUNGGU (Proses dari Desa)
+                $got1 = DB::table('laporan_umum')->whereIn('id_user', $desaIds)->where('status', 'Proses')->count();
+                // SELESAI (Sudah mereka ACC / Disetujui1)
+                $got2 = DB::table('laporan_umum')->whereIn('id_user', $desaIds)->where('status', 'Disetujui1')->count();
+            } else { // DESA
+                $got1 = DB::table('laporan_umum')->where('id_user', $user->id)->where('status', 'Proses')->count();
+                $got2 = DB::table('laporan_umum')->where('id_user', $user->id)->whereIn('status', ['Disetujui1', 'Disetujui2'])->count();
+            }
         }
 
         return view('backend.accbidangumum', compact('got1', 'got2'));

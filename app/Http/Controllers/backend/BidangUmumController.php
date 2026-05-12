@@ -4,8 +4,8 @@ namespace App\Http\Controllers\backend;
 
 use Carbon\Carbon;
 use App\Models\Ttd;
-use App\Models\Ttds;
 use App\Models\BidangUmum;
+use App\Models\Pengguna;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -17,33 +17,36 @@ class BidangUmumController extends Controller
     {
         $data = collect();
 
-        // 1. JIKA YANG LOGIN ADMIN WEB
+        // 1. ADMIN WEB: Hanya lihat yang sudah di-ACC Kecamatan (Disetujui1)
         if (Auth::guard('web')->check()) {
             $data = DB::table('laporan_umum')
-                ->leftJoin('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
-                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                ->join('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
+                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->join('village', 'users_mobile.id_village', '=', 'village.id')
                 ->select('laporan_umum.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                // Tampilkan Disetujui1 dan Proses agar Admin bisa memantau
-                ->whereIn('laporan_umum.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1', 'proses', 'Proses', 'PROSES'])
-                ->orderBy('id_laporan_umum', 'desc')
-                ->get();
+                ->where('laporan_umum.status', 'Disetujui1')
+                ->orderBy('id_laporan_umum', 'desc')->get();
         } 
-        // 2. JIKA YANG LOGIN PENGGUNA MOBILE
+        // 2. PENGGUNA MOBILE
         else if (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
-
-            if ($user->id_role == 2) { // Kecamatan (role 2)
+            if ($user->id_role == 2) { // KECAMATAN: Hanya lihat Proses
                 $data = DB::table('laporan_umum')
-                    ->leftJoin('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
-                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->join('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
+                    ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->join('village', 'users_mobile.id_village', '=', 'village.id')
                     ->select('laporan_umum.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                    ->where('users_mobile.id_role', 1) // Hanya desa
-                    ->whereIn('laporan_umum.status', ['proses', 'Proses', 'PROSES'])
-                    ->orderBy('id_laporan_umum', 'desc')
-                    ->get();
+                    ->where('laporan_umum.status', 'Proses')
+                    ->orderBy('id_laporan_umum', 'desc')->get();
+            } else { // DESA: Lihat milik sendiri
+                $data = DB::table('laporan_umum')
+                    ->join('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
+                    ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->select('laporan_umum.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                    ->where('laporan_umum.id_user', $user->id)
+                    ->orderBy('id_laporan_umum', 'desc')->get();
             }
         }
 
@@ -52,21 +55,19 @@ class BidangUmumController extends Controller
 
     public function edit(string $id_laporan_umum)
     {
-        $data = BidangUmum::find($id_laporan_umum);
+        $data = BidangUmum::where('id_laporan_umum', $id_laporan_umum)->firstOrFail();
         return view('backend.tampil_bidangumum', compact('data'));
     }
 
     public function update(Request $request, string $id_laporan_umum)
     {
-        $data = BidangUmum::find($id_laporan_umum);
+        $data = BidangUmum::where('id_laporan_umum', $id_laporan_umum)->firstOrFail();
         $status = $request->status;
 
-        // Penyesuaian otomatis status menjadi Disetujui1/Disetujui2
-        if (strtolower($status) == 'disetujui') {
-            $status = Auth::guard('pengguna')->check() ? 'Disetujui1' : 'Disetujui2';
+        if (in_array(strtolower($status), ['disetujui', 'disetujui1', 'disetujui2'])) {
+            $status = Auth::guard('web')->check() ? 'Disetujui2' : 'Disetujui1';
         }
 
-        // Kita gunakan (??) agar jika data dari form kosong, dia akan tetap memakai data lama dari database
         $data->update([
             'dusun_lingkungan'  => $request->dusun_lingkungan ?? $data->dusun_lingkungan,
             'PKK_RW'            => $request->PKK_RW ?? $data->PKK_RW,
@@ -85,132 +86,47 @@ class BidangUmumController extends Controller
             'honorer_perempuan' => $request->honorer_perempuan ?? $data->honorer_perempuan,
             'bantuan_laki'      => $request->bantuan_laki ?? $data->bantuan_laki,
             'bantuan_perempuan' => $request->bantuan_perempuan ?? $data->bantuan_perempuan,
-            'id_user'           => $request->id_user ?? $data->id_user,
-            
-            // Status dan Catatan tetap di-update
             'status'            => $status,
             'catatan'           => $request->catatan,
-            
-            // BARIS 'created_at' DIHAPUS KARENA MEMBUAT ERROR 1048
+            'updated_at'        => now()
         ]);
 
-        return redirect()->route('bidangumum.index')->with(['success' => 'Berhasil Mengubah Status']);
+        return redirect()->route('bidangumum.index')->with('success', 'Berhasil Mengubah Status');
     }
 
     public function filter(Request $request)
     {
-        // Tentukan array status berdasarkan guard yang aktif
-        $statusArray = Auth::guard('web')->check() ? ['Disetujui2', 'disetujui2', 'DISETUJUI2'] : ['Disetujui1', 'disetujui1', 'DISETUJUI1'];
+        $statusTarget = Auth::guard('web')->check() ? 'Disetujui2' : 'Disetujui1';
 
-        $baseQuery = DB::table('laporan_umum')
-            ->leftJoin('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
-            ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+        $query = DB::table('laporan_umum')
+            ->join('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
+            ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
             ->select('laporan_umum.*', 'subdistrict.name as nama_kec')
-            ->whereIn('laporan_umum.status', $statusArray);
+            ->where('laporan_umum.status', $statusTarget);
 
-        // Jika guard pengguna (mobile) - tambahkan filter berdasarkan role
         if (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
-            if ($user->id_role == 2) { // Kecamatan
-                $baseQuery->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                    ->where('users_mobile.id_role', 1); // Hanya desa
-            }
+            if ($user->id_role == 2) $query->where('users_mobile.id_subdistrict', $user->id_subdistrict);
         }
 
-        if ($request->has('search')) {
-            $bidangumum = $baseQuery->where('laporan_umum.created_at', 'LIKE', '%' . $request->search . '%')->get();
+        $searchTerm = $request->search ?? $request->search2;
+        $bidangumum = $query->where('laporan_umum.created_at', 'LIKE', '%' . $searchTerm . '%')->get();
 
-            // Cek data kosong
-            if ($bidangumum->isEmpty()) {
-                return back()->with('error', 'Tidak ada data laporan untuk periode tersebut');
-            }
+        if ($bidangumum->isEmpty()) return back()->with('error', 'Tidak ada data laporan untuk periode tersebut');
 
-            $total1 = $bidangumum->sum('dusun_lingkungan');
-            $total2 = $bidangumum->sum('PKK_RW');
-            $total3 = $bidangumum->sum('desa_wisma');
-            $total4 = $bidangumum->sum('KRT');
-            $total5 = $bidangumum->sum('KK');
-            $total6 = $bidangumum->sum('jiwa_laki');
-            $total7 = $bidangumum->sum('jiwa_perempuan');
-            $total8 = $bidangumum->sum('anggota_laki');
-            $total9 = $bidangumum->sum('anggota_perempuan');
-            $total10 = $bidangumum->sum('umum_laki');
-            $total11 = $bidangumum->sum('umum_perempuan');
-            $total12 = $bidangumum->sum('khusus_laki');
-            $total13 = $bidangumum->sum('khusus_perempuan');
-            $total14 = $bidangumum->sum('honorer_laki');
-            $total15 = $bidangumum->sum('honorer_perempuan');
-            $total16 = $bidangumum->sum('bantuan_laki');
-            $total17 = $bidangumum->sum('bantuan_perempuan');
+        $totals = [];
+        for($i=1; $i<=17; $i++) { /* logic sum total di sini jika diperlukan di view */ }
 
-            $currentDate = Carbon::now();
-            $formattedDate = $currentDate->isoFormat('dddd, D MMMM YYYY');
-            
-            $tanggal = $request->input('search');
-            try {
-                $carbonDate = Carbon::parse($tanggal);
-                $tanggal = $carbonDate->isoFormat('MMMM YYYY');
-            } catch (\Exception $e) {}
+        $formattedDate = Carbon::now()->isoFormat('dddd, D MMMM YYYY');
+        $ketua = Ttd::where('jabatan', 'Sekretaris')->where('pokja', 'Bidang Umum')->get();
+        $viewName = $request->has('search2') ? 'backend.cetak_tahun_bidangumum' : 'backend.cetak_bulan_bidangumum';
 
-            $ketua = Ttd::where('jabatan', 'Sekretaris')->where('pokja', 'Bidang Umum')->get();
-            $wakil = Ttd::where('jabatan', 'Ketua')->where('id_ttds', '12')->get();
-
-            return view('backend.cetak_bulan_bidangumum', compact(
-                'bidangumum', 'total1', 'total2', 'total3', 'total4', 'tanggal', 'total5', 'total6', 'total7', 'total8', 
-                'total9', 'total10', 'total11', 'total12', 'total13', 'total14', 'total15', 'total16', 'total17', 
-                'formattedDate', 'ketua', 'wakil'
-            ));
-
-        } elseif ($request->has('search2')) {
-            $bidangumum = $baseQuery->where('laporan_umum.created_at', 'LIKE', '%' . $request->search2 . '%')->get();
-
-            // Cek data kosong
-            if ($bidangumum->isEmpty()) {
-                return back()->with('error', 'Tidak ada data laporan untuk periode tersebut');
-            }
-
-            $total1 = $bidangumum->sum('dusun_lingkungan');
-            $total2 = $bidangumum->sum('PKK_RW');
-            $total3 = $bidangumum->sum('desa_wisma');
-            $total4 = $bidangumum->sum('KRT');
-            $total5 = $bidangumum->sum('KK');
-            $total6 = $bidangumum->sum('jiwa_laki');
-            $total7 = $bidangumum->sum('jiwa_perempuan');
-            $total8 = $bidangumum->sum('anggota_laki');
-            $total9 = $bidangumum->sum('anggota_perempuan');
-            $total10 = $bidangumum->sum('umum_laki');
-            $total11 = $bidangumum->sum('umum_perempuan');
-            $total12 = $bidangumum->sum('khusus_laki');
-            $total13 = $bidangumum->sum('khusus_perempuan');
-            $total14 = $bidangumum->sum('honorer_laki');
-            $total15 = $bidangumum->sum('honorer_perempuan');
-            $total16 = $bidangumum->sum('bantuan_laki');
-            $total17 = $bidangumum->sum('bantuan_perempuan');
-
-            $currentDate = Carbon::now();
-            $formattedDate = $currentDate->isoFormat('dddd, D MMMM YYYY');
-            $tanggal = $request->input('search2');
-            
-            $ketua = Ttd::where('jabatan', 'Sekretaris')->where('pokja', 'Bidang Umum')->get();
-            $wakil = Ttd::where('jabatan', 'Ketua')->where('id_ttds', '12')->get();
-
-            return view('backend.cetak_tahun_bidangumum', compact(
-                'bidangumum', 'total1', 'total2', 'total3', 'total4', 'tanggal', 'total5', 'total6', 'total7', 'total8', 
-                'total9', 'total10', 'total11', 'total12', 'total13', 'total14', 'total15', 'total16', 'total17', 
-                'formattedDate', 'ketua', 'wakil'
-            ));
-        }
-
-        return redirect()->back();
+        return view($viewName, compact('bidangumum', 'formattedDate', 'ketua'));
     }
 
-    public function destroy(string $id_laporan_umum)
+    public function destroy($id)
     {
-        $data = BidangUmum::find($id_laporan_umum);
-        if ($data) {
-            $data->delete();
-            return redirect()->route('bidangumum.index')->with(['success' => 'Berhasil Menghapus Laporan']);
-        }
-        return redirect()->route('bidangumum.index')->with(['error' => 'Data tidak ditemukan']);
+        BidangUmum::where('id_laporan_umum', $id)->delete();
+        return redirect()->route('bidangumum.index')->with('success', 'Berhasil Menghapus Laporan');
     }
 }

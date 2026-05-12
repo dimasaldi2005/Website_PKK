@@ -11,59 +11,73 @@ class Pokja4Controller extends Controller
 {
     public function index()
     {
-        // Default biar aman
-        $modelPertama = 0;
-        $modelKedua = 0;
-        $modelKetiga = 0;
-        $modelKeempat = 0;
-        $modelKelima = 0;
+        $modelPertama = 0; $modelKedua = 0; $modelKetiga = 0; $modelKeempat = 0; $modelKelima = 0;
+        $data = collect();
 
-        // Kumpulkan semua status agar terbaca sebagai "Total Laporan"
-        $semuaStatus = ['Proses', 'proses', 'Disetujui1', 'Disetujui2'];
+        // =====================================
+        // 1. WEB KABUPATEN (Admin)
+        // =====================================
+        if (Auth::guard('web')->check()) {
+            $statusAdmin = ['Disetujui1', 'disetujui1', 'DISETUJUI1', 'Disetujui2', 'disetujui2', 'DISETUJUI2'];
 
-        // Jika login guard pengguna (Mobile/Desa/Kecamatan)
-        if (Auth::guard('pengguna')->check()) {
+            $modelPertama = DB::table('laporan_bidang_kesehatan')->whereIn('status', $statusAdmin)->count();
+            $modelKedua   = DB::table('laporan_kelestarian_lingkungan_hidup')->whereIn('status', $statusAdmin)->count();
+            $modelKetiga  = DB::table('laporan_perencanaan_sehat')->whereIn('status', $statusAdmin)->count();
+            $modelKeempat = DB::table('laporan_kader_pokja4')->whereIn('status', $statusAdmin)->count();
+            $modelKelima  = DB::table('rekap_desa_bulanan')->whereIn('status', $statusAdmin)->count();
 
+            // Tabel Dashboard Admin: Hanya lihat yang sudah di-ACC Kecamatan (Disetujui1)
+            $data = DB::table('laporan_kader_pokja4')
+                ->join('users_mobile', 'laporan_kader_pokja4.id_user', '=', 'users_mobile.id')
+                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                ->select('laporan_kader_pokja4.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                ->where('laporan_kader_pokja4.status', 'Disetujui1')
+                ->orderBy('id_kader_pokja4', 'desc')
+                ->get();
+        }
+        // =====================================
+        // 2. PENGGUNA MOBILE (Kecamatan / Desa)
+        // =====================================
+        else if (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
-
-            // Role 2: Kecamatan
-            if ($user->id_role == 2) {
-                // Cari ID Desa yang ada di kecamatan ini
-                $desaIds = DB::table('users_mobile')
-                    ->where('id_subdistrict', $user->id_subdistrict)
-                    ->where('id_role', 1)
-                    ->pluck('id');
-
-                $modelPertama = DB::table('laporan_bidang_kesehatan')->whereIn('id_user', $desaIds)->whereIn('status', $semuaStatus)->count();
-                $modelKedua   = DB::table('laporan_kelestarian_lingkungan_hidup')->whereIn('id_user', $desaIds)->whereIn('status', $semuaStatus)->count();
-                $modelKetiga  = DB::table('laporan_perencanaan_sehat')->whereIn('id_user', $desaIds)->whereIn('status', $semuaStatus)->count();
-                $modelKeempat = DB::table('laporan_kader_pokja4')->whereIn('id_user', $desaIds)->whereIn('status', $semuaStatus)->count();
-                $modelKelima  = DB::table('rekap_desa_bulanan')->whereIn('id_user', $desaIds)->whereIn('status', $semuaStatus)->count();
             
-            // Role 1: Desa
-            } elseif ($user->id_role == 1) {
-                $modelPertama = DB::table('laporan_bidang_kesehatan')->where('id_user', $user->id)->whereIn('status', $semuaStatus)->count();
-                $modelKedua   = DB::table('laporan_kelestarian_lingkungan_hidup')->where('id_user', $user->id)->whereIn('status', $semuaStatus)->count();
-                $modelKetiga  = DB::table('laporan_perencanaan_sehat')->where('id_user', $user->id)->whereIn('status', $semuaStatus)->count();
-                $modelKeempat = DB::table('laporan_kader_pokja4')->where('id_user', $user->id)->whereIn('status', $semuaStatus)->count();
-                $modelKelima  = DB::table('rekap_desa_bulanan')->where('id_user', $user->id)->whereIn('status', $semuaStatus)->count();
-            }
+            if ($user->id_role == 2) { // KECAMATAN
+                $desaIds = DB::table('users_mobile')->where('id_subdistrict', $user->id_subdistrict)->pluck('id');
+                $statusKec = ['proses', 'Proses', 'PROSES', 'Disetujui1', 'disetujui1', 'DISETUJUI1'];
 
-        } else {
-            // Guard web / admin (Menampilkan seluruh data se-kabupaten)
-            $modelPertama = DB::table('laporan_bidang_kesehatan')->whereIn('status', $semuaStatus)->count();
-            $modelKedua   = DB::table('laporan_kelestarian_lingkungan_hidup')->whereIn('status', $semuaStatus)->count();
-            $modelKetiga  = DB::table('laporan_perencanaan_sehat')->whereIn('status', $semuaStatus)->count();
-            $modelKeempat = DB::table('laporan_kader_pokja4')->whereIn('status', $semuaStatus)->count();
-            $modelKelima  = DB::table('rekap_desa_bulanan')->whereIn('status', $semuaStatus)->count();
+                $modelPertama = DB::table('laporan_bidang_kesehatan')->whereIn('id_user', $desaIds)->whereIn('status', $statusKec)->count();
+                $modelKedua   = DB::table('laporan_kelestarian_lingkungan_hidup')->whereIn('id_user', $desaIds)->whereIn('status', $statusKec)->count();
+                $modelKetiga  = DB::table('laporan_perencanaan_sehat')->whereIn('id_user', $desaIds)->whereIn('status', $statusKec)->count();
+                $modelKeempat = DB::table('laporan_kader_pokja4')->whereIn('id_user', $desaIds)->whereIn('status', $statusKec)->count();
+                $modelKelima  = DB::table('rekap_desa_bulanan')->whereIn('id_user', $desaIds)->whereIn('status', $statusKec)->count();
+
+                // Tabel Dashboard Kecamatan: Hanya lihat yang masih Proses
+                $data = DB::table('laporan_kader_pokja4')
+                    ->join('users_mobile', 'laporan_kader_pokja4.id_user', '=', 'users_mobile.id')
+                    ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->select('laporan_kader_pokja4.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('laporan_kader_pokja4.status', 'Proses')
+                    ->orderBy('id_kader_pokja4', 'desc')
+                    ->get();
+            } else { // DESA
+                $modelPertama = DB::table('laporan_bidang_kesehatan')->where('id_user', $user->id)->count();
+                $modelKetiga  = DB::table('laporan_perencanaan_sehat')->where('id_user', $user->id)->count();
+                // ... dan seterusnya untuk model lain jika perlu
+
+                $data = DB::table('laporan_kader_pokja4')
+                    ->join('users_mobile', 'laporan_kader_pokja4.id_user', '=', 'users_mobile.id')
+                    ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->select('laporan_kader_pokja4.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                    ->where('laporan_kader_pokja4.id_user', $user->id)
+                    ->orderBy('id_kader_pokja4', 'desc')
+                    ->get();
+            }
         }
 
-        return view('backend.pokja4', compact(
-            'modelPertama',
-            'modelKedua',
-            'modelKetiga',
-            'modelKeempat',
-            'modelKelima'
-        ));
+        return view('backend.pokja4', compact('modelPertama', 'modelKedua', 'modelKetiga', 'modelKeempat', 'modelKelima', 'data'));
     }
 }

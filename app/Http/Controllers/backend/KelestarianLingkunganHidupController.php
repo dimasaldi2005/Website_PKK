@@ -14,91 +14,70 @@ class KelestarianLingkunganHidupController extends Controller
     {
         $data = collect();
 
-        if (Auth::guard('pengguna')->check()) {
+        if (Auth::guard('web')->check()) {
+            // ADMIN: Hanya lihat yang antre (Disetujui1)
+            $data = DB::table('laporan_kelestarian_lingkungan_hidup')
+                ->join('users_mobile', 'laporan_kelestarian_lingkungan_hidup.id_user', '=', 'users_mobile.id')
+                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                ->select('laporan_kelestarian_lingkungan_hidup.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                ->where('laporan_kelestarian_lingkungan_hidup.status', 'Disetujui1')
+                ->orderBy('id_pokja4_bidang2', 'desc')->get();
+        } elseif (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
-
             $query = DB::table('laporan_kelestarian_lingkungan_hidup')
-                ->leftJoin('users_mobile', 'laporan_kelestarian_lingkungan_hidup.id_user', '=', 'users_mobile.id')
-                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
-                ->select(
-                    'laporan_kelestarian_lingkungan_hidup.*',
-                    'subdistrict.name as nama_kec',
-                    'village.name as nama_desa'
-                )
-                ->whereIn('laporan_kelestarian_lingkungan_hidup.status', ['Proses', 'proses'])
-                ->orderBy('laporan_kelestarian_lingkungan_hidup.id_pokja4_bidang2', 'desc');
+                ->join('users_mobile', 'laporan_kelestarian_lingkungan_hidup.id_user', '=', 'users_mobile.id')
+                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                ->select('laporan_kelestarian_lingkungan_hidup.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                ->orderBy('id_pokja4_bidang2', 'desc');
 
             if ($user->id_role == 2) {
-                // Kecamatan melihat data desa-desanya
-                $query->where('users_mobile.id_subdistrict', $user->id_subdistrict);
+                // KECAMATAN: Hanya lihat Proses
+                $data = $query->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                              ->where('laporan_kelestarian_lingkungan_hidup.status', 'Proses')->get();
             } else {
-                // Desa melihat datanya sendiri
-                $query->where('laporan_kelestarian_lingkungan_hidup.id_user', $user->id);
+                // DESA: Lihat milik sendiri
+                $data = $query->where('laporan_kelestarian_lingkungan_hidup.id_user', $user->id)->get();
             }
-
-            $data = $query->get();
-
-        } else {
-            // Admin web
-            // FIX: Admin bisa melihat data Proses dan Disetujui1
-            $data = DB::table('laporan_kelestarian_lingkungan_hidup')
-                ->leftJoin('users_mobile', 'laporan_kelestarian_lingkungan_hidup.id_user', '=', 'users_mobile.id')
-                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
-                ->select(
-                    'laporan_kelestarian_lingkungan_hidup.*',
-                    'subdistrict.name as nama_kec',
-                    'village.name as nama_desa'
-                )
-                ->whereIn('laporan_kelestarian_lingkungan_hidup.status', ['Proses', 'proses', 'Disetujui1'])
-                ->orderBy('laporan_kelestarian_lingkungan_hidup.id_pokja4_bidang2', 'desc')
-                ->get();
         }
 
         return view('backend.kelestarian_lingkungan_hidup', compact('data'));
     }
 
-    public function edit(string $id_pokja4_bidang2)
+    public function edit($id)
     {
-        // FIX: Pakai where()->first() bukan find()
-        $data = KelestarianLingkunganHidup::where('id_pokja4_bidang2', $id_pokja4_bidang2)->first();
+        $data = KelestarianLingkunganHidup::where('id_pokja4_bidang2', $id)->firstOrFail();
         return view('backend.tampil_kelestarian_lingkungan_hidup', compact('data'));
     }
 
-    public function update(Request $request, string $id_pokja4_bidang2)
+    public function update(Request $request, $id)
     {
-        $data = KelestarianLingkunganHidup::where('id_pokja4_bidang2', $id_pokja4_bidang2)->first();
-        if(!$data) return redirect()->back()->with('error', 'Data tidak ditemukan');
-
+        $data = KelestarianLingkunganHidup::where('id_pokja4_bidang2', $id)->firstOrFail();
         $status = $request->status;
-        if ($status == 'Disetujui' || $status == 'disetujui') {
+
+        if (in_array(strtolower($status), ['disetujui', 'disetujui1', 'disetujui2'])) {
             $status = Auth::guard('web')->check() ? 'Disetujui2' : 'Disetujui1';
         }
 
         $data->update([
-            'jamban' => $request->jamban,
-            'spal' => $request->spal,
-            'tps' => $request->tps,
-            'mck' => $request->mck,
-            'pdam' => $request->pdam,
-            'sumur' => $request->sumur,
-            'dll' => $request->dll,
+            'jamban' => $request->jamban ?? $data->jamban,
+            'spal'   => $request->spal ?? $data->spal,
+            'tps'    => $request->tps ?? $data->tps,
+            'mck'    => $request->mck ?? $data->mck,
+            'pdam'   => $request->pdam ?? $data->pdam,
+            'sumur'  => $request->sumur ?? $data->sumur,
+            'dll'    => $request->dll ?? $data->dll,
             'status' => $status,
             'catatan' => $request->catatan,
         ]);
 
-        return redirect()->route('kelestarian_lingkungan_hidup.index')
-            ->with(['success' => 'Berhasil Mengubah Status']);
+        return redirect()->route('kelestarian_lingkungan_hidup.index')->with(['success' => 'Berhasil Mengubah Status']);
     }
 
-    public function destroy(string $id_pokja4_bidang2)
+    public function destroy($id)
     {
-        $data = KelestarianLingkunganHidup::where('id_pokja4_bidang2', $id_pokja4_bidang2)->first();
-        if($data) {
-            $data->delete();
-        }
-        return redirect()->route('kelestarian_lingkungan_hidup.index')
-            ->with(['success' => 'Berhasil Menghapus Laporan']);
+        KelestarianLingkunganHidup::where('id_pokja4_bidang2', $id)->delete();
+        return redirect()->route('kelestarian_lingkungan_hidup.index')->with(['success' => 'Laporan Berhasil Dihapus']);
     }
 }

@@ -20,14 +20,14 @@ class AccGotongRoyongController extends Controller
         // =====================================
         if (Auth::guard('web')->check()) {
 
-            // MENUNGGU ACC KABUPATEN
+            // MENUNGGU ACC KABUPATEN (Hanya melihat yang sudah di-ACC Kecamatan)
             $got1 = DB::table('laporan_gotong_royong')
-                ->where('status', 'Disetujui1')
+                ->whereIn('status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
                 ->count();
 
             // SUDAH FINAL
             $got2 = DB::table('laporan_gotong_royong')
-                ->where('status', 'Disetujui2')
+                ->whereIn('status', ['Disetujui2', 'disetujui2', 'DISETUJUI2'])
                 ->count();
         }
 
@@ -40,23 +40,23 @@ class AccGotongRoyongController extends Controller
 
             if ($user->id_role == 2) {
 
+                // JURUS ANTI-0: Hapus where('id_role', 1) agar sistem tidak mendiskualifikasi pembuat laporan
                 $desaUsers = Pengguna::where(
                         'id_subdistrict',
                         $user->id_subdistrict
                     )
-                    ->where('id_role', 1)
                     ->pluck('id');
 
-                // MENUNGGU PERSETUJUAN
+                // MENUNGGU PERSETUJUAN (Hanya melihat laporan mentah dari desa)
                 $got1 = DB::table('laporan_gotong_royong')
                     ->whereIn('id_user', $desaUsers)
-                    ->where('status', 'Proses')
+                    ->whereIn('status', ['proses', 'Proses', 'PROSES'])
                     ->count();
 
                 // SUDAH DISETUJUI
                 $got2 = DB::table('laporan_gotong_royong')
                     ->whereIn('id_user', $desaUsers)
-                    ->where('status', 'Disetujui1')
+                    ->whereIn('status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
                     ->count();
             }
         }

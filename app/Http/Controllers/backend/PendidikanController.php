@@ -38,15 +38,15 @@ class PendidikanController extends Controller
                     ->get();
             }
         } 
-        // 2. JIKA YANG LOGIN ADMIN WEB
+        // 2. JIKA YANG LOGIN ADMIN WEB (KABUPATEN)
         else if (Auth::guard('web')->check()) {
             $data = DB::table('laporan_pendidikan_n_keterampilan')
                 ->leftJoin('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
                 ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
                 ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                 ->select('laporan_pendidikan_n_keterampilan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                // Tampilkan Disetujui1 dan proses agar Admin bisa memantau
-                ->whereIn('laporan_pendidikan_n_keterampilan.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1', 'proses', 'Proses'])
+                // PERBAIKAN: KABUPATEN HANYA BISA MELIHAT DATA YANG SUDAH LEWAT KECAMATAN (Hapus 'proses')
+                ->whereIn('laporan_pendidikan_n_keterampilan.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
                 ->orderBy('laporan_pendidikan_n_keterampilan.id_pokja2_bidang1', 'desc')
                 ->get();
         }
