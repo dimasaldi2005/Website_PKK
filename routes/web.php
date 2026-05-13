@@ -21,30 +21,15 @@ use App\Http\Controllers\backend\GaleriController;
 use App\Http\Controllers\Auth\OtpController;
 use App\Http\Controllers\backend\InovasiController;
 use App\Http\Controllers\backend\Pokja1ExportController;
-// TAMBAHAN UNTUK POKJA 4 EXPORT
 use App\Http\Controllers\backend\Pokja4ExportController;
 
-// Route::get('/', [HomeController::class, 'index'], function () {
-//     return view('/home');
-// });
+
+/*
+|--------------------------------------------------------------------------
+| 1. ROUTE PUBLIC / FRONTEND (TIDAK PERLU LOGIN)
+|--------------------------------------------------------------------------
+*/
 Route::get('/', [HomeController::class, 'index']);
-
-
-// routes/web.php
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth:web,pengguna', 'verified', 'prevent-back-history'])
-    ->name('dashboard');
-
-// Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])
-// ->middleware(['auth:web,pengguna'])
-//     ->name('logout');
-
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
-    ->middleware(['auth:web,pengguna'])
-    ->name('logout');
-
-
-require __DIR__ . '/auth.php';
 
 Route::resource('home', App\Http\Controllers\frontend\HomeController::class);
 Route::resource('laporan', App\Http\Controllers\frontend\LaporanController::class);
@@ -65,32 +50,58 @@ Route::resource('showhat', App\Http\Controllers\frontend\TampilsehatController::
 Route::resource('galery', App\Http\Controllers\frontend\GaleryController::class);
 Route::get('frontend/show/{id}', [BeritaController::class, 'show'])->name('frontend.show');
 
+// ROUTE LUPA SANDI (OTP)
+Route::get('/otp', [OtpController::class, 'showForm'])->name('otp.form');
+Route::post('/otp/send', [OtpController::class, 'sendOtp'])->name('otp.send');
+Route::get('/otp/verify', function () {
+    return view('auth.verify_otp');
+})->name('otp.verify.form');
+Route::post('/otp/verify', [OtpController::class, 'verifyOtp'])->name('otp.verify');
+Route::post('/otp/reset', [OtpController::class, 'resetPassword'])->name('otp.reset');
 
+
+/*
+|--------------------------------------------------------------------------
+| 2. ROUTE BAWAAN LARAVEL (AUTH)
+|--------------------------------------------------------------------------
+| Ditaruh di sini agar route 'logout' bawaan pabrik bisa kita TIMPA di bawahnya.
+*/
+require __DIR__ . '/auth.php';
+
+
+/*
+|--------------------------------------------------------------------------
+| 3. ROUTE BACKEND / PRIVATE (WAJIB LOGIN ADMIN ATAU KECAMATAN)
+|--------------------------------------------------------------------------
+| Semua route di dalam blok ini dilindungi dengan aman.
+*/
 Route::middleware(['auth:web,pengguna', 'prevent-back-history'])->group(function () {
+
+    // === MENIMPA ROUTE LOGOUT AGAR BISA DIAKSES 2 AKUN ===
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+    // === DASHBOARD ===
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // === MENU UTAMA & PROFILE ===
     Route::resource('profile', App\Http\Controllers\backend\ProfileController::class);
     Route::resource('change_password', App\Http\Controllers\backend\ChangePasswordController::class);
-    // Route::resource('jumlah_berita', App\Http\Controllers\backend\JumlahBeritaController::class);
-    // Route::resource('galeri', App\Http\Controllers\backend\GaleriController::class);
-    Route::resource('kesehatan', App\Http\Controllers\backend\KesehatanController::class);
-    Route::get('/kesehatan/filter', [App\Http\Controllers\backend\KesehatanController::class, 'filter'])
-        ->name('kesehatan.filter');
-
-        Route::get('/bidangumum/filter', [App\Http\Controllers\backend\BidangUmumController::class, 'filter'])->name('bidangumum.filter');
     
-    // TAMBAHKAN ROUTE EXPORT JSON INI
+    // === FITUR DATA & POKJA ===
+    Route::resource('kesehatan', App\Http\Controllers\backend\KesehatanController::class);
+    Route::get('/kesehatan/filter', [App\Http\Controllers\backend\KesehatanController::class, 'filter'])->name('kesehatan.filter');
+
+    Route::get('/bidangumum/filter', [App\Http\Controllers\backend\BidangUmumController::class, 'filter'])->name('bidangumum.filter');
     Route::get('/bidangumum/export-json', [App\Http\Controllers\backend\BidangUmumController::class, 'getExportData'])->name('bidangumum.exportJson');
-    Route::get('/gotongroyong/filter', [App\Http\Controllers\backend\GotongRoyongController::class, 'filter'])
-        ->name('gotongroyong.filter');
-    Route::get('/pendidikan/filter', [App\Http\Controllers\backend\PendidikanController::class, 'filter'])
-        ->name('pendidikan.filter');
-    Route::get('/pangan/filter', [App\Http\Controllers\backend\PanganController::class, 'filter'])
-        ->name('pangan.filter');
+    
+    Route::get('/gotongroyong/filter', [App\Http\Controllers\backend\GotongRoyongController::class, 'filter'])->name('gotongroyong.filter');
+    Route::get('/pendidikan/filter', [App\Http\Controllers\backend\PendidikanController::class, 'filter'])->name('pendidikan.filter');
+    Route::get('/pangan/filter', [App\Http\Controllers\backend\PanganController::class, 'filter'])->name('pangan.filter');
+    
     Route::resource('kelestarian_lingkungan_hidup', App\Http\Controllers\backend\KelestarianLingkunganHidupController::class);
     Route::resource('perencanaan_sehat', App\Http\Controllers\backend\PerencanaanSehatController::class);
-    Route::resource('input_berita', App\Http\Controllers\backend\InputBeritaController::class);
-    Route::resource('input_pengumuman', App\Http\Controllers\backend\InputPengumumanController::class);
-    Route::resource('profile', App\Http\Controllers\backend\ProfileController::class);
-    Route::resource('change_password', App\Http\Controllers\backend\ChangePasswordController::class);
+    
+    // === GALERI ===
     Route::resource('galeripokja1', App\Http\Controllers\backend\Galeri1Controller::class);
     Route::get('/galeripokja1/filter', [App\Http\Controllers\backend\Galeri1Controller::class, 'filter'])->name('galeripokja1.filter');
     Route::get('/galeripokja2/filter', [App\Http\Controllers\backend\Galeri2Controller::class, 'filter'])->name('galeripokja2.filter');
@@ -100,20 +111,23 @@ Route::middleware(['auth:web,pengguna', 'prevent-back-history'])->group(function
     Route::resource('galeripokja2', App\Http\Controllers\backend\Galeri2Controller::class);
     Route::resource('galeripokja3', App\Http\Controllers\backend\Galeri3Controller::class);
     Route::resource('galeripokja4', App\Http\Controllers\backend\Galeri4Controller::class);
+
+    // === POKJA ===
     Route::resource('pokja1', App\Http\Controllers\backend\Pokja1Controller::class);
     Route::resource('pokja2', App\Http\Controllers\backend\Pokja2Controller::class);
     Route::resource('pokja3', App\Http\Controllers\backend\Pokja3Controller::class);
     Route::resource('pokja4', App\Http\Controllers\backend\Pokja4Controller::class);
 
-    // CUSTOM ROUTE EXPORT JSON LAMA (TETAP DIBIARKAN UNTUK JAGA-JAGA)
+    // === EXPORT JSON LAMA ===
     Route::get('/laporanpokja1/export-json', [App\Http\Controllers\backend\LaporanPokja1Controller::class, 'getExportData'])->name('laporanpokja1.exportJson');
     Route::get('/laporanpokja4/export-json', [App\Http\Controllers\backend\LaporanPokja4Controller::class, 'getExportData'])->name('laporanpokja4.exportJson');
 
-    // RESOURCE ROUTES
+    // === LAPORAN POKJA ===
     Route::resource('laporanpokja1', App\Http\Controllers\backend\LaporanPokja1Controller::class);
     Route::resource('laporanpokja3', App\Http\Controllers\backend\LaporanPokja3Controller::class);
     Route::resource('laporanpokja4', App\Http\Controllers\backend\LaporanPokja4Controller::class);
 
+    // === DETAIL & ACC (DEC & ACC) ===
     Route::resource('deckesehatan', App\Http\Controllers\backend\DecKesehatanController::class);
     Route::resource('deckelestarian', App\Http\Controllers\backend\DecKelestarianController::class);
     Route::resource('decperencanaan', App\Http\Controllers\backend\DecPerencanaanController::class);
@@ -144,6 +158,7 @@ Route::middleware(['auth:web,pengguna', 'prevent-back-history'])->group(function
     Route::resource('acclaporanpokja4', App\Http\Controllers\backend\AccLaporanPokja4Controller::class);
     Route::resource('accbidangumum', App\Http\Controllers\backend\AccBidangUmumController::class);
 
+    // === RESOURCES LAINNYA ===
     Route::resource('bidangumum', App\Http\Controllers\backend\BidangUmumController::class);
     Route::resource('gotongroyong', App\Http\Controllers\backend\GotongRoyongController::class);
     Route::resource('penghayatan', App\Http\Controllers\backend\PenghayatanController::class);
@@ -168,7 +183,45 @@ Route::middleware(['auth:web,pengguna', 'prevent-back-history'])->group(function
     Route::resource('galerilaporanpokja3', App\Http\Controllers\backend\GaleriLaporanPokja3Controller::class);
     Route::resource('galerilaporanpokja4', App\Http\Controllers\backend\GaleriLaporanPokja4Controller::class);
 
-    //admin akses
+    /*
+    |--------------------------------------------------------------------------
+    | INOVASI & REKAP BULANAN (YANG SEBELUMNYA JEBOL, SEKARANG AMAN!)
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/inovasi', [InovasiController::class, 'index'])->name('inovasi.index');
+    Route::get('/inovasi/prioritas', [InovasiController::class, 'prioritas'])->name('inovasi.prioritas');
+    Route::get('/inovasi/unggulan', [InovasiController::class, 'unggulan'])->name('inovasi.unggulan');
+
+    Route::get('/inovasi/prioritas/bulanan', [InovasiController::class, 'prioritasBulanan'])->name('prioritas.bulanan');
+    Route::get('/inovasi/unggulan/bulanan', [InovasiController::class, 'unggulanBulanan'])->name('unggulan.bulanan');
+
+    Route::get('/inovasi/unggulan/bulanan/edit/{id}', [InovasiController::class, 'editUnggulan'])->name('unggulan.bulanan.edit');
+    Route::put('/inovasi/unggulan/bulanan/update/{id}', [InovasiController::class, 'updateUnggulan'])->name('unggulan.bulanan.update');
+    Route::delete('/inovasi/unggulan/bulanan/hapus/{id}', [InovasiController::class, 'destroyUnggulan'])->name('unggulan.bulanan.destroy');
+
+    Route::get('/inovasi/prioritas/bulanan/edit/{id}', [InovasiController::class, 'editPrioritas'])->name('prioritas.bulanan.edit');
+    Route::put('/inovasi/prioritas/bulanan/update/{id}', [InovasiController::class, 'updatePrioritas'])->name('prioritas.bulanan.update');
+    Route::delete('/inovasi/prioritas/bulanan/hapus/{id}', [InovasiController::class, 'destroyPrioritas'])->name('prioritas.bulanan.destroy');
+
+    /*
+    |--------------------------------------------------------------------------
+    | EXPORT EXCEL & JSON LAINNYA
+    |--------------------------------------------------------------------------
+    */
+    Route::post('/export-pokja1', [Pokja1ExportController::class, 'exportToSheet'])->name('export.pokja1');
+    Route::get('/cetak-pokja1', [App\Http\Controllers\backend\Pokja1Controller::class, 'cetak'])->name('pokja1.cetak');
+    Route::get('/pokja1/filter', [App\Http\Controllers\backend\Pokja1Controller::class, 'filter'])->name('pokja1.filter');
+    Route::get('/api-export/pokja1', [App\Http\Controllers\backend\Pokja1Controller::class, 'getExportData'])->name('pokja1.exportJson');
+
+    Route::post('/export-pokja4', [Pokja4ExportController::class, 'exportToSheet'])->name('export.pokja4');
+    Route::get('/api-export/pokja2', [App\Http\Controllers\backend\Pokja2Controller::class, 'getExportData'])->name('pokja2.exportJson');
+    Route::get('/api-export/pokja3', [App\Http\Controllers\backend\Pokja3Controller::class, 'getExportData'])->name('pokja3.exportJson');
+
+    /*
+    |--------------------------------------------------------------------------
+    | KHUSUS ADMIN (SUPER ADMIN)
+    |--------------------------------------------------------------------------
+    */
     Route::middleware(['admin'])->group(function () {
         Route::resource('ttd', App\Http\Controllers\backend\TtdController::class);
         Route::resource('ttdketua', App\Http\Controllers\backend\TtdKetuaController::class);
@@ -177,93 +230,5 @@ Route::middleware(['auth:web,pengguna', 'prevent-back-history'])->group(function
         Route::resource('input_berita', App\Http\Controllers\backend\InputBeritaController::class);
         Route::resource('input_pengumuman', App\Http\Controllers\backend\InputPengumumanController::class);
     });
+
 });
-
-//lupa sandi
-Route::get('/otp', [OtpController::class, 'showForm'])->name('otp.form');
-Route::post('/otp/send', [OtpController::class, 'sendOtp'])->name('otp.send');
-
-Route::get('/otp/verify', function () {
-    return view('auth.verify_otp');
-})->name('otp.verify.form');
-
-Route::post('/otp/verify', [OtpController::class, 'verifyOtp'])->name('otp.verify');
-
-Route::post('/otp/reset', [OtpController::class, 'resetPassword'])->name('otp.reset');
-
-
-// HALAMAN KATEGORI
-/*
-|--------------------------------------------------------------------------
-| INOVASI
-|--------------------------------------------------------------------------
-*/
-
-Route::get(
-    '/inovasi',
-    [InovasiController::class, 'index']
-)
-    ->name('inovasi.index');
-
-Route::get(
-    '/inovasi/prioritas',
-    [InovasiController::class, 'prioritas']
-)
-    ->name('inovasi.prioritas');
-
-Route::get(
-    '/inovasi/unggulan',
-    [InovasiController::class, 'unggulan']
-)
-    ->name('inovasi.unggulan');
-
-/*
-|--------------------------------------------------------------------------
-| REKAP BULANAN
-|--------------------------------------------------------------------------
-*/
-
-Route::get(
-    '/inovasi/prioritas/bulanan',
-    [InovasiController::class, 'prioritasBulanan']
-)
-    ->name('prioritas.bulanan');
-
-Route::get(
-    '/inovasi/unggulan/bulanan',
-    [InovasiController::class, 'unggulanBulanan']
-)
-    ->name('unggulan.bulanan');
-
-
-
-
-Route::post('/export-pokja1', [Pokja1ExportController::class, 'exportToSheet'])
-    ->name('export.pokja1');
-Route::get('/cetak-pokja1', [App\Http\Controllers\backend\Pokja1Controller::class, 'cetak'])->name('pokja1.cetak');
-Route::get('/pokja1/filter', [App\Http\Controllers\backend\Pokja1Controller::class, 'filter'])->name('pokja1.filter');
-// ROUTE BARU KHUSUS EXPORT JSON POKJA 1
-// ROUTE BARU YANG ANTI TABRAKAN
-Route::get('/api-export/pokja1', [App\Http\Controllers\backend\Pokja1Controller::class, 'getExportData'])->name('pokja1.exportJson');
-
-// ----------------------------------------------------
-// ROUTE BARU UNTUK EXPORT POKJA 4 VIA CONTROLLER SERVER
-// ----------------------------------------------------
-Route::post('/export-pokja4', [Pokja4ExportController::class, 'exportToSheet'])
-    ->name('export.pokja4');
-// Pastikan tidak ada typo di kata 'pokja2'
-Route::get('/api-export/pokja2', [App\Http\Controllers\backend\Pokja2Controller::class, 'getExportData'])->name('pokja2.exportJson');
-// ROUTE EXPORT JSON POKJA 3
-Route::get('/api-export/pokja3', [App\Http\Controllers\backend\Pokja3Controller::class, 'getExportData'])->name('pokja3.exportJson');
-
-// ... route inovasi bulanan yang sudah ada ...
-
-// ROUTE UNTUK EDIT, UPDATE, DAN HAPUS REKAP DESA BULANAN (UNGGULAN)
-Route::get('/inovasi/unggulan/bulanan/edit/{id}', [InovasiController::class, 'editUnggulan'])->name('unggulan.bulanan.edit');
-Route::put('/inovasi/unggulan/bulanan/update/{id}', [InovasiController::class, 'updateUnggulan'])->name('unggulan.bulanan.update');
-Route::delete('/inovasi/unggulan/bulanan/hapus/{id}', [InovasiController::class, 'destroyUnggulan'])->name('unggulan.bulanan.destroy');
-
-// LAKUKAN HAL YANG SAMA UNTUK PRIORITAS (Opsional, jika prioritas juga butuh fitur ini)
-Route::get('/inovasi/prioritas/bulanan/edit/{id}', [InovasiController::class, 'editPrioritas'])->name('prioritas.bulanan.edit');
-Route::put('/inovasi/prioritas/bulanan/update/{id}', [InovasiController::class, 'updatePrioritas'])->name('prioritas.bulanan.update');
-Route::delete('/inovasi/prioritas/bulanan/hapus/{id}', [InovasiController::class, 'destroyPrioritas'])->name('prioritas.bulanan.destroy');

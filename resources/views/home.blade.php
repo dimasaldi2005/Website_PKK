@@ -1,21 +1,3 @@
-{{-- ALERT --}}
-@if(session('success'))
-<div class="alert alert-success" id="alert-success">
-  {{ session('success') }}
-</div>
-
-<script>
-  setTimeout(function() {
-    const alert = document.getElementById('alert-success');
-    if (alert) {
-      alert.style.transition = 'opacity 0.5s ease';
-      alert.style.opacity = '0';
-      setTimeout(() => alert.remove(), 500);
-    }
-  }, 3000);
-</script>
-@endif
-
 @extends('frontend/layouts.template')
 
 @section('content')
@@ -27,17 +9,71 @@
   <div class="container">
     <div class="hero-content d-flex align-items-center gap-2">
       <!-- LOGO -->
-      <img src="{{ asset('frontend/assets/img/favicon.png') }}" class="hero-logo">
+      <img src="{{ asset('frontend/assets/img/favicon.png') }}" class="hero-logo" alt="Logo PKK">
       <!-- TEXT -->
       <div>
         <h1 id="typing-text"></h1>
         <p id="typing-sub"></p>
       </div>
-
     </div>
   </div>
 </section>
 <!-- End Hero -->
+
+{{-- ========================================================== --}}
+{{-- POP-UP SWEETALERT KHUSUS LOGOUT / NOTIFIKASI               --}}
+{{-- ========================================================== --}}
+@if (session('success') || session('status') || session('message'))
+    <!-- Panggil Library SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Skrip jaga-jaga: Paksa hapus preloader (loading muter) jika nyantol
+            const preloader = document.querySelector('#preloader');
+            if (preloader) {
+                preloader.style.display = 'none';
+            }
+
+            // Tampilkan SweetAlert
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil Logout!',
+                html: '<span style="font-family: \'Poppins\', sans-serif; font-size: 15px; color: #64748b;">{{ session("success") ?? session("status") ?? session("message") ?? "Sampai jumpa! Anda telah aman keluar dari sistem E-PKK." }}</span>',
+                showConfirmButton: true,
+                confirmButtonText: '<i class="bi bi-house-door-fill me-1"></i> Tutup',
+                confirmButtonColor: '#4154f1', // Warna biru elegan menyesuaikan tema
+                timer: 5000, // Hilang otomatis dalam 5 detik
+                timerProgressBar: true,
+                backdrop: `rgba(15, 23, 42, 0.5)`, // Latar belakang blur agak gelap
+                customClass: {
+                    popup: 'rounded-4 shadow-lg border-0', 
+                    title: 'font-poppins fw-bold text-dark fs-3',
+                    confirmButton: 'font-poppins fw-semibold rounded-pill px-4 py-2 mt-2 shadow-sm'
+                },
+                showClass: {
+                    popup: 'animate__animated animate__zoomIn animate__faster' // Muncul dengan efek Zoom
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__zoomOut animate__faster' // Hilang dengan efek Zoom
+                }
+            });
+        });
+    </script>
+
+    <style>
+        .font-poppins {
+            font-family: 'Poppins', sans-serif !important;
+        }
+        .swal2-confirm:hover {
+            background-color: #2a3eb1 !important;
+            transform: translateY(-2px);
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(65, 84, 241, 0.4) !important;
+        }
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css');
+    </style>
+@endif
 
 <main id="main">
 
@@ -172,9 +208,12 @@
   </section>
   <!-- End Portfolio -->
 
-  <!-- Swiper JS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+</main> <!-- Tutup Tag Main -->
+
+<!-- Swiper JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
 
   <!-- Modern Millennial Animations CSS -->
   <style>

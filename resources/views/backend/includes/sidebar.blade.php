@@ -151,8 +151,8 @@
 
         {{-- Logout --}}
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#" onclick="confirmLogout(event)">
-                <i class="bi bi-box-arrow-left"></i>
+            <a class="nav-link collapsed text-danger fw-semibold" href="#" onclick="confirmLogout(event)">
+                <i class="bi bi-box-arrow-left text-danger"></i>
                 <span>Logout</span>
             </a>
         </li>
@@ -160,130 +160,79 @@
     </ul>
 </aside>
 
+<!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  function confirmLogout(event) {
-    event.preventDefault();
-    Swal.fire({
-      title: '<span style="color: white; font-family: \'Poppins\', sans-serif; font-weight: 700; font-size: 22px;">Logout</span>',
-      html: '<p style="font-family: \'Poppins\', sans-serif; font-size: 15px; font-weight: 500; color: #4a5568; margin: 20px 0 25px 0;">Apakah anda yakin ingin Logout?</p>',
-      showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: '#d1d5db',
-      confirmButtonText: '<span style="font-family: \'Poppins\', sans-serif; font-weight: 700; font-size: 14px;">Logout</span>',
-      cancelButtonText: '<span style="font-family: \'Poppins\', sans-serif; font-weight: 700; font-size: 14px; color: #4a5568;">Batal</span>',
-      customClass: {
-        popup: 'logout-popup-custom',
-        title: 'logout-title-custom',
-        htmlContainer: 'logout-content-custom',
-        confirmButton: 'logout-confirm-btn-custom',
-        cancelButton: 'logout-cancel-btn-custom',
-        actions: 'logout-actions-custom'
-      },
-      buttonsStyling: false,
-      reverseButtons: true,
-      width: '420px'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Submit form logout
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '{{ route("logout") }}';
+    function confirmLogout(event) {
+        event.preventDefault();
         
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = '_token';
-        csrfToken.value = '{{ csrf_token() }}';
-        
-        form.appendChild(csrfToken);
-        document.body.appendChild(form);
-        form.submit();
-      }
-    });
-  }
+        Swal.fire({
+            title: 'Keluar Aplikasi?',
+            text: "Sesi Anda akan diakhiri. Apakah Anda yakin ingin keluar?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545', // Danger color
+            cancelButtonColor: '#6c757d', // Secondary color
+            confirmButtonText: '<i class="bi bi-box-arrow-right me-1"></i> Ya, Logout',
+            cancelButtonText: '<i class="bi bi-x-circle me-1"></i> Batal',
+            reverseButtons: true, // Batal di kiri, Logout di kanan
+            customClass: {
+                popup: 'rounded-4 shadow-lg border-0',
+                title: 'fs-4 fw-bold text-dark font-poppins',
+                htmlContainer: 'text-muted font-poppins',
+                confirmButton: 'btn btn-danger rounded-pill px-4 py-2 mx-2 fw-semibold font-poppins',
+                cancelButton: 'btn btn-secondary rounded-pill px-4 py-2 mx-2 fw-semibold font-poppins text-white'
+            },
+            buttonsStyling: false, // Mematikan style bawaan swal agar class bootstrap berfungsi
+            showLoaderOnConfirm: true, // Fitur anti-nyantol: muncul spinner saat ditekan
+            preConfirm: () => {
+                return new Promise((resolve) => {
+                    // Membuat form secara dinamis
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '{{ route("logout") }}';
+                    form.style.display = 'none'; // Sembunyikan form agar tidak merusak layout
+
+                    // Membuat CSRF Token
+                    const csrfToken = document.createElement('input');
+                    csrfToken.type = 'hidden';
+                    csrfToken.name = '_token';
+                    csrfToken.value = '{{ csrf_token() }}';
+
+                    // Gabungkan dan eksekusi
+                    form.appendChild(csrfToken);
+                    document.body.appendChild(form);
+                    
+                    // Delay sangat singkat untuk memastikan browser merender DOM sebelum submit
+                    setTimeout(() => {
+                        form.submit();
+                        resolve();
+                    }, 100);
+                });
+            },
+            allowOutsideClick: () => !Swal.isLoading() // Tidak bisa diklik di luar kotak saat loading
+        });
+    }
 </script>
 
 <style>
-  .logout-popup-custom {
-    border-radius: 16px !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    font-family: 'Poppins', sans-serif !important;
-  }
-  
-  .logout-popup-custom * {
-    font-family: 'Poppins', sans-serif !important;
-  }
-  
-  .logout-title-custom {
-    background-color: #ef4444 !important;
-    padding: 14px 22px !important;
-    margin: 0 !important;
-    text-align: left !important;
-    font-family: 'Poppins', sans-serif !important;
-  }
-  
-  .logout-content-custom {
-    padding: 0 28px !important;
-    margin: 0 !important;
-    font-family: 'Poppins', sans-serif !important;
-  }
-  
-  .logout-content-custom p {
-    font-family: 'Poppins', sans-serif !important;
-  }
-  
-  .logout-actions-custom {
-    padding: 0 28px 28px 28px !important;
-    gap: 10px !important;
-    justify-content: center !important;
-  }
-  
-  .logout-confirm-btn-custom {
-    background-color: #ef4444 !important;
-    color: white !important;
-    font-family: 'Poppins', sans-serif !important;
-    font-weight: 700 !important;
-    padding: 11px 35px !important;
-    border-radius: 8px !important;
-    border: none !important;
-    cursor: pointer !important;
-    transition: all 0.2s !important;
-    flex: 1 !important;
-    max-width: 160px !important;
-  }
-  
-  .logout-confirm-btn-custom span {
-    font-family: 'Poppins', sans-serif !important;
-  }
-  
-  .logout-confirm-btn-custom:hover {
-    background-color: #dc2626 !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3) !important;
-  }
-  
-  .logout-cancel-btn-custom {
-    background-color: #e5e7eb !important;
-    color: #4a5568 !important;
-    font-family: 'Poppins', sans-serif !important;
-    font-weight: 700 !important;
-    padding: 11px 35px !important;
-    border-radius: 8px !important;
-    border: none !important;
-    cursor: pointer !important;
-    transition: all 0.2s !important;
-    flex: 1 !important;
-    max-width: 160px !important;
-  }
-  
-  .logout-cancel-btn-custom span {
-    font-family: 'Poppins', sans-serif !important;
-  }
-  
-  .logout-cancel-btn-custom:hover {
-    background-color: #d1d5db !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 10px rgba(209, 213, 219, 0.3) !important;
-  }
+    /* Styling tambahan agar font Poppins teraplikasi dengan baik di SweetAlert */
+    .font-poppins {
+        font-family: 'Poppins', sans-serif !important;
+    }
+    
+    /* Efek hover pada tombol agar lebih hidup */
+    .swal2-confirm.btn-danger:hover {
+        background-color: #c82333 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .swal2-cancel.btn-secondary:hover {
+        background-color: #5a6268 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+        transition: all 0.2s ease-in-out;
+    }
 </style>
