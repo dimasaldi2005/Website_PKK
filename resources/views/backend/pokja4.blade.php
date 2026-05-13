@@ -1,8 +1,6 @@
-{{-- @extends('backend/layouts.template') --}}
-{{-- @section('content1') --}}
+@extends('backend.layouts.template')
 
-<!DOCTYPE html>
-<html lang="en">
+@section('content1')
 
 <head>
     <meta charset="utf-8">
@@ -266,174 +264,117 @@
                 </form>
             </div>
         </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-success" id="btnExport"><i class="bi bi-download"></i> <span id="btnText">Export</span></button>
+        </div>
+      </form>
     </div>
+  </div>
+</div>
 
-    <a href="#" class="back-to-top d-flex align-items-center justify-content-center">
-        <i class="bi bi-arrow-up-short"></i>
-    </a>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  // URL GOOGLE APPS SCRIPT POKJA 4 YANG BARU
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzzZHCfXfsAKfF9rdeLGNRnEGmWe8u7Wxzfw4tePj-aXmjypjntzlRkp8-n4LgThYc/exec";
+  const SHEET_HREF = "https://docs.google.com/spreadsheets/d/1sG9520UiJQIXg3u7YHXPPIpjU41w8fkyrw3fP37u-9c/edit?usp=sharing";
 
-    <!-- JS -->
-    <script src="backend/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="backend/assets/js/main.js"></script>
+  document.getElementById("formatExport").addEventListener("change", function() {
+    document.getElementById("infoLinkSheet").style.display = this.value === "excel" ? "block" : "none";
+  });
 
-    <script>
-        // PASTIKAN APPS SCRIPT URL INI ADALAH URL DEPLOYMENT UNTUK POKJA 4 KAMU
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxI94KbVy5KxSoClLSGjrqSLCaU9rqGdiHghFFcLnKlFV9-SgRnHDhLR5661sBsQukN/exec";
+  document.getElementById("formExport").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const format = document.getElementById("formatExport").value;
+    const btn = document.getElementById("btnExport");
+    const btnText = document.getElementById("btnText");
+    const form = e.target;
+    const formData = new FormData(form);
+    
+    const bulan = formData.get('bulan');
+    const tahun = formData.get('tahun');
+    const bidang = formData.get('bidang');
 
-        // MUNCULKAN KOTAK INFO JIKA FORMAT EXCEL DIPILIH
-        document.getElementById("formatExport").addEventListener("change", function() {
-            const infoBox = document.getElementById("infoLinkSheet");
-            if (this.value === "excel") {
-                infoBox.style.display = "block";
-            } else {
-                infoBox.style.display = "none";
-            }
-        });
+    if (!format) { Swal.fire({ icon: 'warning', title: 'Pilih Format!', text: 'Silakan pilih format export terlebih dahulu' }); return; }
 
-        document.getElementById("formExport").addEventListener("submit", async function(e) {
-            e.preventDefault();
-
-            const format = document.getElementById("formatExport").value;
-            const btn = document.getElementById("btnExport");
-            const btnText = document.getElementById("btnText");
-            const form = e.target;
-
-            const formData = new FormData(form);
-            const bulan = formData.get('bulan');
-            const tahun = formData.get('tahun');
-            const bidang = formData.get('bidang');
-
-            if (!format) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Pilih Format!',
-                    text: 'Silakan pilih format export terlebih dahulu'
-                });
-                return;
-            }
-
-            if (format === "pdf") {
-                // Jika route PDF-nya berbeda, sesuaikan di bawah ini
-                const params = new URLSearchParams(formData).toString();
-                window.location.href = "{{ route('kesehatan.filter') }}?" + params;
-
-            } else if (format === "excel") {
-
-                // --- KONFIRMASI SEBELUM EXPORT ---
-                const confirmExport = await Swal.fire({
-                    title: 'Mulai Ekspor?',
-                    html: `Data akan ditimpa/diperbarui ke dalam <b>Google Sheets</b>.<br><br>
-                 <a href="https://docs.google.com/spreadsheets/d/1sG9520UiJQIXg3u7YHXPPIpjU41w8fkyrw3fP37u-9c/edit?usp=sharing" target="_blank" style="text-decoration: none; color: #0d6efd; font-weight: 600; background: #f8f9fa; padding: 5px 10px; border-radius: 5px;">
-                   <i class="bi bi-box-arrow-up-right"></i> Pratinjau Spreadsheet Saat Ini
+    // --- PDF EXPORT ---
+    if (format === "pdf") {
+      let params = new URLSearchParams();
+      params.append('bidang', bidang);
+      if (bulan && tahun) {
+          params.append('search', `${tahun}-${bulan.toString().padStart(2, '0')}`);
+      } else if (tahun) {
+          params.append('search2', tahun);
+      }
+      window.location.href = "{{ route('kesehatan.filter') }}?" + params.toString(); 
+    } 
+    
+    // --- GOOGLE SHEETS EXPORT ---
+    else if (format === "excel") {
+      const confirmExport = await Swal.fire({
+        title: 'Mulai Ekspor?', html: `Data akan ditimpa/diperbarui ke dalam <b>Google Sheets Pokja 4</b>.<br><br>
+                 <a href="${SHEET_HREF}" target="_blank" style="text-decoration: none; color: #0d6efd; font-weight: 600; background: #f8f9fa; padding: 5px 10px; border-radius: 5px;">
+                   <i class="bi bi-box-arrow-up-right"></i> Pratinjau Spreadsheet
                  </a>`,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#198754',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: '<i class="bi bi-send"></i> Ya, Ekspor Sekarang!',
-                    cancelButtonText: 'Batal',
-                    reverseButtons: true
-                });
+        icon: 'question', showCancelButton: true,
+        confirmButtonColor: '#198754', cancelButtonColor: '#6c757d',
+        confirmButtonText: '<i class="bi bi-send"></i> Ya, Ekspor!', cancelButtonText: 'Batal', reverseButtons: true
+      });
+      if (!confirmExport.isConfirmed) return;
 
-                if (!confirmExport.isConfirmed) {
-                    return;
-                }
+      btn.disabled = true;
+      btnText.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Memproses...';
+      Swal.fire({ title: 'Mengekspor data...', text: 'Sedang mengambil data dari Database...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
 
-                btn.disabled = true;
-                btnText.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Memproses...';
+      try {
+        // 1. Fetch JSON dari Laravel Controller
+        const urlTarget = `{{ route('laporanpokja4.exportJson') }}?bulan=${bulan}&tahun=${tahun}&bidang=${bidang}`;
+        const dbResponse = await fetch(urlTarget);
+        
+        if (!dbResponse.ok) {
+            const textError = await dbResponse.text();
+            throw new Error(`Gagal memproses data di server lokal (Status: ${dbResponse.status}).`);
+        }
+        
+        const dbResult = await dbResponse.json();
+        
+        if (dbResult.status === 'empty' || !dbResult.data || dbResult.data.length === 0) {
+          Swal.fire('Data Kosong', dbResult.message || 'Tidak ada laporan yang Disetujui pada periode tersebut.', 'info');
+          btn.disabled = false; btnText.textContent = 'Export'; return;
+        }
 
-                Swal.fire({
-                    title: 'Mengekspor data...',
-                    text: 'Sedang mengambil data dari Database...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
+        Swal.update({ text: `Ditemukan ${dbResult.data.length} baris data. Mengirim ke Google Sheets...` });
 
-                try {
-                    // --- LANGKAH 1: AMBIL DATA DARI LARAVEL (Route Pokja 4) ---
-                    const urlTarget = `{{ route('laporanpokja4.exportJson') }}?bulan=${bulan}&tahun=${tahun}&bidang=${bidang}`;
-
-                    const dbResponse = await fetch(urlTarget);
-
-                    if (!dbResponse.ok) {
-                        const textError = await dbResponse.text();
-                        let realErrorMsg = `Status: ${dbResponse.status}`;
-                        try {
-                            const jsonError = JSON.parse(textError);
-                            if (jsonError.message) realErrorMsg = jsonError.message;
-                        } catch (e) {}
-                        throw new Error(realErrorMsg);
-                    }
-
-                    const dbResult = await dbResponse.json();
-
-                    if (!dbResult.data || dbResult.data.length === 0) {
-                        Swal.fire('Data Kosong', 'Tidak ada laporan yang Disetujui pada bulan dan tahun tersebut.', 'info');
-                        btn.disabled = false;
-                        btnText.textContent = 'Export';
-                        return;
-                    }
-
-                    Swal.update({
-                        text: `Ditemukan ${dbResult.data.length} baris data. Menyiapkan dan merapikan tabel di Google Sheets...`
-                    });
-
-                    // --- LANGKAH 2: KIRIM DATA KE GOOGLE APPS SCRIPT ---
-                    const googleResponse = await fetch(APPS_SCRIPT_URL, {
-                        method: 'POST',
-                        redirect: 'follow',
-                        headers: {
-                            'Content-Type': 'text/plain;charset=utf-8'
-                        },
-                        body: JSON.stringify(dbResult)
-                    });
-
-                    const textResult = await googleResponse.text();
-
-                    try {
-                        const result = JSON.parse(textResult);
-
-                        if (result.status === "success") {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil!',
-                                html: `✅ ${result.message}<br><br>
-                               🔗 Silahkan buka tautan berikut untuk melihat hasilnya:<br><br>
-                               <a href="https://docs.google.com/spreadsheets/d/1sG9520UiJQIXg3u7YHXPPIpjU41w8fkyrw3fP37u-9c/edit?usp=sharing" target="_blank" class="btn btn-sm btn-outline-primary">
-                                  Buka Spreadsheet Laporan
-                               </a>`,
-                                confirmButtonText: 'Tutup',
-                            }).then(() => {
-                                form.reset();
-                                document.getElementById("infoLinkSheet").style.display = "none";
-                                const modal = bootstrap.Modal.getInstance(document.getElementById('modalLaporan'));
-                                if (modal) modal.hide();
-                            });
-                        } else {
-                            throw new Error(result.message);
-                        }
-                    } catch (e) {
-                        console.error("Respons dari Google Script:", textResult);
-                        throw new Error("Google Apps Script mengembalikan halaman error. Pastikan Deploy as Web App di-set ke 'Who has access: Anyone'.");
-                    }
-
-                } catch (error) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal Mengirim!',
-                        html: `Terjadi kesalahan:<br><br><code>${error.message}</code>`
-                    });
-                } finally {
-                    btn.disabled = false;
-                    btnText.textContent = 'Export';
-                }
-            }
+        // 2. Tembak data ke Google Apps Script
+        const googleResponse = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST', redirect: 'follow',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(dbResult)
         });
-    </script>
+        
+        const textResult = await googleResponse.text();
+        
+        try {
+            const result = JSON.parse(textResult);
+            if (result.status === "success") {
+              Swal.fire({ icon: 'success', title: 'Berhasil!', html: `✅ ${result.message}<br><br>
+                                   <a href="${SHEET_HREF}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                      Buka Laporan Pokja 4
+                                   </a>`, confirmButtonText: 'Tutup' })
+                .then(() => { form.reset(); document.getElementById("infoLinkSheet").style.display = "none"; bootstrap.Modal.getInstance(document.getElementById('modalLaporan'))?.hide(); });
+            } else { throw new Error(result.message); }
+        } catch(e) {
+            let debugHTML = textResult.substring(0, 150).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            throw new Error(`Gagal memproses response Google Apps Script. Pastikan Deploy as Web App di-set ke 'Anyone'.<br><br><small style="color:red;">${debugHTML}...</small>`);
+        }
 
-</body>
+      } catch (error) {
+        Swal.fire({ icon: 'error', title: 'Gagal Mengirim!', html: `Terjadi kesalahan jaringan atau server:<br><br><code>${error.message}</code>` });
+      } finally {
+        btn.disabled = false; btnText.textContent = 'Export';
+      }
+    }
+  });
+</script>
 
-</html>
-{{-- @endsection --}}
+@endsection

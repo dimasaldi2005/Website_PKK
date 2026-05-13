@@ -74,8 +74,11 @@ Route::middleware(['auth:web,pengguna', 'prevent-back-history'])->group(function
     Route::resource('kesehatan', App\Http\Controllers\backend\KesehatanController::class);
     Route::get('/kesehatan/filter', [App\Http\Controllers\backend\KesehatanController::class, 'filter'])
         ->name('kesehatan.filter');
-    Route::get('/bidangumum/filter', [App\Http\Controllers\backend\BidangUmumController::class, 'filter'])
-        ->name('bidangumum.filter');
+
+        Route::get('/bidangumum/filter', [App\Http\Controllers\backend\BidangUmumController::class, 'filter'])->name('bidangumum.filter');
+    
+    // TAMBAHKAN ROUTE EXPORT JSON INI
+    Route::get('/bidangumum/export-json', [App\Http\Controllers\backend\BidangUmumController::class, 'getExportData'])->name('bidangumum.exportJson');
     Route::get('/gotongroyong/filter', [App\Http\Controllers\backend\GotongRoyongController::class, 'filter'])
         ->name('gotongroyong.filter');
     Route::get('/pendidikan/filter', [App\Http\Controllers\backend\PendidikanController::class, 'filter'])
@@ -239,9 +242,16 @@ Route::post('/export-pokja1', [Pokja1ExportController::class, 'exportToSheet'])
     ->name('export.pokja1');
 Route::get('/cetak-pokja1', [App\Http\Controllers\backend\Pokja1Controller::class, 'cetak'])->name('pokja1.cetak');
 Route::get('/pokja1/filter', [App\Http\Controllers\backend\Pokja1Controller::class, 'filter'])->name('pokja1.filter');
+// ROUTE BARU KHUSUS EXPORT JSON POKJA 1
+// ROUTE BARU YANG ANTI TABRAKAN
+Route::get('/api-export/pokja1', [App\Http\Controllers\backend\Pokja1Controller::class, 'getExportData'])->name('pokja1.exportJson');
 
 // ----------------------------------------------------
 // ROUTE BARU UNTUK EXPORT POKJA 4 VIA CONTROLLER SERVER
 // ----------------------------------------------------
 Route::post('/export-pokja4', [Pokja4ExportController::class, 'exportToSheet'])
     ->name('export.pokja4');
+// Pastikan tidak ada typo di kata 'pokja2'
+Route::get('/api-export/pokja2', [App\Http\Controllers\backend\Pokja2Controller::class, 'getExportData'])->name('pokja2.exportJson');
+// ROUTE EXPORT JSON POKJA 3
+Route::get('/api-export/pokja3', [App\Http\Controllers\backend\Pokja3Controller::class, 'getExportData'])->name('pokja3.exportJson');

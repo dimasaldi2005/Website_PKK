@@ -36,60 +36,72 @@
 
 
   <!-- ======= Footer ======= -->
-  <footer id="footer" style="background-color: #07304A !important; padding: 40px 0 20px 0;">
+  <footer id="footer" style="background-color: #07304A !important; padding: 0;">
 
-    <div class="footer-top" style="background-color: #07304A !important; padding: 60px 0 30px 0;">
+    <div class="footer-top" style="background-color: #07304A !important; padding: 45px 0 35px 0;">
       <div class="container">
-        <div class="row">
+        <div class="row align-items-center justify-content-between">
 
-          <!-- Kolom 1: Info Kontak -->
-          <div class="col-lg-4 col-md-4 footer-contact">
-            <h3 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 18px; color: #fff; margin-bottom: 15px;">Pemberdayaan Kesejahteraan Keluarga</h3>
-            <h4 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 18px; color: #fff; margin-bottom: 20px;">Kabupaten Nganjuk</h4>
+          <!-- Kolom 1: Judul + Alamat -->
+          <div class="col-lg-4 col-md-4 mb-3 mb-lg-0">
+            <h3 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; color: #fff; margin-bottom: 18px; line-height: 1.6;">
+              Pemberdayaan Kesejahteraan Keluarga<br>Kabupaten Nganjuk
+            </h3>
             
-            <div style="margin-top: 20px;">
-              <p style="font-family: 'Poppins', sans-serif; font-size: 14px; color: #e0e0e0; line-height: 1.8; margin-bottom: 10px;">
-                Jl. Dermojoyo No.21, Payaman, Kec. Nganjuk, Kabupaten Nganjuk, Jawa Timur 64418
-              </p>
-              <p style="font-family: 'Poppins', sans-serif; font-size: 14px; color: #e0e0e0; margin-bottom: 5px;">
-                <strong style="color: #fff;">Phone</strong> : 087754215178
-              </p>
-              <p style="font-family: 'Poppins', sans-serif; font-size: 14px; color: #e0e0e0; margin-bottom: 0;">
-                <strong style="color: #fff;">Email</strong> : admin@pkk-nganjuk.my.id
-              </p>
-            </div>
+            <p style="font-family: 'Poppins', sans-serif; font-size: 13px; color: #d0d0d0; line-height: 1.7; margin-bottom: 0; font-weight: 400;">
+              Jl. Dermojoyo No.21, Payaman, Kec. Nganjuk,<br>Kabupaten Nganjuk, Jawa Timur 64418
+            </p>
           </div>
 
-          <!-- Kolom 2: Link Terkait (Jumlah Pengunjung) -->
-          <div class="col-lg-4 col-md-4 footer-links">
-            <h4 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; color: #fff; margin-bottom: 20px;">Link Terkait</h4>
-            <div style="font-family: 'Poppins', sans-serif; font-size: 14px; color: #e0e0e0; line-height: 2;">
-              <p style="margin-bottom: 8px;">› Hari ini : {{ $visitor->count }}</p>
-              <p style="margin-bottom: 8px;">› Minggu ini : {{ $totalMinggu }}</p>
-              <p style="margin-bottom: 8px;">› Bulan ini : {{ $totalBulan }}</p>
-              <p style="margin-bottom: 8px;">› Tahun ini : {{ $totalTahun }}</p>
-              <p style="margin-bottom: 0;">› Semua Pengunjung : {{ $totalVisitors }}</p>
+          <!-- Kolom 2: Kontak -->
+          <div class="col-lg-3 col-md-3 mb-3 mb-lg-0">
+            <h4 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; color: #fff; margin-bottom: 18px;">Kontak :</h4>
+            <div style="font-family: 'Poppins', sans-serif; font-size: 13px; color: #d0d0d0; line-height: 2; font-weight: 400;">
+              <p style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                <i class="bi bi-telephone-fill" style="color: #fff; font-size: 14px;"></i> 
+                <span>087754215178</span>
+              </p>
+              <p style="margin-bottom: 0; display: flex; align-items: center; gap: 8px;">
+                <i class="bi bi-envelope-fill" style="color: #fff; font-size: 14px;"></i> 
+                <span>admin@pkk-nganjuk.my.id</span>
+              </p>
             </div>
           </div>
 
           <!-- Kolom 3: Lokasi PKK dengan Maps -->
-          <div class="col-lg-4 col-md-4 footer-links">
-            <h4 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; color: #fff; margin-bottom: 20px;">Lokasi PKK :</h4>
-            <div style="border-radius: 8px; overflow: hidden; border: 3px solid #fff;">
-              <a href="https://maps.app.goo.gl/37AmTwodTWA6hius7" target="_blank">
+          <div class="col-lg-3 col-md-3">
+            <div style="background: #fff; border-radius: 12px; overflow: hidden; padding: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.25);">
+              <a href="https://maps.app.goo.gl/37AmTwodTWA6hius7" target="_blank" style="display: block;">
                 <iframe 
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.9876543210987!2d111.90345678901234!3d-7.603456789012345!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7856f123456789%3A0x1234567890abcdef!2sJl.%20Dermojoyo%20No.21%2C%20Payaman%2C%20Kec.%20Nganjuk%2C%20Kabupaten%20Nganjuk%2C%20Jawa%20Timur%2064418!5e0!3m2!1sen!2sid!4v1234567890123!5m2!1sen!2sid" 
                   width="100%" 
-                  height="150" 
-                  style="border:0;" 
+                  height="110" 
+                  style="border:0; border-radius: 6px; display: block;" 
                   allowfullscreen="" 
                   loading="lazy" 
                   referrerpolicy="no-referrer-when-downgrade">
                 </iframe>
               </a>
+              <p style="font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 600; color: #07304A; text-align: center; margin: 8px 0 0 0;">
+                Lokasi PKK
+              </p>
             </div>
           </div>
 
+        </div>
+      </div>
+    </div>
+
+    <!-- Garis Pemisah -->
+    <div style="border-top: 1px solid rgba(255,255,255,0.2); margin: 0;"></div>
+
+    <!-- Copyright Bar -->
+    <div style="background-color: #07304A; padding: 16px 0;">
+      <div class="container">
+        <div class="text-center">
+          <p style="font-family: 'Poppins', sans-serif; font-size: 13px; color: #b0b0b0; margin: 0; font-weight: 400;">
+            <i class="bi bi-c-circle" style="font-size: 12px;"></i> 2026 PKK Kab. Nganjuk. All Rights Reserved.
+          </p>
         </div>
       </div>
     </div>

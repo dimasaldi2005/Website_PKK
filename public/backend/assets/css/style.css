@@ -35,7 +35,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Nunito", sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 /*--------------------------------------------------------------
@@ -306,7 +306,7 @@ h6 {
 /* Breadcrumbs */
 .breadcrumb {
   font-size: 14px;
-  font-family: "Nunito", sans-serif;
+  font-family: "Poppins", sans-serif;
   color: #899bbd;
   font-weight: 600;
 }
@@ -373,10 +373,10 @@ h6 {
 }
 
 .logo span {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: #1a1a1a;
-  font-family: "Nunito", sans-serif;
+  font-family: "Poppins", sans-serif;
   line-height: 1.4;
   white-space: normal;
 }
@@ -681,8 +681,8 @@ h6 {
   display: flex;
   align-items: center;
   font-size: 13px;
-  font-weight: 500;
-  font-family: "Nunito", sans-serif;
+  font-weight: 400;
+  font-family: "Poppins", sans-serif;
   color: #333;
   transition: 0.2s;
   background: transparent;
@@ -750,12 +750,13 @@ h6 {
   align-items: center;
   font-size: 12px;
   font-weight: 400;
-  font-family: "Nunito", sans-serif;
+  font-family: "Poppins", sans-serif;
   color: #555;
   transition: 0.2s;
   padding: 6px 8px;
   border-radius: 4px;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .sidebar-nav .nav-content a::before {
@@ -834,9 +835,9 @@ h6 {
 }
 
 .dashboard .info-card h6 {
-  font-size: 28px;
+  font-size: 22px;
   color: #012970;
-  font-weight: 700;
+  font-weight: 600;
   margin: 0;
   padding: 0;
 }

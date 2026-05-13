@@ -70,15 +70,15 @@
     </li>
 
     <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+      <a class="nav-link {{ Request::is('accbidangumum*') || Request::is('pokja1*') || Request::is('pokja2*') || Request::is('pokja3*') || Request::is('pokja4*') ? '' : 'collapsed' }}" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
       <i class="fa-solid fa-book"></i><span>Kelompok Kerja</span><i class="bi bi-chevron-down ms-auto"></i>
       </a>
-      <ul id="components-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
-      <li><a href="{{ route('accbidangumum.index') }}"><i class="bi bi-circle"></i><span>Bidang Umum</span></a></li>
-      <li><a href="{{ route('pokja1.index') }}"><i class="bi bi-circle"></i><span>Kelompok Kerja 1</span></a></li>
-      <li><a href="{{ route('pokja2.index') }}"><i class="bi bi-circle"></i><span>Kelompok Kerja 2</span></a></li>
-      <li><a href="{{ route('pokja3.index') }}"><i class="bi bi-circle"></i><span>Kelompok Kerja 3</span></a></li>
-      <li><a href="{{ route('pokja4.index') }}"><i class="bi bi-circle"></i><span>Kelompok Kerja 4</span></a></li>
+      <ul id="components-nav" class="nav-content collapse {{ Request::is('accbidangumum*') || Request::is('pokja1*') || Request::is('pokja2*') || Request::is('pokja3*') || Request::is('pokja4*') ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
+      <li><a href="{{ route('accbidangumum.index') }}" class="{{ Request::is('accbidangumum*') ? 'active' : '' }}"><i class="bi bi-circle"></i><span>Bidang Umum</span></a></li>
+      <li><a href="{{ route('pokja1.index') }}" class="{{ Request::is('pokja1*') ? 'active' : '' }}"><i class="bi bi-circle"></i><span>Kelompok Kerja 1</span></a></li>
+      <li><a href="{{ route('pokja2.index') }}" class="{{ Request::is('pokja2*') ? 'active' : '' }}"><i class="bi bi-circle"></i><span>Kelompok Kerja 2</span></a></li>
+      <li><a href="{{ route('pokja3.index') }}" class="{{ Request::is('pokja3*') ? 'active' : '' }}"><i class="bi bi-circle"></i><span>Kelompok Kerja 3</span></a></li>
+      <li><a href="{{ route('pokja4.index') }}" class="{{ Request::is('pokja4*') ? 'active' : '' }}"><i class="bi bi-circle"></i><span>Kelompok Kerja 4</span></a></li>
       </ul>
     </li>
   @endif
