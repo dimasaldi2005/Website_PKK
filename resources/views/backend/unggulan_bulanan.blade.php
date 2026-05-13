@@ -4,642 +4,226 @@
 <html lang="en">
 
 <head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Rekap Desa Bulanan - Unggulan</title>
 
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <link href="{{ asset('backend/assets/img/favicon.png') }}" rel="icon">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Nunito|Poppins" rel="stylesheet">
+  <link href="{{ asset('backend/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ asset('backend/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
+  <link href="{{ asset('backend/assets/css/style.css') }}" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{{ asset('fontawesome/css/all.min.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <title>Rekap Desa Bulanan - Unggulan</title>
-
-    <!-- Favicons -->
-    <link href="{{ asset('backend/assets/img/favicon.png') }}" rel="icon">
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.gstatic.com" rel="preconnect">
-
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|
-        Nunito:300,300i,400,400i,600,600i,700,700i|
-        Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
-        rel="stylesheet">
-
-    <!-- Vendor CSS -->
-    <link href="{{ asset('backend/assets/vendor/bootstrap/css/bootstrap.min.css') }}"
-        rel="stylesheet">
-
-    <link href="{{ asset('backend/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}"
-        rel="stylesheet">
-
-    <link href="{{ asset('backend/assets/vendor/boxicons/css/boxicons.min.css') }}"
-        rel="stylesheet">
-
-    <link href="{{ asset('backend/assets/vendor/simple-datatables/style.css') }}"
-        rel="stylesheet">
-
-    <!-- Main CSS -->
-    <link href="{{ asset('backend/assets/css/style.css') }}"
-        rel="stylesheet">
-
-    <!-- Fontawesome -->
-    <link rel="stylesheet"
-        href="{{ asset('fontawesome/css/all.min.css') }}">
-
-    <style>
-        .card {
-            border: none;
-            border-radius: 18px;
-            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-            border-radius: 12px;
-        }
-
-        .table-responsive table {
-            min-width: 1800px;
-            white-space: nowrap;
-        }
-
-        .table thead th {
-            text-align: center;
-            vertical-align: middle;
-            font-size: 12px;
-            font-weight: 700;
-            background: #f8fafc;
-            color: #334155;
-        }
-
-        .table tbody td {
-            vertical-align: middle;
-            text-align: center;
-            font-size: 12px;
-        }
-
-        .table tbody tr:hover {
-            background-color: #f8fafc;
-        }
-
-        .badge {
-            font-size: 11px;
-            padding: 8px 14px;
-        }
-
-        .btn-sm {
-            padding: 6px 10px;
-        }
-    </style>
-
+  <style>
+    .table-responsive { overflow-x: auto; border-radius: 10px; box-shadow: 0 4px 18px rgba(0,0,0,0.06); }
+    .table-responsive table { min-width: 1500px; white-space: nowrap; margin-bottom: 0; }
+    .table-responsive thead th { position: sticky; top: 0; background: #f8fafc; color: #334155; font-size: 12px; font-weight: 600; padding: 15px 10px; vertical-align: middle; border: 1px solid #e2e8f0; text-transform: uppercase; }
+    .table-responsive tbody td { font-size: 13px; padding: 12px 10px; vertical-align: middle; background-color: white; color: #475569; }
+    .table-responsive tbody tr:hover td { background-color: #f1f5f9; }
+    .table-bordered th, .table-bordered td { border: 1px solid #e2e8f0; }
+    .table-responsive::-webkit-scrollbar { height: 8px; }
+    .table-responsive::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+    .table-responsive::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    .table-responsive::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    * { font-family: "Poppins", sans-serif !important; }
+  </style>
 </head>
 
 <body>
 
-    <!-- ======= HEADER ======= -->
-    <header id="header"
-        class="header fixed-top d-flex align-items-center">
-
-        <div class="d-flex align-items-center justify-content-between">
-
-            <a href="#"
-                class="logo d-flex align-items-center">
-
-                <img src="{{ asset('backend/assets/img/pkk.png') }}"
-                    alt="">
-
-                <span class="d-none d-lg-block">
-
-                    PKK NGANJUK
-
-                </span>
-
-            </a>
-
-            <i class="bi bi-list toggle-sidebar-btn"></i>
-
-        </div>
-
-    </header>
-
-    <!-- ======= SIDEBAR ======= -->
-    @include('backend.includes.sidebar')
-
-    <!-- ======= MAIN ======= -->
-    <main id="main"
-        class="main">
-
-        <!-- PAGE TITLE -->
-        <div class="pagetitle mb-4">
-
-            <h1>Rekap Desa Bulanan - Unggulan</h1>
-
-        </div>
-
-        <!-- ALERT -->
-        @if ($message = Session::get('success'))
-
-        <div class="alert alert-success alert-dismissible fade show"
-            role="alert">
-
-            <i class="bi bi-check-circle-fill me-2"></i>
-
-            {{ $message }}
-
-            <button type="button"
-                class="btn-close"
-                data-bs-dismiss="alert">
-            </button>
-
-        </div>
-
-        @endif
-
-        <!-- SECTION -->
-        <section class="section dashboard">
-
-            <div class="card">
-
-                <div class="card-body p-4">
-
-                    <!-- FILTER -->
-                    <div class="row mb-4">
-
-                        <div class="col-md-4">
-
-                            <form method="GET">
-
-                                <label class="form-label fw-bold">
-
-                                    Status Laporan
-
-                                </label>
-
-                                <select name="status"
-                                    class="form-select"
-                                    onchange="this.form.submit()">
-
-                                    {{-- MENUNGGU PERSETUJUAN --}}
-                                    <option value="Proses"
-                                        {{ request('status', 'Proses') == 'Proses' ? 'selected' : '' }}>
-
-                                        Menunggu Persetujuan
-
-                                    </option>
-
-                                    {{-- SUDAH DISETUJUI --}}
-                                    <option value="Disetujui2"
-                                        {{ request('status') == 'Disetujui2' ? 'selected' : '' }}>
-
-                                        Sudah Disetujui
-
-                                    </option>
-
-                                </select>
-
-                            </form>
-
-                        </div>
-
-                    </div>
-
-                    <!-- INFO -->
-                    <div class="alert alert-info d-flex align-items-center">
-
-                        <i class="bi bi-info-circle-fill me-2"></i>
-
-                        <div>
-
-                            Scroll horizontal untuk melihat seluruh data laporan.
-
-                        </div>
-
-                    </div>
-
-                    <!-- TABLE -->
-                    <div class="table-responsive mt-4">
-
-                        <table class="table table-bordered table-hover align-middle">
-
-                            <thead>
-
-                                <!-- HEADER -->
-                                <tr>
-
-                                    <th rowspan="3">NO</th>
-
-                                    @if (Auth::guard('web')->check())
-
-                                    <th rowspan="3">
-                                        KECAMATAN
-                                    </th>
-
-                                    <th rowspan="3">
-                                        DESA
-                                    </th>
-
-                                    @elseif (Auth::guard('pengguna')->check())
-
-                                    <th rowspan="3">
-                                        DESA
-                                    </th>
-
-                                    @endif
-
-                                    <th colspan="3">
-                                        JUMLAH
-                                    </th>
-
-                                    <th colspan="4">
-                                        JUMLAH IBU
-                                    </th>
-
-                                    <th colspan="6">
-                                        JUMLAH BAYI
-                                    </th>
-
-                                    <th colspan="2">
-                                        BALITA MENINGGAL
-                                    </th>
-
-                                    <th rowspan="3">
-                                        STATUS
-                                    </th>
-
-                                    <th rowspan="3">
-                                        TANGGAL
-                                    </th>
-
-                                    <th rowspan="3">
-                                        AKSI
-                                    </th>
-
-                                </tr>
-
-                                <!-- HEADER 2 -->
-                                <tr>
-
-                                    <th rowspan="2">RW</th>
-                                    <th rowspan="2">RT</th>
-                                    <th rowspan="2">DASA WISMA</th>
-
-                                    <th rowspan="2">HAMIL</th>
-                                    <th rowspan="2">MELAHIRKAN</th>
-                                    <th rowspan="2">NIFAS</th>
-                                    <th rowspan="2">MENINGGAL</th>
-
-                                    <th colspan="2">LAHIR</th>
-
-                                    <th colspan="2">AKTE</th>
-
-                                    <th colspan="2">MENINGGAL</th>
-
-                                    <th colspan="2"></th>
-
-                                </tr>
-
-                                <!-- HEADER 3 -->
-                                <tr>
-
-                                    <th>L</th>
-                                    <th>P</th>
-
-                                    <th>ADA</th>
-                                    <th>TIDAK</th>
-
-                                    <th>L</th>
-                                    <th>P</th>
-
-                                    <th>L</th>
-                                    <th>P</th>
-
-                                </tr>
-
-                            </thead>
-
-                            <tbody>
-
-                                @forelse($data as $item)
-
-                                <tr>
-
-                                    <!-- NO -->
-                                    <td>
-
-                                        {{ $loop->iteration }}
-
-                                    </td>
-
-                                    <!-- KEC / DESA -->
-                                    @if (Auth::guard('web')->check())
-
-                                    <td>
-
-                                        {{ $item->nama_kec ?? '-' }}
-
-                                    </td>
-
-                                    <td>
-
-                                        {{ $item->nama_desa ?? '-' }}
-
-                                    </td>
-
-                                    @elseif (Auth::guard('pengguna')->check())
-
-                                    <td>
-
-                                        {{ $item->nama_desa ?? '-' }}
-
-                                    </td>
-
-                                    @endif
-
-                                    <!-- DATA -->
-                                    <td>{{ $item->rw ?? 0 }}</td>
-                                    <td>{{ $item->rt ?? 0 }}</td>
-                                    <td>{{ $item->dasa_wisma ?? 0 }}</td>
-
-                                    <td>{{ $item->hamil ?? 0 }}</td>
-                                    <td>{{ $item->melahirkan ?? 0 }}</td>
-                                    <td>{{ $item->nifas ?? 0 }}</td>
-                                    <td>{{ $item->meninggal ?? 0 }}</td>
-
-                                    <td>{{ $item->bayi_lahir_l ?? 0 }}</td>
-                                    <td>{{ $item->bayi_lahir_p ?? 0 }}</td>
-
-                                    <td>{{ $item->akte_kelahiran_ada ?? 0 }}</td>
-                                    <td>{{ $item->akte_kelahiran_tidak ?? 0 }}</td>
-
-                                    <td>{{ $item->bayi_meninggal_l ?? 0 }}</td>
-                                    <td>{{ $item->bayi_meninggal_p ?? 0 }}</td>
-
-                                    <td>{{ $item->balita_meninggal_l ?? 0 }}</td>
-                                    <td>{{ $item->balita_meninggal_p ?? 0 }}</td>
-
-                                    <!-- STATUS -->
-                                    <td class="text-center">
-
-                                        {{-- WEB KABUPATEN --}}
-                                        @if(Auth::guard('web')->check())
-
-                                        {{-- MENUNGGU --}}
-                                        @if($item->status == 'Proses')
-
-                                        <span class="badge rounded-pill bg-warning text-dark px-3 py-2">
-
-                                            <i class="bi bi-hourglass-split me-1"></i>
-
-                                            Menunggu Persetujuan
-
-                                        </span>
-
-                                        {{-- SUDAH --}}
-                                        @elseif($item->status == 'Disetujui2')
-
-                                        <span class="badge rounded-pill bg-success px-3 py-2">
-
-                                            <i class="bi bi-check-circle-fill me-1"></i>
-
-                                            Disetujui Kabupaten
-
-                                        </span>
-
-                                        @endif
-
-                                        {{-- WEB KECAMATAN --}}
-                                        @elseif(Auth::guard('pengguna')->check())
-
-                                        {{-- PROSES --}}
-                                        @if($item->status == 'Proses')
-
-                                        <span class="badge rounded-pill bg-warning text-dark px-3 py-2">
-
-                                            <i class="bi bi-hourglass-split me-1"></i>
-
-                                            Proses
-
-                                        </span>
-
-                                        {{-- DISETUJUI --}}
-                                        @elseif($item->status == 'Disetujui2')
-
-                                        <span class="badge rounded-pill bg-success px-3 py-2">
-
-                                            <i class="bi bi-check-circle-fill me-1"></i>
-
-                                            Disetujui1
-
-                                        </span>
-
-                                        @endif
-
-                                        @endif
-
-                                    </td>
-
-                                    <!-- TANGGAL -->
-                                    <td>
-
-                                        {{ \Carbon\Carbon::parse($item->created_at)->format('d/m/Y H:i') }}
-
-                                    </td>
-
-                                    <!-- AKSI -->
-                                    <td class="text-center">
-
-                                        {{-- WEB KABUPATEN --}}
-                                        @if(Auth::guard('web')->check())
-
-                                        {{-- MENUNGGU --}}
-                                        @if($item->status == 'Proses')
-
-                                        <div class="d-flex justify-content-center gap-1">
-
-                                            <!-- REVIEW -->
-                                            <a href="#"
-                                                class="btn btn-info btn-sm rounded-pill px-3"
-                                                title="Review">
-
-                                                <i class="bi bi-eye-fill"></i>
-
-                                            </a>
-
-                                            <!-- HAPUS -->
-                                            <form action="#"
-                                                method="POST"
-                                                class="d-inline">
-
-                                                @csrf
-                                                @method('DELETE')
-
-                                                <button type="submit"
-                                                    class="btn btn-danger btn-sm rounded-pill px-3"
-                                                    title="Hapus">
-
-                                                    <i class="bi bi-trash-fill"></i>
-
-                                                </button>
-
-                                            </form>
-
-                                        </div>
-
-                                        {{-- SUDAH --}}
-                                        @elseif($item->status == 'Disetujui2')
-
-                                        <div class="d-flex justify-content-center gap-1">
-
-                                            <!-- DETAIL -->
-                                            <a href="#"
-                                                class="btn btn-primary btn-sm rounded-pill px-3"
-                                                title="Detail">
-
-                                                <i class="bi bi-eye-fill"></i>
-
-                                            </a>
-
-                                            <!-- HAPUS -->
-                                            <form action="#"
-                                                method="POST"
-                                                class="d-inline">
-
-                                                @csrf
-                                                @method('DELETE')
-
-                                                <button type="submit"
-                                                    class="btn btn-danger btn-sm rounded-pill px-3"
-                                                    title="Hapus">
-
-                                                    <i class="bi bi-trash-fill"></i>
-
-                                                </button>
-
-                                            </form>
-
-                                        </div>
-
-                                        @endif
-
-                                        {{-- WEB KECAMATAN --}}
-                                        @elseif(Auth::guard('pengguna')->check())
-
-                                        {{-- PROSES --}}
-                                        @if($item->status == 'Proses')
-
-                                        <div class="d-flex justify-content-center gap-1">
-
-                                            <!-- REVIEW -->
-                                            <a href="#"
-                                                class="btn btn-info btn-sm rounded-pill px-3">
-
-                                                <i class="bi bi-eye-fill"></i>
-
-                                            </a>
-
-                                            <!-- HAPUS -->
-                                            <form action="#"
-                                                method="POST"
-                                                class="d-inline">
-
-                                                @csrf
-                                                @method('DELETE')
-
-                                                <button type="submit"
-                                                    class="btn btn-danger btn-sm rounded-pill px-3">
-
-                                                    <i class="bi bi-trash-fill"></i>
-
-                                                </button>
-
-                                            </form>
-
-                                        </div>
-
-                                        {{-- DISETUJUI --}}
-                                        @elseif($item->status == 'Disetujui2')
-
-                                        <div class="d-flex justify-content-center gap-1">
-
-                                            <!-- DETAIL -->
-                                            <a href="#"
-                                                class="btn btn-primary btn-sm rounded-pill px-3">
-
-                                                <i class="bi bi-eye-fill"></i>
-
-                                            </a>
-
-                                            <!-- HAPUS -->
-                                            <form action="#"
-                                                method="POST"
-                                                class="d-inline">
-
-                                                @csrf
-                                                @method('DELETE')
-
-                                                <button type="submit"
-                                                    class="btn btn-danger btn-sm rounded-pill px-3">
-
-                                                    <i class="bi bi-trash-fill"></i>
-
-                                                </button>
-
-                                            </form>
-
-                                        </div>
-
-                                        @endif
-
-                                        @endif
-
-                                    </td>
-
-                                </tr>
-
-                                @empty
-
-                                <tr>
-
-                                    <td colspan="25"
-                                        class="text-center py-5">
-
-                                        <div class="alert alert-danger mb-0">
-
-                                            <i class="bi bi-exclamation-circle-fill me-2"></i>
-
-                                            Tidak ada data laporan
-
-                                        </div>
-
-                                    </td>
-
-                                </tr>
-
-                                @endforelse
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                </div>
-
+  @include('backend.includes.sidebar')
+
+  <main id="main" class="main">
+    <div class="pagetitle">
+      <h1>Rekap Desa Bulanan - Unggulan</h1>
+    </div>
+
+    @if ($message = Session::get('success'))
+    <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
+      <i class="bi bi-check-circle me-1"></i> {{ $message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
+    <div class="card mt-2">
+      <div class="card-body">
+        
+        <div class="row mt-3">
+            <div class="col-md-4">
+                <form method="GET">
+                    <label class="form-label fw-bold">Status Laporan</label>
+                    <select name="status" class="form-select" onchange="this.form.submit()">
+                        @if(Auth::guard('web')->check())
+                            <option value="Disetujui1" {{ request('status', $status) == 'Disetujui1' ? 'selected' : '' }}>Menunggu Persetujuan</option>
+                            <option value="Disetujui2" {{ request('status', $status) == 'Disetujui2' ? 'selected' : '' }}>Sudah Disetujui</option>
+                        @elseif(Auth::guard('pengguna')->check())
+                            <option value="Proses" {{ request('status', $status) == 'Proses' ? 'selected' : '' }}>Menunggu Persetujuan</option>
+                            <option value="Disetujui1" {{ request('status', $status) == 'Disetujui1' ? 'selected' : '' }}>Sudah Disetujui</option>
+                        @endif
+                    </select>
+                </form>
             </div>
+        </div>
 
-        </section>
+        <div class="alert alert-info d-flex align-items-center mt-3" role="alert">
+          <i class="bi bi-info-circle-fill me-2"></i>
+          <div>Scroll horizontal untuk melihat semua kolom data.</div>
+        </div>
 
-    </main>
+        <div class="table-responsive mt-3">
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th rowspan="3" class="text-center align-middle">No</th>
+                @if (Auth::guard('web')->check())
+                <th rowspan="3" class="text-center align-middle">Kecamatan</th>
+                <th rowspan="3" class="text-center align-middle">Desa</th>
+                @elseif (Auth::guard('pengguna')->check())
+                <th rowspan="3" class="text-center align-middle">Desa</th>
+                @endif
+                <th colspan="3" class="text-center align-middle">JUMLAH</th>
+                <th colspan="4" class="text-center align-middle">JUMLAH IBU</th>
+                <th colspan="6" class="text-center align-middle">JUMLAH BAYI</th>
+                <th colspan="2" class="text-center align-middle">BALITA MENINGGAL</th>
+                <th rowspan="3" class="text-center align-middle">Status</th>
+                <th rowspan="3" class="text-center align-middle">Tanggal</th>
+                <th rowspan="3" class="text-center align-middle">Aksi</th>
+              </tr>
+              <tr>
+                <th rowspan="2" class="text-center align-middle">RW</th>
+                <th rowspan="2" class="text-center align-middle">RT</th>
+                <th rowspan="2" class="text-center align-middle">DASA WISMA</th>
+                <th rowspan="2" class="text-center align-middle">HAMIL</th>
+                <th rowspan="2" class="text-center align-middle">MELAHIRKAN</th>
+                <th rowspan="2" class="text-center align-middle">NIFAS</th>
+                <th rowspan="2" class="text-center align-middle">MENINGGAL</th>
+                <th colspan="2" class="text-center align-middle">LAHIR</th>
+                <th colspan="2" class="text-center align-middle">AKTE</th>
+                <th colspan="2" class="text-center align-middle">MENINGGAL</th>
+                <th colspan="2"></th>
+              </tr>
+              <tr>
+                <th class="text-center align-middle">L</th>
+                <th class="text-center align-middle">P</th>
+                <th class="text-center align-middle">ADA</th>
+                <th class="text-center align-middle">TIDAK</th>
+                <th class="text-center align-middle">L</th>
+                <th class="text-center align-middle">P</th>
+                <th class="text-center align-middle">L</th>
+                <th class="text-center align-middle">P</th>
+              </tr>
+            </thead>
+            <tbody>
+              @php $no = 1; @endphp
+              @forelse ($data as $item)
+              <tr>
+                <th scope="row" class="text-center">{{ $no++ }}</th>
+                @if (Auth::guard('web')->check())
+                  <td class="text-center">{{ $item->nama_kec ?? '-' }}</td>
+                  <td class="text-center">{{ $item->nama_desa ?? '-' }}</td>
+                @elseif (Auth::guard('pengguna')->check())
+                  <td class="text-center">{{ $item->nama_desa ?? '-' }}</td>
+                @endif
+                
+                <td class="text-center">{{ $item->rw ?? '0' }}</td>
+                <td class="text-center">{{ $item->rt ?? '0' }}</td>
+                <td class="text-center">{{ $item->dasa_wisma ?? '0' }}</td>
+                <td class="text-center">{{ $item->hamil ?? '0' }}</td>
+                <td class="text-center">{{ $item->melahirkan ?? '0' }}</td>
+                <td class="text-center">{{ $item->nifas ?? '0' }}</td>
+                <td class="text-center">{{ $item->meninggal ?? '0' }}</td>
+                <td class="text-center">{{ $item->bayi_lahir_l ?? '0' }}</td>
+                <td class="text-center">{{ $item->bayi_lahir_p ?? '0' }}</td>
+                <td class="text-center">{{ $item->akte_kelahiran_ada ?? '0' }}</td>
+                <td class="text-center">{{ $item->akte_kelahiran_tidak ?? '0' }}</td>
+                <td class="text-center">{{ $item->bayi_meninggal_l ?? '0' }}</td>
+                <td class="text-center">{{ $item->bayi_meninggal_p ?? '0' }}</td>
+                <td class="text-center">{{ $item->balita_meninggal_l ?? '0' }}</td>
+                <td class="text-center">{{ $item->balita_meninggal_p ?? '0' }}</td>
+                
+                <td class="text-center">
+                  @if(in_array(strtolower($item->status), ['proses', 'revisi']))
+                    <span class="badge bg-warning text-dark">{{ $item->status }}</span>
+                  @elseif(in_array(strtolower($item->status), ['disetujui1', 'disetujui2']))
+                    <span class="badge bg-success">{{ $item->status }}</span>
+                  @else
+                    <span class="badge bg-secondary">{{ $item->status }}</span>
+                  @endif
+                </td>
+                
+                <td class="text-center">{{ \Carbon\Carbon::parse($item->created_at)->format('d/m/Y H:i') }}</td>
+                
+                <td class="text-center" style="white-space: nowrap;">
+                    
+                    {{-- LOGIKA HAPUS DATA TOK --}}
+                    @php
+                        $bolehEdit = false;
+                        if(Auth::guard('web')->check() && strtolower($item->status) == 'disetujui1') $bolehEdit = true;
+                        if(Auth::guard('pengguna')->check() && strtolower($item->status) == 'proses') $bolehEdit = true;
+                    @endphp
 
-    <!-- BACK TO TOP -->
-    <a href="#"
-        class="back-to-top d-flex align-items-center justify-content-center">
+                    @if($bolehEdit)
+                        <a href="{{ route('unggulan.bulanan.edit', $item->id_rekap_desa_bulanan) }}" class="btn btn-sm btn-info text-white me-1" data-bs-toggle="tooltip" title="Review Data">
+                            <i class="bi bi-search"></i>
+                        </a>
+                    @endif
 
-        <i class="bi bi-arrow-up-short"></i>
+                    <form action="{{ route('unggulan.bulanan.destroy', $item->id_rekap_desa_bulanan)}}" method="POST" class="d-inline delete-form">
+                        @csrf
+                        @method('DELETE')
+                        <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(this)" data-bs-toggle="tooltip" title="Hapus Data">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form> 
+                </td>
 
-    </a>
+              </tr>
+              @empty
+              <tr>
+                <td colspan="20" class="text-center py-5">
+                  <div class="alert alert-danger mb-0">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Tidak ada data laporan.
+                  </div>
+                </td>
+              </tr>
+              @endforelse
+            </tbody>
+          </table>
+        </div>
 
-    <!-- JS -->
-    <script src="{{ asset('backend/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+      </div>
+    </div>
+  </main>
 
-    <script src="{{ asset('backend/assets/js/main.js') }}"></script>
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <script src="{{ asset('backend/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ asset('backend/assets/js/main.js') }}"></script>
+
+  <script>
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
+    function confirmDelete(button) {
+      Swal.fire({
+        title: 'Yakin hapus data?',
+        text: "Data yang dihapus tidak bisa dikembalikan.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Ya, Hapus!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          button.closest('form').submit();
+        }
+      });
+    }
+  </script>
 
 </body>
-
 </html>

@@ -255,3 +255,15 @@ Route::post('/export-pokja4', [Pokja4ExportController::class, 'exportToSheet'])
 Route::get('/api-export/pokja2', [App\Http\Controllers\backend\Pokja2Controller::class, 'getExportData'])->name('pokja2.exportJson');
 // ROUTE EXPORT JSON POKJA 3
 Route::get('/api-export/pokja3', [App\Http\Controllers\backend\Pokja3Controller::class, 'getExportData'])->name('pokja3.exportJson');
+
+// ... route inovasi bulanan yang sudah ada ...
+
+// ROUTE UNTUK EDIT, UPDATE, DAN HAPUS REKAP DESA BULANAN (UNGGULAN)
+Route::get('/inovasi/unggulan/bulanan/edit/{id}', [InovasiController::class, 'editUnggulan'])->name('unggulan.bulanan.edit');
+Route::put('/inovasi/unggulan/bulanan/update/{id}', [InovasiController::class, 'updateUnggulan'])->name('unggulan.bulanan.update');
+Route::delete('/inovasi/unggulan/bulanan/hapus/{id}', [InovasiController::class, 'destroyUnggulan'])->name('unggulan.bulanan.destroy');
+
+// LAKUKAN HAL YANG SAMA UNTUK PRIORITAS (Opsional, jika prioritas juga butuh fitur ini)
+Route::get('/inovasi/prioritas/bulanan/edit/{id}', [InovasiController::class, 'editPrioritas'])->name('prioritas.bulanan.edit');
+Route::put('/inovasi/prioritas/bulanan/update/{id}', [InovasiController::class, 'updatePrioritas'])->name('prioritas.bulanan.update');
+Route::delete('/inovasi/prioritas/bulanan/hapus/{id}', [InovasiController::class, 'destroyPrioritas'])->name('prioritas.bulanan.destroy');
