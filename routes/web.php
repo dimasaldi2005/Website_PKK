@@ -19,6 +19,7 @@ use App\Http\Controllers\backend\GotongRoyongController;
 use App\Http\Controllers\backend\JumlahBeritaController;
 use App\Http\Controllers\backend\GaleriController;
 use App\Http\Controllers\Auth\OtpController;
+use App\Http\Controllers\backend\InovasiController;
 use App\Http\Controllers\backend\Pokja1ExportController;
 // TAMBAHAN UNTUK POKJA 4 EXPORT
 use App\Http\Controllers\backend\Pokja4ExportController;
@@ -100,11 +101,11 @@ Route::middleware(['auth:web,pengguna', 'prevent-back-history'])->group(function
     Route::resource('pokja2', App\Http\Controllers\backend\Pokja2Controller::class);
     Route::resource('pokja3', App\Http\Controllers\backend\Pokja3Controller::class);
     Route::resource('pokja4', App\Http\Controllers\backend\Pokja4Controller::class);
-    
+
     // CUSTOM ROUTE EXPORT JSON LAMA (TETAP DIBIARKAN UNTUK JAGA-JAGA)
     Route::get('/laporanpokja1/export-json', [App\Http\Controllers\backend\LaporanPokja1Controller::class, 'getExportData'])->name('laporanpokja1.exportJson');
     Route::get('/laporanpokja4/export-json', [App\Http\Controllers\backend\LaporanPokja4Controller::class, 'getExportData'])->name('laporanpokja4.exportJson');
-    
+
     // RESOURCE ROUTES
     Route::resource('laporanpokja1', App\Http\Controllers\backend\LaporanPokja1Controller::class);
     Route::resource('laporanpokja3', App\Http\Controllers\backend\LaporanPokja3Controller::class);
@@ -187,7 +188,52 @@ Route::post('/otp/verify', [OtpController::class, 'verifyOtp'])->name('otp.verif
 
 Route::post('/otp/reset', [OtpController::class, 'resetPassword'])->name('otp.reset');
 
-Route::resource('inovasi', App\Http\Controllers\backend\InovasiController::class);
+
+// HALAMAN KATEGORI
+/*
+|--------------------------------------------------------------------------
+| INOVASI
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
+    '/inovasi',
+    [InovasiController::class, 'index']
+)
+    ->name('inovasi.index');
+
+Route::get(
+    '/inovasi/prioritas',
+    [InovasiController::class, 'prioritas']
+)
+    ->name('inovasi.prioritas');
+
+Route::get(
+    '/inovasi/unggulan',
+    [InovasiController::class, 'unggulan']
+)
+    ->name('inovasi.unggulan');
+
+/*
+|--------------------------------------------------------------------------
+| REKAP BULANAN
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
+    '/inovasi/prioritas/bulanan',
+    [InovasiController::class, 'prioritasBulanan']
+)
+    ->name('prioritas.bulanan');
+
+Route::get(
+    '/inovasi/unggulan/bulanan',
+    [InovasiController::class, 'unggulanBulanan']
+)
+    ->name('unggulan.bulanan');
+
+
+
 
 Route::post('/export-pokja1', [Pokja1ExportController::class, 'exportToSheet'])
     ->name('export.pokja1');
