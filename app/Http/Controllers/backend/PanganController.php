@@ -22,33 +22,55 @@ class PanganController extends Controller
         // =====================================
         if (Auth::guard('web')->check()) {
             $data = DB::table('laporan_pangan')
-                ->join('users_mobile', 'laporan_pangan.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                ->leftJoin('users_mobile', 'laporan_pangan.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                 ->select('laporan_pangan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                // LOGIKA SAKLEK: Hanya yang sudah di-ACC Kecamatan
-                ->where('laporan_pangan.status', 'Disetujui1')
+                // KABUPATEN HANYA BISA MELIHAT DATA YANG SUDAH LEWAT KECAMATAN
+                ->where(function ($query) {
+                    // LAPORAN DARI DESA
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_pangan.status',
+                                ['Disetujui1', 'disetujui1', 'DISETUJUI1']
+                            );
+                    })
+                        // LAPORAN DARI MOBILE KECAMATAN
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_pangan.status',
+                                    ['Proses', 'proses', 'PROSES']
+                                );
+                        });
+                })
                 ->orderBy('laporan_pangan.id_pokja3_bidang1', 'desc')
                 ->get();
+
+            return view('backend.pangan', compact('data'));
         } 
         // =====================================
         // 2. WEB KECAMATAN (Hanya Lihat Proses)
         // =====================================
-        else if (Auth::guard('pengguna')->check()) {
+        if (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) { // Role Kecamatan
+            if ($user->id_role == 2) { // KECAMATAN
                 $data = DB::table('laporan_pangan')
-                    ->join('users_mobile', 'laporan_pangan.id_user', '=', 'users_mobile.id')
-                    ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                    ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->leftJoin('users_mobile', 'laporan_pangan.id_user', '=', 'users_mobile.id')
+                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                     ->select('laporan_pangan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                    // LOGIKA SAKLEK: Hanya yang masih mentah (Proses)
-                    ->where('laporan_pangan.status', 'Proses')
+                    ->where('users_mobile.id_role', 1)
+                    // KECAMATAN HANYA BISA MELIHAT DATA MENTAH
+                    ->whereIn('laporan_pangan.status', ['proses', 'Proses', 'PROSES'])
                     ->orderBy('laporan_pangan.id_pokja3_bidang1', 'desc')
                     ->get();
             }
+
+            return view('backend.pangan', compact('data'));
         }
 
         return view('backend.pangan', compact('data'));

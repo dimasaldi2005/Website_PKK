@@ -5,6 +5,7 @@ namespace App\Http\Controllers\backend;
 use Illuminate\Http\Request;
 use App\Models\Penghayatan;
 use App\Models\Pengguna;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,47 +19,65 @@ class AccPenghayatanController extends Controller
         // =========================
         // WEB KABUPATEN
         // =========================
+        // 1. CEK KABUPATEN DULU
         if (Auth::guard('web')->check()) {
 
-            // MENUNGGU ACC KABUPATEN (Hanya melihat yang sudah di-ACC Kecamatan)
-            $peng1 = Penghayatan::whereIn('status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
+            // MENUNGGU ACC KABUPATEN
+            $peng1 = DB::table('laporan_penghayatan_n_pengamalan')
+                ->leftJoin('users_mobile', 'laporan_penghayatan_n_pengamalan.id_user', '=', 'users_mobile.id')
+
+                ->where(function ($query) {
+
+                    // dari desa yang sudah acc kecamatan
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_penghayatan_n_pengamalan.status',
+                                ['Disetujui1', 'disetujui1', 'DISETUJUI1']
+                            );
+                    })
+
+                        // dari mobile kecamatan
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_penghayatan_n_pengamalan.status',
+                                    ['Proses', 'proses', 'PROSES']
+                                );
+                        });
+                })
+
                 ->count();
 
-            // SUDAH FINAL
-            $peng2 = Penghayatan::whereIn('status', ['Disetujui2', 'disetujui2', 'DISETUJUI2'])
+            // SUDAH SELESAI ACC KABUPATEN
+            $peng2 = DB::table('laporan_penghayatan_n_pengamalan')
+                ->whereIn(
+                    'status',
+                    ['Disetujui2', 'disetujui2', 'DISETUJUI2']
+                )
                 ->count();
         }
 
         // =========================
         // WEB KECAMATAN
         // =========================
-        else if (Auth::guard('pengguna')->check()) {
-
+        elseif (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
 
             if ($user->id_role == 2) {
-
-                // JURUS ANTI-0: Hapus where('id_role', 1) agar sistem tidak bingung
-                $desaUsers = Pengguna::where(
-                        'id_subdistrict',
-                        $user->id_subdistrict
-                    )
-                    ->pluck('id');
-
-                // MENUNGGU PERSETUJUAN (Hanya melihat laporan mentah dari desa)
-                $peng1 = Penghayatan::whereIn(
-                        'id_user',
-                        $desaUsers
-                    )
-                    ->whereIn('status', ['proses', 'Proses', 'PROSES'])
+                // Kecamatan: Menunggu = Proses | Selesai = Disetujui1
+                $peng1 = DB::table('laporan_penghayatan_n_pengamalan')
+                    ->leftJoin('users_mobile', 'laporan_penghayatan_n_pengamalan.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_penghayatan_n_pengamalan.status', ['proses', 'Proses', 'PROSES'])
                     ->count();
 
-                // SUDAH DISETUJUI
-                $peng2 = Penghayatan::whereIn(
-                        'id_user',
-                        $desaUsers
-                    )
-                    ->whereIn('status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                $peng2 = DB::table('laporan_penghayatan_n_pengamalan')
+                    ->leftJoin('users_mobile', 'laporan_penghayatan_n_pengamalan.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_penghayatan_n_pengamalan.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
                     ->count();
             }
         }
@@ -68,4 +87,4 @@ class AccPenghayatanController extends Controller
             compact('peng1', 'peng2')
         );
     }
-}   
+}

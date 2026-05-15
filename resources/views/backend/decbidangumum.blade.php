@@ -3,7 +3,9 @@
 @section('content1')
 
 <style>
-  * { font-family: 'Poppins', sans-serif !important; }
+  * {
+    font-family: 'Poppins', sans-serif !important;
+  }
 
   .page-heading {
     font-size: 24px;
@@ -16,7 +18,7 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     border-radius: 10px;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
     background: white;
   }
 
@@ -55,20 +57,50 @@
     background-color: #f1f5f9;
   }
 
-  .table-bordered th, .table-bordered td {
+  .table-bordered th,
+  .table-bordered td {
     border: 1px solid #e2e8f0;
   }
 
-  .table-responsive::-webkit-scrollbar { height: 8px; }
-  .table-responsive::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
-  .table-responsive::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-  .table-responsive::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  .table-responsive::-webkit-scrollbar {
+    height: 8px;
+  }
 
-  .header-group-title { font-size: 12px; font-weight: 700; color: #1e293b; }
-  .header-sub-title { font-size: 10px; font-weight: 600; color: #64748b; }
+  .table-responsive::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+  }
 
-  .card { border-radius: 12px; border: none; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-  .card-body { padding: 24px; }
+  .table-responsive::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+  }
+
+  .table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  .header-group-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1e293b;
+  }
+
+  .header-sub-title {
+    font-size: 10px;
+    font-weight: 600;
+    color: #64748b;
+  }
+
+  .card {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-body {
+    padding: 24px;
+  }
 </style>
 
 <main id="main" class="main">
@@ -126,12 +158,12 @@
                 <th scope="col" colspan="2" class="text-center header-sub-title">BANTUAN</th>
               </tr>
               <tr>
-                <th scope="col" class="text-center" style="font-size:9px;">Dusun/<br>Lingkungan</th>
-                <th scope="col" class="text-center" style="font-size:9px;">PKK/<br>RW</th>
-                <th scope="col" class="text-center" style="font-size:9px;">PKK/<br>RT</th>
-                <th scope="col" class="text-center" style="font-size:9px;">Desa/<br>Wisma</th>
-                <th scope="col" class="text-center" style="font-size:9px;">KRT</th>
-                <th scope="col" class="text-center" style="font-size:9px;">KK</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
                 <th scope="col" class="text-center" style="font-size:9px;">L</th>
                 <th scope="col" class="text-center" style="font-size:9px;">P</th>
                 <th scope="col" class="text-center" style="font-size:9px;">L</th>
@@ -176,10 +208,18 @@
                 <td class="text-center">{{ $umum->bantuan_laki ?? '0' }}</td>
                 <td class="text-center">{{ $umum->bantuan_perempuan ?? '0' }}</td>
                 <td class="text-center">
-                  @if($umum->status == 'Aktif')
-                  <span class="badge bg-success">{{ $umum->status }}</span>
+                  @if(in_array(strtolower($umum->status), ['proses', 'revisi']))
+                  <span class="badge bg-warning text-dark">
+                    {{ $umum->status }}
+                  </span>
+                  @elseif(in_array(strtolower($umum->status), ['disetujui1', 'disetujui2']))
+                  <span class="badge bg-success">
+                    {{ $umum->status }}
+                  </span>
                   @else
-                  <span class="badge bg-secondary">{{ $umum->status }}</span>
+                  <span class="badge bg-secondary">
+                    {{ $umum->status }}
+                  </span>
                   @endif
                 </td>
                 <td class="text-center" style="font-size:11px;">{{ \Carbon\Carbon::parse($umum->created_at)->format('d/m/Y H:i') }}</td>

@@ -16,31 +16,53 @@ class KesehatanController extends Controller
         $data = collect();
 
         if (Auth::guard('web')->check()) {
-            // ADMIN: Hanya lihat yang antre (Disetujui1)
             $data = DB::table('laporan_bidang_kesehatan')
-                ->join('users_mobile', 'laporan_bidang_kesehatan.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                ->leftJoin('users_mobile', 'laporan_bidang_kesehatan.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                 ->select('laporan_bidang_kesehatan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                ->where('laporan_bidang_kesehatan.status', 'Disetujui1')
-                ->orderBy('id_pokja4_bidang1', 'desc')->get();
-        } elseif (Auth::guard('pengguna')->check()) {
-            $user = Auth::guard('pengguna')->user();
-            $query = DB::table('laporan_bidang_kesehatan')
-                ->join('users_mobile', 'laporan_bidang_kesehatan.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->join('village', 'users_mobile.id_village', '=', 'village.id')
-                ->select('laporan_bidang_kesehatan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                ->orderBy('id_pokja4_bidang1', 'desc');
+                // KABUPATEN HANYA BISA MELIHAT DATA YANG SUDAH LEWAT KECAMATAN
+                ->where(function ($query) {
+                    // LAPORAN DARI DESA
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_bidang_kesehatan.status',
+                                ['Disetujui1', 'disetujui1', 'DISETUJUI1']
+                            );
+                    })
+                        // LAPORAN DARI MOBILE KECAMATAN
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_bidang_kesehatan.status',
+                                    ['Proses', 'proses', 'PROSES']
+                                );
+                        });
+                })
+                ->orderBy('laporan_bidang_kesehatan.id_pokja4_bidang1', 'desc')
+                ->get();
 
-            if ($user->id_role == 2) {
-                // KECAMATAN: Hanya lihat Proses
-                $data = $query->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                              ->where('laporan_bidang_kesehatan.status', 'Proses')->get();
-            } else {
-                // DESA: Lihat milik sendiri
-                $data = $query->where('laporan_bidang_kesehatan.id_user', $user->id)->get();
+            return view('backend.kesehatan', compact('data'));
+        }
+        if (Auth::guard('pengguna')->check()) {
+            $user = Auth::guard('pengguna')->user();
+
+            if ($user->id_role == 2) { // KECAMATAN
+                $data = DB::table('laporan_bidang_kesehatan')
+                    ->leftJoin('users_mobile', 'laporan_bidang_kesehatan.id_user', '=', 'users_mobile.id')
+                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->select('laporan_bidang_kesehatan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    // KECAMATAN HANYA BISA MELIHAT DATA MENTAH
+                    ->whereIn('laporan_bidang_kesehatan.status', ['proses', 'Proses', 'PROSES'])
+                    ->orderBy('laporan_bidang_kesehatan.id_pokja4_bidang1', 'desc')
+                    ->get();
             }
+
+            return view('backend.kesehatan', compact('data'));
         }
 
         return view('backend.kesehatan', compact('data'));

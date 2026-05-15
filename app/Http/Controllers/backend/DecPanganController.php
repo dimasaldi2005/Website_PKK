@@ -56,7 +56,7 @@ class DecPanganController extends Controller
                     ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                     ->select('laporan_pangan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
                     ->where('laporan_pangan.id_user', $user->id)
-                    ->whereIn('laporan_pangan.status', ['Disetujui1', 'Disetujui2'])
+                    ->whereIn('laporan_pangan.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
                     ->orderBy('id_pokja3_bidang1', 'desc')
                     ->get();
             }

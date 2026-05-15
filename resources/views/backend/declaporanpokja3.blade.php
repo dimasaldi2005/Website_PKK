@@ -142,8 +142,7 @@
                   <th class="text-center align-middle" rowspan="2" scope="col">Desa</th>
                 @endif
                 
-                <th scope="col" colspan="3" class="text-center header-group-title" style="background-color: #fcf8e3;">JUMLAH INDUSTRI RUMAH TANGGA</th>
-                <th class="text-center align-middle" rowspan="2" scope="col">Tata Laksana RT</th>
+                <th scope="col" colspan="3" class="text-center header-group-title" style="background-color: #fcf8e3;">JUMLAH KADER</th>
                 <th scope="col" rowspan="2" class="text-center align-middle">Status</th>
                 <th scope="col" rowspan="2" class="text-center align-middle">Tanggal</th>
                 <th scope="col" rowspan="2" class="text-center align-middle">Aksi</th>
@@ -169,7 +168,7 @@
                 
                 <td class="text-center">{{ $sehat1->pangan ?? '0' }}</td>
                 <td class="text-center">{{ $sehat1->sandang ?? '0' }}</td>
-                <td class="text-center">{{ $sehat1->jasa ?? '0' }}</td> <td class="text-center">{{ $sehat1->tata_laksana_rumah ?? '0' }}</td>
+                <td class="text-center">{{ $sehat1->tata_laksana_rumah ?? '0' }}</td>
                 
                 <td class="text-center">
                   @if(in_array(strtolower($sehat1->status), ['proses', 'revisi']))

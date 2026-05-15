@@ -12,6 +12,8 @@ class DecPenghayatanController extends Controller
 {
     public function index()
     {
+        $data2 = collect();
+
         // Cek guard yang login
         if (Auth::guard('web')->check()) {
             // Jika admin web, tampilkan semua data yang sudah disetujui
@@ -23,7 +25,8 @@ class DecPenghayatanController extends Controller
                 ->where('laporan_penghayatan_n_pengamalan.status', 'Disetujui2')
                 ->orderBy('id_pokja1_bidang1', 'desc')
                 ->get();
-        } elseif (Auth::guard('pengguna')->check()) {
+        } 
+        elseif (Auth::guard('pengguna')->check()) {
             // Jika pengguna mobile dengan role 2 (Kecamatan)
             $user = Auth::guard('pengguna')->user();
 

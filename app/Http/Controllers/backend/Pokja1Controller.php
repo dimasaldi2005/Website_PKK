@@ -22,13 +22,85 @@ class Pokja1Controller extends Controller
             $statusAdmin = ['Disetujui1', 'Disetujui2'];
 
             $modelPertama = DB::table('laporan_penghayatan_n_pengamalan')
-                ->whereIn('status', $statusAdmin)->count();
+                ->leftJoin(
+                    'users_mobile',
+                    'laporan_penghayatan_n_pengamalan.id_user',
+                    '=',
+                    'users_mobile.id'
+                )
+                ->where(function ($query) {
+                    // DESA
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_penghayatan_n_pengamalan.status',
+                                ['Disetujui1','Disetujui2']
+                            );
+                    })
+                        // MOBILE KECAMATAN
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_penghayatan_n_pengamalan.status',
+                                    ['Proses', 'proses', 'PROSES','Disetujui2']
+                                );
+                        });
+                })
+                ->count();
 
             $modelKedua = DB::table('laporan_gotong_royong')
-                ->whereIn('status', $statusAdmin)->count();
+                ->leftJoin(
+                    'users_mobile',
+                    'laporan_gotong_royong.id_user',
+                    '=',
+                    'users_mobile.id'
+                )
+                ->where(function ($query) {
+                    // DESA
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_gotong_royong.status',
+                                ['Disetujui1','Disetujui2']
+                            );
+                    })
+                        // MOBILE KECAMATAN
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_gotong_royong.status',
+                                    ['Proses', 'proses', 'PROSES','Disetujui2']
+                                );
+                        });
+                })
+                ->count();
 
             $modelKetiga = DB::table('laporan_kader_pokja1')
-                ->whereIn('status', $statusAdmin)->count();
+                ->leftJoin(
+                    'users_mobile',
+                    'laporan_kader_pokja1.id_user',
+                    '=',
+                    'users_mobile.id'
+                )
+                ->where(function ($query) {
+                    // DESA
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_kader_pokja1.status',
+                                ['Disetujui1','Disetujui2']
+                            );
+                    })
+                        // MOBILE KECAMATAN
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_kader_pokja1.status',
+                                    ['Proses', 'proses', 'PROSES', 'Disetujui2']
+                                );
+                        });
+                })
+                ->count();
         }
         // =====================================
         // WEB KECAMATAN
@@ -42,18 +114,21 @@ class Pokja1Controller extends Controller
                 $modelPertama = DB::table('laporan_penghayatan_n_pengamalan')
                     ->leftJoin('users_mobile', 'laporan_penghayatan_n_pengamalan.id_user', '=', 'users_mobile.id')
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
                     ->whereIn('laporan_penghayatan_n_pengamalan.status', $statusKecamatan)
                     ->count();
 
                 $modelKedua = DB::table('laporan_gotong_royong')
                     ->leftJoin('users_mobile', 'laporan_gotong_royong.id_user', '=', 'users_mobile.id')
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
                     ->whereIn('laporan_gotong_royong.status', $statusKecamatan)
                     ->count();
 
                 $modelKetiga = DB::table('laporan_kader_pokja1')
                     ->leftJoin('users_mobile', 'laporan_kader_pokja1.id_user', '=', 'users_mobile.id')
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
                     ->whereIn('laporan_kader_pokja1.status', $statusKecamatan)
                     ->count();
             }
@@ -75,10 +150,10 @@ class Pokja1Controller extends Controller
     // ==========================================
     // FUNGSI BARU: EXPORT JSON POKJA 1
     // ==========================================
-// ==========================================
+    // ==========================================
     // FUNGSI BARU: EXPORT JSON POKJA 1
     // ==========================================
-// ==========================================
+    // ==========================================
     // FUNGSI BARU: EXPORT JSON POKJA 1
     // ==========================================
     public function getExportData(Request $request)
@@ -110,7 +185,7 @@ class Pokja1Controller extends Controller
                 if ($user->id_role == 2) {
                     $statusKecamatan = ['Proses', 'proses', 'PROSES', 'Disetujui1', 'disetujui1', 'DISETUJUI1'];
                     $query->whereIn("$tabel.status", $statusKecamatan)
-                          ->where('users_mobile.id_subdistrict', $user->id_subdistrict);
+                        ->where('users_mobile.id_subdistrict', $user->id_subdistrict);
                 } else {
                     $query->where("$tabel.id_user", $user->id);
                 }
@@ -132,7 +207,7 @@ class Pokja1Controller extends Controller
             $data->transform(function ($item) {
                 // 1. Daftar kolom 'dapur' yang tidak boleh masuk ke Excel
                 $kolomSampah = ['uuid', 'id_user', 'id_role', 'id_organization', 'created_at', 'updated_at'];
-                
+
                 foreach ($kolomSampah as $kolom) {
                     if (property_exists($item, $kolom)) {
                         unset($item->$kolom); // Buang kolomnya!
@@ -160,10 +235,9 @@ class Pokja1Controller extends Controller
                 'bidang' => strtoupper($bidang),
                 'data' => $data
             ]);
-
         } catch (\Throwable $e) {
             return response()->json([
-                'status' => 'error', 
+                'status' => 'error',
                 'message' => 'Error Baris ' . $e->getLine() . ': ' . $e->getMessage()
             ], 500);
         }

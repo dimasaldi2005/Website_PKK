@@ -1,14 +1,12 @@
-{{-- @extends('backend/layouts.template') --}}
-{{-- @section('content1') --}}
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>Inovasi Unggulan</title>
+    <title>Inovasi Prioritas</title>
 
     <!-- Favicons -->
     <link href="{{ asset('backend/assets/img/favicon.png') }}" rel="icon">
@@ -34,12 +32,7 @@
         rel="stylesheet">
 
     <!-- Main CSS -->
-    <link href="{{ asset('backend/assets/css/style.css') }}"
-        rel="stylesheet">
-
-    <!-- Fontawesome -->
-    <link rel="stylesheet"
-        href="{{ asset('fontawesome/css/all.min.css') }}">
+    <link href="{{ asset('backend/assets/css/style.css') }}" rel="stylesheet">
 
     <style>
         * {
@@ -234,7 +227,7 @@
 
             <i class="bi bi-list toggle-sidebar-btn"></i>
 
-            <a href="{{ route('dashboard') }}"
+            <a href="#"
                 class="logo d-flex align-items-center"
                 style="text-decoration:none;">
 
@@ -259,10 +252,10 @@
     <main id="main"
         class="main">
 
-        <!-- PAGE TITLE -->
+        <!-- TITLE -->
         <div class="pagetitle mb-4">
 
-            <h1>Inovasi Unggulan</h1>
+            <h1>Inovasi Prioritas</h1>
 
         </div>
 
@@ -271,12 +264,12 @@
 
             <div class="row g-4">
 
-                <!-- REKAP BULANAN -->
+                <!-- BULANAN -->
                 <div class="col-xxl-6 col-md-6">
 
                     <div class="card info-card">
 
-                        <a href="{{ route('unggulan.bulanan') }}">
+                        <a href="#">
 
                             <div class="card-body">
 
@@ -295,7 +288,7 @@
 
                                     <div class="ps-4">
 
-                                        <h6>{{ $bulanan ?? 0 }}</h6>
+                                        <h6>0</h6>
 
                                         <span>
                                             Jumlah total laporan
@@ -313,7 +306,7 @@
 
                 </div>
 
-                <!-- REKAP TAHUNAN -->
+                <!-- TAHUNAN -->
                 <div class="col-xxl-6 col-md-6">
 
                     <div class="card info-card">
@@ -337,7 +330,7 @@
 
                                     <div class="ps-4">
 
-                                        <h6>{{ $tahunan ?? 0 }}</h6>
+                                        <h6>0</h6>
 
                                         <span>
                                             Jumlah total laporan
@@ -355,7 +348,7 @@
 
                 </div>
 
-                <!-- REKAP POSYANDU -->
+                <!-- POSYANDU -->
                 <div class="col-xxl-6 col-md-6">
 
                     <div class="card info-card">
@@ -379,7 +372,7 @@
 
                                     <div class="ps-4">
 
-                                        <h6>{{ $posyandu ?? 0 }}</h6>
+                                        <h6>0</h6>
 
                                         <span>
                                             Jumlah total laporan
@@ -397,7 +390,7 @@
 
                 </div>
 
-                <!-- KEGIATAN POKJA 4 -->
+                <!-- KEGIATAN -->
                 <div class="col-xxl-6 col-md-6">
 
                     <div class="card info-card">
@@ -421,7 +414,7 @@
 
                                     <div class="ps-4">
 
-                                        <h6>{{ $kegiatan ?? 0 }}</h6>
+                                        <h6>0</h6>
 
                                         <span>
                                             Jumlah total laporan
@@ -445,14 +438,6 @@
 
     </main>
 
-    <!-- BACK TO TOP -->
-    <a href="#"
-        class="back-to-top d-flex align-items-center justify-content-center">
-
-        <i class="bi bi-arrow-up-short"></i>
-
-    </a>
-
     <!-- JS -->
     <script src="{{ asset('backend/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
@@ -461,5 +446,3 @@
 </body>
 
 </html>
-
-{{-- @endsection --}}

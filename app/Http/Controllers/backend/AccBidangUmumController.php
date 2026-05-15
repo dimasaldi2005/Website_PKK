@@ -11,31 +11,71 @@ class AccBidangUmumController extends Controller
 {
     public function index()
     {
-        $got1 = 0; $got2 = 0;
+        $got1 = 0;
+        $got2 = 0;
 
         // =====================================
         // 1. WEB KABUPATEN (ADMIN)
         // =====================================
         if (Auth::guard('web')->check()) {
-            // MENUNGGU (Sudah di-ACC Kecamatan / Disetujui1)
-            $got1 = DB::table('laporan_umum')->where('status', 'Disetujui1')->count();
-            // SELESAI (Final / Disetujui2)
-            $got2 = DB::table('laporan_umum')->where('status', 'Disetujui2')->count();
-        } 
+
+            // MENUNGGU ACC KABUPATEN
+            $got1 = DB::table('laporan_umum')
+                ->leftJoin('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
+
+                ->where(function ($query) {
+
+                    // dari desa yang sudah acc kecamatan
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_umum.status',
+                                ['Disetujui1', 'disetujui1', 'DISETUJUI1']
+                            );
+                    })
+
+                        // dari mobile kecamatan
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_umum.status',
+                                    ['Proses', 'proses', 'PROSES']
+                                );
+                        });
+                })
+
+                ->count();
+
+            // SUDAH SELESAI ACC KABUPATEN
+            $got2 = DB::table('laporan_umum')
+                ->whereIn(
+                    'status',
+                    ['Disetujui2', 'disetujui2', 'DISETUJUI2']
+                )
+                ->count();
+        }
+
         // =====================================
         // 2. PENGGUNA MOBILE (KECAMATAN / DESA)
         // =====================================
-        else if (Auth::guard('pengguna')->check()) {
+        elseif (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
-            if ($user->id_role == 2) { // KECAMATAN
-                $desaIds = DB::table('users_mobile')->where('id_subdistrict', $user->id_subdistrict)->pluck('id');
-                // MENUNGGU (Proses dari Desa)
-                $got1 = DB::table('laporan_umum')->whereIn('id_user', $desaIds)->where('status', 'Proses')->count();
-                // SELESAI (Sudah mereka ACC / Disetujui1)
-                $got2 = DB::table('laporan_umum')->whereIn('id_user', $desaIds)->where('status', 'Disetujui1')->count();
-            } else { // DESA
-                $got1 = DB::table('laporan_umum')->where('id_user', $user->id)->where('status', 'Proses')->count();
-                $got2 = DB::table('laporan_umum')->where('id_user', $user->id)->whereIn('status', ['Disetujui1', 'Disetujui2'])->count();
+
+            if ($user->id_role == 2) {
+                // Kecamatan: Menunggu = Proses | Selesai = Disetujui1
+                $got1 = DB::table('laporan_umum')
+                    ->leftJoin('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_umum.status', ['proses', 'Proses', 'PROSES'])
+                    ->count();
+
+                $got2 = DB::table('laporan_umum')
+                    ->leftJoin('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_umum.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                    ->count();
             }
         }
 

@@ -14,32 +14,58 @@ class KelestarianLingkunganHidupController extends Controller
     {
         $data = collect();
 
-        if (Auth::guard('web')->check()) {
-            // ADMIN: Hanya lihat yang antre (Disetujui1)
+         if (Auth::guard('web')->check()) {
             $data = DB::table('laporan_kelestarian_lingkungan_hidup')
-                ->join('users_mobile', 'laporan_kelestarian_lingkungan_hidup.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                ->leftJoin('users_mobile', 'laporan_kelestarian_lingkungan_hidup.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                 ->select('laporan_kelestarian_lingkungan_hidup.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                ->where('laporan_kelestarian_lingkungan_hidup.status', 'Disetujui1')
-                ->orderBy('id_pokja4_bidang2', 'desc')->get();
-        } elseif (Auth::guard('pengguna')->check()) {
-            $user = Auth::guard('pengguna')->user();
-            $query = DB::table('laporan_kelestarian_lingkungan_hidup')
-                ->join('users_mobile', 'laporan_kelestarian_lingkungan_hidup.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->join('village', 'users_mobile.id_village', '=', 'village.id')
-                ->select('laporan_kelestarian_lingkungan_hidup.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                ->orderBy('id_pokja4_bidang2', 'desc');
+                // KABUPATEN HANYA BISA MELIHAT DATA YANG SUDAH LEWAT KECAMATAN
+                ->where(function ($query) {
+                    // LAPORAN DARI DESA
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_kelestarian_lingkungan_hidup.status',
+                                ['Disetujui1', 'disetujui1', 'DISETUJUI1']
+                            );
+                    })
+                        // LAPORAN DARI MOBILE KECAMATAN
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_kelestarian_lingkungan_hidup.status',
+                                    ['Proses', 'proses', 'PROSES']
+                                );
+                        });
+                })
+                ->orderBy('laporan_kelestarian_lingkungan_hidup.id_pokja4_bidang2', 'desc')
+                ->get();
 
-            if ($user->id_role == 2) {
-                // KECAMATAN: Hanya lihat Proses
-                $data = $query->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                              ->where('laporan_kelestarian_lingkungan_hidup.status', 'Proses')->get();
-            } else {
-                // DESA: Lihat milik sendiri
-                $data = $query->where('laporan_kelestarian_lingkungan_hidup.id_user', $user->id)->get();
+            return view('backend.kelestarian_lingkungan_hidup', compact('data'));
+        }
+
+        // =========================
+        // WEB KECAMATAN
+        // =========================
+        if (Auth::guard('pengguna')->check()) {
+            $user = Auth::guard('pengguna')->user();
+
+            if ($user->id_role == 2) { // KECAMATAN
+                $data = DB::table('laporan_kelestarian_lingkungan_hidup')
+                    ->leftJoin('users_mobile', 'laporan_kelestarian_lingkungan_hidup.id_user', '=', 'users_mobile.id')
+                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->select('laporan_kelestarian_lingkungan_hidup.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    // KECAMATAN HANYA BISA MELIHAT DATA MENTAH
+                    ->whereIn('laporan_kelestarian_lingkungan_hidup.status', ['proses', 'Proses', 'PROSES'])
+                    ->orderBy('laporan_kelestarian_lingkungan_hidup.id_pokja4_bidang2', 'desc')
+                    ->get();
             }
+
+            return view('backend.kelestarian_lingkungan_hidup', compact('data'));
         }
 
         return view('backend.kelestarian_lingkungan_hidup', compact('data'));

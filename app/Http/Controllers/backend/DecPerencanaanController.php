@@ -34,7 +34,7 @@ class DecPerencanaanController extends Controller
                     ->select('laporan_perencanaan_sehat.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
                     ->where('laporan_perencanaan_sehat.status', 'Disetujui1')
-                    ->orderBy('id_pokja3_bidang2', 'desc')->get();
+                    ->orderBy('id_pokja4_bidang3', 'desc')->get();
             } else {
                 // DESA: Lihat riwayat miliknya yang sudah di-ACC
                 $data2 = DB::table('laporan_perencanaan_sehat')
@@ -44,7 +44,7 @@ class DecPerencanaanController extends Controller
                     ->select('laporan_perencanaan_sehat.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
                     ->where('laporan_perencanaan_sehat.id_user', $user->id)
                     ->whereIn('laporan_perencanaan_sehat.status', ['Disetujui1', 'Disetujui2'])
-                    ->orderBy('id_pokja3_bidang2', 'desc')->get();
+                    ->orderBy('id_pokja4_bidang3', 'desc')->get();
             }
         }
 

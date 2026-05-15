@@ -131,51 +131,6 @@
     </div>
     @endif
 
-    <!-- Filter Card -->
-    <div class="form-card">
-      <form action="{{ route('pokja1.index') }}" method="GET" id="filterForm">
-        <div class="d-flex align-items-center gap-3 mb-3">
-          <div class="d-flex align-items-center gap-2">
-            <label for="bulan" class="form-label" style="margin-bottom:0; font-size:14px; color:#6b7280; white-space:nowrap; font-weight:500;">Pilih Bulan</label>
-            <select name="bulan" id="bulan" class="form-control" style="height:40px; width:180px; font-size:13px; border:1px solid #cbd5e0; border-radius:6px; padding:8px 12px; color:#4a5568;">
-              <option value="">-- Pilih Bulan --</option>
-              <option value="01">Januari</option>
-              <option value="02">Februari</option>
-              <option value="03">Maret</option>
-              <option value="04">April</option>
-              <option value="05">Mei</option>
-              <option value="06">Juni</option>
-              <option value="07">Juli</option>
-              <option value="08">Agustus</option>
-              <option value="09">September</option>
-              <option value="10">Oktober</option>
-              <option value="11">November</option>
-              <option value="12">Desember</option>
-            </select>
-          </div>
-          <div class="d-flex align-items-center gap-2">
-            <label for="tahun" class="form-label" style="margin-bottom:0; font-size:14px; color:#6b7280; white-space:nowrap; font-weight:500;">Pilih Tahun</label>
-            <select name="tahun" id="tahun" class="form-control" style="height:40px; width:180px; font-size:13px; border:1px solid #cbd5e0; border-radius:6px; padding:8px 12px; color:#4a5568;">
-              <option value="">-- Pilih Tahun --</option>
-              <option value="2023">2023</option>
-              <option value="2024">2024</option>
-              <option value="2025">2025</option>
-              <option value="2026">2026</option>
-            </select>
-          </div>
-        </div>
-        <div class="d-flex justify-content-end gap-2">
-          <button type="button" class="btn d-flex align-items-center justify-content-center" onclick="resetFilter()" style="background-color:#9ca3af; color:white; border:none; height:40px; padding:0 24px; border-radius:6px; font-weight:600; font-size:14px;">
-            Refresh
-          </button>
-          <button type="button" class="btn d-flex align-items-center justify-content-center gap-2" onclick="submitFilter()" style="background-color:#0369a1; color:white; border:none; height:40px; padding:0 24px; border-radius:6px; font-weight:600; font-size:14px;">
-            <i class="bi bi-funnel-fill" style="font-size:14px;"></i>
-            <span>Filter</span>
-          </button>
-        </div>
-      </form>
-    </div>
-
     <div class="card mt-3">
       <div class="card-body">
         <div class="alert alert-info d-flex align-items-center" role="alert" style="background-color:#dbeafe; color:#1e40af; border:none; border-radius:8px;">

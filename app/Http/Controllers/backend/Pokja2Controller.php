@@ -18,56 +18,86 @@ class Pokja2Controller extends Controller
         // 1. WEB KABUPATEN (ADMIN)
         // =====================================
         if (Auth::guard('web')->check()) {
-            
-            // Admin Kabupaten memantau laporan yang sudah di-ACC Kecamatan (Disetujui1) dan Final (Disetujui2)
-            $statusAdmin = ['Disetujui1', 'disetujui1', 'DISETUJUI1', 'Disetujui2', 'disetujui2', 'DISETUJUI2'];
+            $statusAdmin = ['Disetujui1', 'Disetujui2'];
 
             $modelPertama = DB::table('laporan_pendidikan_n_keterampilan')
-                ->whereIn('status', $statusAdmin)
+                ->leftJoin(
+                    'users_mobile',
+                    'laporan_pendidikan_n_keterampilan.id_user',
+                    '=',
+                    'users_mobile.id'
+                )
+                ->where(function ($query) {
+                    // DESA
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_pendidikan_n_keterampilan.status',
+                                ['Disetujui1','Disetujui2']
+                            );
+                    })
+                        // MOBILE KECAMATAN
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_pendidikan_n_keterampilan.status',
+                                    ['Proses', 'proses', 'PROSES','Disetujui2']
+                                );
+                        });
+                })
                 ->count();
 
             $modelKedua = DB::table('laporan_pengembangan_kehidupan')
-                ->whereIn('status', $statusAdmin)
+                ->leftJoin(
+                    'users_mobile',
+                    'laporan_pengembangan_kehidupan.id_user',
+                    '=',
+                    'users_mobile.id'
+                )
+                ->where(function ($query) {
+                    // DESA
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_pengembangan_kehidupan.status',
+                                ['Disetujui1','Disetujui2']
+                            );
+                    })
+                        // MOBILE KECAMATAN
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_pengembangan_kehidupan.status',
+                                    ['Proses', 'proses', 'PROSES','Disetujui2']
+                                );
+                        });
+                })
                 ->count();
-        } 
+
+        }
         // =====================================
         // 2. PENGGUNA MOBILE (KECAMATAN / DESA)
         // =====================================
-        elseif (Auth::guard('pengguna')->check()) {
+        else if (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) { 
-                // --- KECAMATAN ---
-                
-                // JURUS ANTI-0: Ambil semua ID user di wilayah kecamatan ini (Hapus filter id_role agar data tidak nyangkut)
-                $desaIds = DB::table('users_mobile')
-                    ->where('id_subdistrict', $user->id_subdistrict)
-                    ->pluck('id');
-                
-                // Kecamatan memantau laporan yang masih 'Proses' dan yang sudah mereka ACC ('Disetujui1')
-                $statusKecamatan = ['proses', 'Proses', 'PROSES', 'Disetujui1', 'disetujui1', 'DISETUJUI1'];
+            if ($user->id_role == 2) {
+                $statusKecamatan = ['Proses', 'Disetujui1'];
 
                 $modelPertama = DB::table('laporan_pendidikan_n_keterampilan')
-                    ->whereIn('id_user', $desaIds)
-                    ->whereIn('status', $statusKecamatan)
+                    ->leftJoin('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_pendidikan_n_keterampilan.status', $statusKecamatan)
                     ->count();
 
                 $modelKedua = DB::table('laporan_pengembangan_kehidupan')
-                    ->whereIn('id_user', $desaIds)
-                    ->whereIn('status', $statusKecamatan)
+                    ->leftJoin('users_mobile', 'laporan_pengembangan_kehidupan.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_pengembangan_kehidupan.status', $statusKecamatan)
                     ->count();
 
-            } else {
-                // --- DESA ---
-                // Jika akun Desa yang login, tampilkan jumlah laporan miliknya sendiri
-                
-                $modelPertama = DB::table('laporan_pendidikan_n_keterampilan')
-                    ->where('id_user', $user->id)
-                    ->count();
-
-                $modelKedua = DB::table('laporan_pengembangan_kehidupan')
-                    ->where('id_user', $user->id)
-                    ->count();
             }
         }
 

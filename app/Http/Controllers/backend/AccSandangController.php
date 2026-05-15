@@ -19,51 +19,62 @@ class AccSandangController extends Controller
         // =====================================
         if (Auth::guard('web')->check()) {
 
-            // MENUNGGU ACC KABUPATEN (Hanya menghitung yang sudah di-ACC Kecamatan)
+            // MENUNGGU ACC KABUPATEN
             $sand1 = DB::table('laporan_sandang')
-                ->whereIn('status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                ->leftJoin('users_mobile', 'laporan_sandang.id_user', '=', 'users_mobile.id')
+
+                ->where(function ($query) {
+
+                    // dari desa yang sudah acc kecamatan
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_sandang.status',
+                                ['Disetujui1', 'disetujui1', 'DISETUJUI1']
+                            );
+                    })
+
+                        // dari mobile kecamatan
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_sandang.status',
+                                    ['Proses', 'proses', 'PROSES']
+                                );
+                        });
+                })
+
                 ->count();
 
-            // SUDAH FINAL (Sudah di-ACC Kabupaten/Admin)
+            // SUDAH SELESAI ACC KABUPATEN
             $sand2 = DB::table('laporan_sandang')
-                ->whereIn('status', ['Disetujui2', 'disetujui2', 'DISETUJUI2'])
+                ->whereIn(
+                    'status',
+                    ['Disetujui2', 'disetujui2', 'DISETUJUI2']
+                )
                 ->count();
-        } 
+        }
         
         // =====================================
         // 2. PENGGUNA MOBILE (KECAMATAN / DESA)
         // =====================================
-        else if (Auth::guard('pengguna')->check()) {
+        elseif (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) { // Role Kecamatan
-                
-                // JURUS ANTI-0: Ambil semua ID user di bawah kecamatan ini
-                $desaUsers = DB::table('users_mobile')
-                    ->where('id_subdistrict', $user->id_subdistrict)
-                    ->pluck('id');
-
-                // MENUNGGU PERSETUJUAN (Data mentah "Proses" dari desa)
+            if ($user->id_role == 2) {
+                // Kecamatan: Menunggu = Proses | Selesai = Disetujui1
                 $sand1 = DB::table('laporan_sandang')
-                    ->whereIn('id_user', $desaUsers)
-                    ->whereIn('status', ['proses', 'Proses', 'PROSES'])
-                    ->count();
-
-                // SUDAH DISETUJUI (Data yang sudah di-ACC Kecamatan menjadi Disetujui1)
-                $sand2 = DB::table('laporan_sandang')
-                    ->whereIn('id_user', $desaUsers)
-                    ->whereIn('status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
-                    ->count();
-            } else {
-                // UNTUK ROLE DESA (Agar dashboard desa tidak 0)
-                $sand1 = DB::table('laporan_sandang')
-                    ->where('id_user', $user->id)
-                    ->whereIn('status', ['proses', 'Proses', 'PROSES'])
+                    ->leftJoin('users_mobile', 'laporan_sandang.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_sandang.status', ['proses', 'Proses', 'PROSES'])
                     ->count();
 
                 $sand2 = DB::table('laporan_sandang')
-                    ->where('id_user', $user->id)
-                    ->whereIn('status', ['Disetujui1', 'Disetujui2'])
+                    ->leftJoin('users_mobile', 'laporan_sandang.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_sandang.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
                     ->count();
             }
         }

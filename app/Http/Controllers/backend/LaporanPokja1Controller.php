@@ -17,24 +17,41 @@ class LaporanPokja1Controller extends Controller
         $data = collect();
 
         // BLOK 1: MUTLAK HANYA UNTUK KABUPATEN
-        if (Auth::guard('web')->check()) { 
+        if (Auth::guard('web')->check()) {
             $data = DB::table('laporan_kader_pokja1')
                 ->leftJoin('users_mobile', 'laporan_kader_pokja1.id_user', '=', 'users_mobile.id')
                 ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
                 ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                 ->select('laporan_kader_pokja1.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
                 // KABUPATEN HANYA BISA MELIHAT DATA YANG SUDAH LEWAT KECAMATAN
-                ->whereIn('laporan_kader_pokja1.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                ->where(function ($query) {
+                    // LAPORAN DARI DESA
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_kader_pokja1.status',
+                                ['Disetujui1', 'disetujui1', 'DISETUJUI1']
+                            );
+                    })
+                        // LAPORAN DARI MOBILE KECAMATAN
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_kader_pokja1.status',
+                                    ['Proses', 'proses', 'PROSES']
+                                );
+                        });
+                })
                 ->orderBy('laporan_kader_pokja1.id_kader_pokja1', 'desc')
                 ->get();
-                
+
             return view('backend.laporanpokja1', compact('data'));
         }
 
         // BLOK 2: MUTLAK HANYA UNTUK KECAMATAN & DESA
         if (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
-            
+
             if ($user->id_role == 2) { // KECAMATAN
                 $data = DB::table('laporan_kader_pokja1')
                     ->leftJoin('users_mobile', 'laporan_kader_pokja1.id_user', '=', 'users_mobile.id')
@@ -42,14 +59,15 @@ class LaporanPokja1Controller extends Controller
                     ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                     ->select('laporan_kader_pokja1.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
                     // KECAMATAN HANYA BISA MELIHAT DATA MENTAH
                     ->whereIn('laporan_kader_pokja1.status', ['proses', 'Proses', 'PROSES'])
                     ->orderBy('laporan_kader_pokja1.id_kader_pokja1', 'desc')
                     ->get();
             }
-            
+
             return view('backend.laporanpokja1', compact('data'));
-        } 
+        }
 
         // JIKA TIDAK LOGIN, KEMBALIKAN DATA KOSONG
         return view('backend.laporanpokja1', compact('data'));
@@ -59,7 +77,9 @@ class LaporanPokja1Controller extends Controller
     public function edit(string $id_kader_pokja1)
     {
         $data = LaporanPokja1::find($id_kader_pokja1);
-        if (!$data) { return redirect()->route('laporanpokja1.index')->with('error', 'Data tidak ditemukan'); }
+        if (!$data) {
+            return redirect()->route('laporanpokja1.index')->with('error', 'Data tidak ditemukan');
+        }
         return view('backend.tampil_laporanpokja1', compact('data'));
     }
 
@@ -67,11 +87,13 @@ class LaporanPokja1Controller extends Controller
     public function update(Request $request, string $id_kader_pokja1)
     {
         $data = LaporanPokja1::find($id_kader_pokja1);
-        if (!$data) { return redirect()->back()->with(['error' => 'Data tidak ditemukan!']); }
+        if (!$data) {
+            return redirect()->back()->with(['error' => 'Data tidak ditemukan!']);
+        }
 
         $status = $request->status;
         $statusVariasi = ['disetujui', 'disetujui (admin)', 'disetujui (kecamatan)', 'disetujui1', 'disetujui2'];
-        
+
         if (in_array(strtolower($status), $statusVariasi)) {
             // Jika login pakai 'tim penggerak' -> Disetujui2, Jika 'aldi' -> Disetujui1
             $status = Auth::guard('web')->check() ? 'Disetujui2' : 'Disetujui1';
@@ -93,7 +115,7 @@ class LaporanPokja1Controller extends Controller
     public function destroy(string $id_kader_pokja1)
     {
         $data = LaporanPokja1::find($id_kader_pokja1);
-        if($data){
+        if ($data) {
             $data->delete();
             return redirect()->route('laporanpokja1.index')->with(['success' => 'Berhasil Menghapus Laporan']);
         }
@@ -119,7 +141,7 @@ class LaporanPokja1Controller extends Controller
             ->leftJoin('users_mobile', 'laporan_penghayatan_n_pengamalan.id_user', '=', 'users_mobile.id')
             ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
             ->select('laporan_penghayatan_n_pengamalan.*', 'subdistrict.name as nama_kec')
-            ->when($bulan, fn($q) => $q->whereMonth('created_at', $bulan)) 
+            ->when($bulan, fn($q) => $q->whereMonth('created_at', $bulan))
             ->when($tahun, fn($q) => $q->whereYear('created_at', $tahun))
             ->whereIn('status', ['Disetujui2', 'disetujui2'])
             ->get();
@@ -149,17 +171,17 @@ class LaporanPokja1Controller extends Controller
         try {
             if ($bidang == 'gotongroyong') {
                 $data = DB::table('laporan_gotong_royong')
-                    ->when($bulan, fn($q) => $q->whereMonth('tanggal', $bulan)) 
+                    ->when($bulan, fn($q) => $q->whereMonth('tanggal', $bulan))
                     ->when($tahun, fn($q) => $q->whereYear('tanggal', $tahun))
                     ->whereIn('status', ['Disetujui2', 'disetujui2'])->get();
             } elseif ($bidang == 'penghayatan') {
-                $data = DB::table('laporan_penghayatan_n_pengamalan') 
-                    ->when($bulan, fn($q) => $q->whereMonth('created_at', $bulan)) 
+                $data = DB::table('laporan_penghayatan_n_pengamalan')
+                    ->when($bulan, fn($q) => $q->whereMonth('created_at', $bulan))
                     ->when($tahun, fn($q) => $q->whereYear('created_at', $tahun))
                     ->whereIn('status', ['Disetujui2', 'disetujui2'])->get();
             } elseif ($bidang == 'kader') {
                 $data = DB::table('laporan_kader_pokja1')
-                    ->when($bulan, fn($q) => $q->whereMonth('tanggal', $bulan)) 
+                    ->when($bulan, fn($q) => $q->whereMonth('tanggal', $bulan))
                     ->when($tahun, fn($q) => $q->whereYear('tanggal', $tahun))
                     ->whereIn('status', ['Disetujui2', 'disetujui2'])->get();
             }
@@ -167,5 +189,5 @@ class LaporanPokja1Controller extends Controller
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'Error Laravel: ' . $e->getMessage()], 500);
         }
-    }   
+    }
 }

@@ -13,32 +13,63 @@ class PengembanganController extends Controller
     public function index()
     {
         // Cek guard yang digunakan
+        $data = collect();
+
+        // =========================
+        // WEB KABUPATEN
+        // =========================
         if (Auth::guard('web')->check()) {
-            // Jika admin web, tampilkan data dengan status 'proses'
             $data = DB::table('laporan_pengembangan_kehidupan')
-                ->join('users_mobile', 'laporan_pengembangan_kehidupan.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->join('village', 'users_mobile.id_village', '=', 'village.id')
-                ->select('laporan_pengembangan_kehidupan.*', 'village.name as nama_desa', 'subdistrict.name as nama_kec')
-                ->whereIn('laporan_pengembangan_kehidupan.status', ['Disetujui1'])
-                ->orderBy('id_pokja2_bidang2', 'desc')
+                ->leftJoin('users_mobile', 'laporan_pengembangan_kehidupan.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                ->select('laporan_pengembangan_kehidupan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                // KABUPATEN HANYA BISA MELIHAT DATA YANG SUDAH LEWAT KECAMATAN
+                ->where(function ($query) {
+                    // LAPORAN DARI DESA
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_pengembangan_kehidupan.status',
+                                ['Disetujui1', 'disetujui1', 'DISETUJUI1']
+                            );
+                    })
+                        // LAPORAN DARI MOBILE KECAMATAN
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_pengembangan_kehidupan.status',
+                                    ['Proses', 'proses', 'PROSES']
+                                );
+                        });
+                })
+                ->orderBy('laporan_pengembangan_kehidupan.id_pokja2_bidang2', 'desc')
                 ->get();
-        } elseif (Auth::guard('pengguna')->check()) {
+
+            return view('backend.pengembangan', compact('data'));
+        }
+        
+        // =========================
+        // WEB KECAMATAN
+        // =========================
+        if (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) { // Kecamatan
-                // Tampilkan data dari desa (role 1) di kecamatan yang sama
+            if ($user->id_role == 2) { // KECAMATAN
                 $data = DB::table('laporan_pengembangan_kehidupan')
-                    ->join('users_mobile', 'laporan_pengembangan_kehidupan.id_user', '=', 'users_mobile.id')
-                    ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                    ->join('village', 'users_mobile.id_village', '=', 'village.id')
-                    ->select('laporan_pengembangan_kehidupan.*', 'village.name as nama_desa', 'subdistrict.name as nama_kec')
+                    ->leftJoin('users_mobile', 'laporan_pengembangan_kehidupan.id_user', '=', 'users_mobile.id')
+                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->select('laporan_pengembangan_kehidupan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                    ->where('users_mobile.id_role', 1) // Desa
-                    ->whereIn('laporan_pengembangan_kehidupan.status', ['proses'])
-                    ->orderBy('id_pokja2_bidang2', 'desc')
+                    ->where('users_mobile.id_role', 1)
+                    // KECAMATAN HANYA BISA MELIHAT DATA MENTAH
+                    ->whereIn('laporan_pengembangan_kehidupan.status', ['proses', 'Proses', 'PROSES'])
+                    ->orderBy('laporan_pengembangan_kehidupan.id_pokja2_bidang2', 'desc')
                     ->get();
             }
+
+            return view('backend.pengembangan', compact('data'));
         }
 
         return view('backend.pengembangan', compact('data'));

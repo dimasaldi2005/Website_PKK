@@ -9,14 +9,9 @@ class Inovasi extends Model
 {
     use HasFactory;
 
-    protected $table = 'inovasi';
-
-    protected $fillable = [
-        'id_user',
-        'jenis',
-        'judul',
-        'deskripsi',
-        'status',
-        'catatan'
+    protected $table = 'rekap_desa_bulanan';
+    protected $primaryKey = 'id_rekap_desa_bulanan';
+    protected $guarded = [
+        'id_rekap_desa_bulanan'
     ];
 }

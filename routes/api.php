@@ -59,6 +59,8 @@ Route::post('/report/update', [RiwayatController::class, 'updateLaporan']);
 // LAPORAN
 Route::post('/report/galeri', [ReportController::class, 'insertGaleri']);
 
+Route::post('/report/laporan-umum', [ReportController::class, 'storeLaporanUmum']);
+
 // POKJA 1
 Route::post('/report/kader-pokja1', [ReportController::class, 'insertKaderPokja1']);
 Route::post('/report/gotong-royong', [ReportController::class, 'insertGotongRoyong']);
@@ -69,11 +71,13 @@ Route::post('/report/pendidikan-keterampilan', [ReportController::class, 'insert
 Route::post('/report/pengembangan-kehidupan', [ReportController::class, 'insertPengembanganKehidupan']);
 
 // POKJA 3
+Route::post('/report/kader-pokja3', [ReportController::class, 'insertKaderPokja3']);
 Route::post('/report/pangan', [ReportController::class, 'insertPangan']);
 Route::post('/report/sandang', [ReportController::class, 'insertSandang']);
 Route::post('/report/perumahan', [ReportController::class, 'insertPerumahan']);
 
 // POKJA 4
+Route::post('/report/kader-pokja4', [ReportController::class, 'insertKaderPokja4']);
 Route::post('/report/kesehatan', [ReportController::class, 'insertKesehatan']);
 Route::post('/report/lingkungan-hidup', [ReportController::class, 'insertLingkunganHidup']);
 Route::post('/report/perencanaan-sehat', [ReportController::class, 'insertPerencanaanSehat']);

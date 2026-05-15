@@ -14,52 +14,40 @@ class DecPendidikanController extends Controller
     {
         $data2 = collect();
 
-        // =====================================
-        // 1. JIKA YANG LOGIN ADMIN WEB (KABUPATEN)
-        // =====================================
+        // Cek guard yang login
         if (Auth::guard('web')->check()) {
-            // Admin Kabupaten harus bisa lihat yang sudah di-ACC Kecamatan (1) DAN yang sudah Final (2)
-            $statusAdmin = ['Disetujui1', 'disetujui1', 'DISETUJUI1', 'Disetujui2', 'disetujui2', 'DISETUJUI2'];
-
+            // Jika admin web, tampilkan semua data yang sudah disetujui
             $data2 = DB::table('laporan_pendidikan_n_keterampilan')
-                ->leftJoin('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
-                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                ->join('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
+                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->join('village', 'users_mobile.id_village', '=', 'village.id')
                 ->select('laporan_pendidikan_n_keterampilan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                ->whereIn('laporan_pendidikan_n_keterampilan.status', $statusAdmin)
-                ->orderBy('laporan_pendidikan_n_keterampilan.id_pokja2_bidang1', 'desc')
+                ->where('laporan_pendidikan_n_keterampilan.status', 'Disetujui2')
+                ->orderBy('id_pokja2_bidang1', 'desc')
                 ->get();
-        } 
-        // =====================================
-        // 2. JIKA YANG LOGIN PENGGUNA MOBILE (KECAMATAN / DESA)
-        // =====================================
-        else if (Auth::guard('pengguna')->check()) {
+        } elseif (Auth::guard('pengguna')->check()) {
+            // Jika pengguna mobile dengan role 2 (Kecamatan)
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) { // Role Kecamatan
-                // Kecamatan melihat data di wilayahnya yang sudah di-ACC (1) maupun yang sudah Final (2)
-                $statusKec = ['Disetujui1', 'disetujui1', 'DISETUJUI1', 'Disetujui2', 'disetujui2', 'DISETUJUI2'];
-
+            if ($user->id_role == 2) {
+                // Ambil data desa (role 1) di kecamatan tersebut yang sudah Disetujui1
                 $data2 = DB::table('laporan_pendidikan_n_keterampilan')
-                    ->leftJoin('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
-                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->join('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
+                    ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->where('users_mobile.id_role', 1) // Hanya desa
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict) // Kecamatan yang sama
+                    ->where('laporan_pendidikan_n_keterampilan.status', 'Disetujui1')
                     ->select('laporan_pendidikan_n_keterampilan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                    ->whereIn('laporan_pendidikan_n_keterampilan.status', $statusKec)
-                    ->orderBy('laporan_pendidikan_n_keterampilan.id_pokja2_bidang1', 'desc')
+                    ->orderBy('id_pokja2_bidang1', 'desc')
                     ->get();
-            } else { // Role Desa
-                // Desa melihat semua riwayat laporannya sendiri
-                $data2 = DB::table('laporan_pendidikan_n_keterampilan')
-                    ->leftJoin('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
-                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
-                    ->select('laporan_pendidikan_n_keterampilan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                    ->where('laporan_pendidikan_n_keterampilan.id_user', $user->id)
-                    ->orderBy('laporan_pendidikan_n_keterampilan.id_pokja2_bidang1', 'desc')
-                    ->get();
+            } else {
+                // Jika bukan role 2, kembalikan data kosong
+                $data2 = collect();
             }
+        } else {
+            // Jika tidak ada guard yang cocok, kembalikan data kosong
+            $data2 = collect();
         }
 
         return view('backend.decpendidikan', compact('data2'));

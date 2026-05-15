@@ -18,7 +18,7 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
-public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         // 1. Validasi input form
         $request->validate([
@@ -26,7 +26,7 @@ public function store(Request $request): RedirectResponse
             'password' => ['required', 'string'],
         ]);
 
-        $loginId = $request->input('email'); 
+        $loginId = $request->input('email');
         $password = $request->input('password');
         $remember = $request->boolean('remember');
 
@@ -45,19 +45,19 @@ public function store(Request $request): RedirectResponse
 
         // 4. Jika gagal login karena salah password atau akun tidak terdaftar
         throw \Illuminate\Validation\ValidationException::withMessages([
-            'email' => trans('auth.failed'),
+            'email' => 'Email / Nomor WhatsApp atau password salah.',
         ]);
     }
 
     public function destroy(Request $request)
     {
         // 1. Pastikan kedua guard benar-benar di-logout (Gembok ditutup!)
-        if(Auth::guard('web')->check()){
-            Auth::guard('web')->logout(); 
+        if (Auth::guard('web')->check()) {
+            Auth::guard('web')->logout();
         }
-        
-        if(Auth::guard('pengguna')->check()){
-            Auth::guard('pengguna')->logout(); 
+
+        if (Auth::guard('pengguna')->check()) {
+            Auth::guard('pengguna')->logout();
         }
 
         // 2. Hancurkan sisa-sisa sesi di browser

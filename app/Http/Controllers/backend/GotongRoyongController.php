@@ -19,86 +19,57 @@ class GotongRoyongController extends Controller
         // WEB KABUPATEN
         // =========================
         if (Auth::guard('web')->check()) {
-
             $data = DB::table('laporan_gotong_royong')
-                ->join(
-                    'users_mobile',
-                    'laporan_gotong_royong.id_user',
-                    '=',
-                    'users_mobile.id'
-                )
-                ->join(
-                    'subdistrict',
-                    'users_mobile.id_subdistrict',
-                    '=',
-                    'subdistrict.id'
-                )
-                ->join(
-                    'village',
-                    'users_mobile.id_village',
-                    '=',
-                    'village.id'
-                )
-                ->select(
-                    'laporan_gotong_royong.*',
-                    'subdistrict.name as nama_kec',
-                    'village.name as nama_desa'
-                )
-                ->where(
-                    'laporan_gotong_royong.status',
-                    'Disetujui1'
-                )
-                ->orderBy(
-                    'laporan_gotong_royong.id_pokja1_bidang2',
-                    'desc'
-                )
+                ->leftJoin('users_mobile', 'laporan_gotong_royong.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                ->select('laporan_gotong_royong.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                // KABUPATEN HANYA BISA MELIHAT DATA YANG SUDAH LEWAT KECAMATAN
+                ->where(function ($query) {
+                    // LAPORAN DARI DESA
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_gotong_royong.status',
+                                ['Disetujui1', 'disetujui1', 'DISETUJUI1']
+                            );
+                    })
+                        // LAPORAN DARI MOBILE KECAMATAN
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_gotong_royong.status',
+                                    ['Proses', 'proses', 'PROSES']
+                                );
+                        });
+                })
+                ->orderBy('laporan_gotong_royong.id_pokja1_bidang2', 'desc')
                 ->get();
+
+            return view('backend.gotongroyong', compact('data'));
         }
 
         // =========================
         // WEB KECAMATAN
         // =========================
-        else if (Auth::guard('pengguna')->check()) {
-
+        if (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
 
-            $data = DB::table('laporan_gotong_royong')
-                ->join(
-                    'users_mobile',
-                    'laporan_gotong_royong.id_user',
-                    '=',
-                    'users_mobile.id'
-                )
-                ->join(
-                    'subdistrict',
-                    'users_mobile.id_subdistrict',
-                    '=',
-                    'subdistrict.id'
-                )
-                ->join(
-                    'village',
-                    'users_mobile.id_village',
-                    '=',
-                    'village.id'
-                )
-                ->select(
-                    'laporan_gotong_royong.*',
-                    'subdistrict.name as nama_kec',
-                    'village.name as nama_desa'
-                )
-                ->where(
-                    'users_mobile.id_subdistrict',
-                    $user->id_subdistrict
-                )
-                ->where(
-                    'laporan_gotong_royong.status',
-                    'Proses'
-                )
-                ->orderBy(
-                    'laporan_gotong_royong.id_pokja1_bidang2',
-                    'desc'
-                )
-                ->get();
+            if ($user->id_role == 2) { // KECAMATAN
+                $data = DB::table('laporan_gotong_royong')
+                    ->leftJoin('users_mobile', 'laporan_gotong_royong.id_user', '=', 'users_mobile.id')
+                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->select('laporan_gotong_royong.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    // KECAMATAN HANYA BISA MELIHAT DATA MENTAH
+                    ->whereIn('laporan_gotong_royong.status', ['proses', 'Proses', 'PROSES'])
+                    ->orderBy('laporan_gotong_royong.id_pokja1_bidang2', 'desc')
+                    ->get();
+            }
+
+            return view('backend.gotongroyong', compact('data'));
         }
 
         return view(

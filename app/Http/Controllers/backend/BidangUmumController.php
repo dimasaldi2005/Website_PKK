@@ -20,34 +20,55 @@ class BidangUmumController extends Controller
         // 1. ADMIN WEB: Hanya lihat yang sudah di-ACC Kecamatan (Disetujui1)
         if (Auth::guard('web')->check()) {
             $data = DB::table('laporan_umum')
-                ->join('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                ->leftJoin('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                 ->select('laporan_umum.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                ->where('laporan_umum.status', 'Disetujui1')
-                ->orderBy('id_laporan_umum', 'desc')->get();
+                // KABUPATEN HANYA BISA MELIHAT DATA YANG SUDAH LEWAT KECAMATAN
+                ->where(function ($query) {
+                    // LAPORAN DARI DESA
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_umum.status',
+                                ['Disetujui1', 'disetujui1', 'DISETUJUI1']
+                            );
+                    })
+                        // LAPORAN DARI MOBILE KECAMATAN
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_umum.status',
+                                    ['Proses', 'proses', 'PROSES']
+                                );
+                        });
+                })
+                ->orderBy('laporan_umum.id_laporan_umum', 'desc')
+                ->get();
+
+            return view('backend.bidangumum', compact('data'));
         } 
-        // 2. PENGGUNA MOBILE
-        else if (Auth::guard('pengguna')->check()) {
+        // =====================================
+        // 2. WEB KECAMATAN (Hanya Lihat Proses)
+        // =====================================
+        if (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
-            if ($user->id_role == 2) { // KECAMATAN: Hanya lihat Proses
+
+            if ($user->id_role == 2) { // KECAMATAN
                 $data = DB::table('laporan_umum')
-                    ->join('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
-                    ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                    ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->leftJoin('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
+                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                     ->select('laporan_umum.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                    ->where('laporan_umum.status', 'Proses')
-                    ->orderBy('id_laporan_umum', 'desc')->get();
-            } else { // DESA: Lihat milik sendiri
-                $data = DB::table('laporan_umum')
-                    ->join('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
-                    ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                    ->join('village', 'users_mobile.id_village', '=', 'village.id')
-                    ->select('laporan_umum.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                    ->where('laporan_umum.id_user', $user->id)
-                    ->orderBy('id_laporan_umum', 'desc')->get();
+                    ->where('users_mobile.id_role', 1)
+                    // KECAMATAN HANYA BISA MELIHAT DATA MENTAH
+                    ->whereIn('laporan_umum.status', ['proses', 'Proses', 'PROSES'])
+                    ->orderBy('laporan_umum.id_laporan_umum', 'desc')
+                    ->get();
             }
+
+            return view('backend.bidangumum', compact('data'));
         }
 
         return view('backend.bidangumum', compact('data'));

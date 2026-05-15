@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\backend;
 
 use Illuminate\Http\Request;
-use App\Models\Pengembangan;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,45 +11,84 @@ class AccPengembanganController extends Controller
 {
     public function index()
     {
-        // Cek guard pengguna
-        if (Auth::guard('web')->check()) {
-            // Jika admin web, tampilkan data dengan status Disetujui1 dan Disetujui2
-            $pengembangan = Pengembangan::whereIn('status', ['Disetujui1', 'Disetujui2'])
-                ->orderBy('created_at', 'desc')
-                ->get();
+        $pen1 = 0;
+        $pen2 = 0;
 
-            $pen1 = Pengembangan::where('status', 'Disetujui1')->count();
-            $pen2 = Pengembangan::where('status', 'Disetujui2')->count();
-        } elseif (Auth::guard('pengguna')->check()) {
+        // =========================
+        // 1. WEB KABUPATEN
+        // =========================
+        if (Auth::guard('web')->check()) {
+
+            // MENUNGGU ACC KABUPATEN
+            $pen1 = DB::table('laporan_pengembangan_kehidupan')
+                ->leftJoin('users_mobile', 'laporan_pengembangan_kehidupan.id_user', '=', 'users_mobile.id')
+
+                ->where(function ($query) {
+
+                    // dari desa yang sudah acc kecamatan
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_pengembangan_kehidupan.status',
+                                ['Disetujui1', 'disetujui1', 'DISETUJUI1']
+                            );
+                    })
+
+                    // dari mobile kecamatan
+                    ->orWhere(function ($q) {
+                        $q->where('users_mobile.id_role', 2)
+                            ->whereIn(
+                                'laporan_pengembangan_kehidupan.status',
+                                ['Proses', 'proses', 'PROSES']
+                            );
+                    });
+                })
+
+                ->count();
+
+            // SUDAH SELESAI ACC KABUPATEN
+            $pen2 = DB::table('laporan_pengembangan_kehidupan')
+                ->whereIn(
+                    'status',
+                    ['Disetujui2', 'disetujui2', 'DISETUJUI2']
+                )
+                ->count();
+        }
+
+        // =========================
+        // 2. WEB KECAMATAN / DESA
+        // =========================
+        elseif (Auth::guard('pengguna')->check()) {
+
             $user = Auth::guard('pengguna')->user();
 
-            // Jika pengguna mobile dengan role 2 (kecamatan)
+            // ================= KECAMATAN =================
             if ($user->id_role == 2) {
-                // Ambil data dari desa (role 1) di kecamatan yang sama
-                $pengembangan = Pengembangan::whereHas('user', function ($query) use ($user) {
-                    $query->where('id_role', 1)
-                        ->where('id_subdistrict', $user->id_subdistrict);
-                })
-                    ->whereIn('status', ['proses', 'Disetujui1'])
-                    ->orderBy('created_at', 'desc')
-                    ->get();
 
-                $pen1 = Pengembangan::whereHas('user', function ($query) use ($user) {
-                    $query->where('id_role', 1)
-                        ->where('id_subdistrict', $user->id_subdistrict);
-                })
-                    ->where('status', 'proses')
+                // MENUNGGU ACC KECAMATAN
+                $pen1 = DB::table('laporan_pengembangan_kehidupan')
+                    ->leftJoin('users_mobile', 'laporan_pengembangan_kehidupan.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn(
+                        'laporan_pengembangan_kehidupan.status',
+                        ['proses', 'Proses', 'PROSES']
+                    )
                     ->count();
 
-                $pen2 = Pengembangan::whereHas('user', function ($query) use ($user) {
-                    $query->where('id_role', 1)
-                        ->where('id_subdistrict', $user->id_subdistrict);
-                })
-                    ->where('status', 'Disetujui1')
+                // SUDAH DISETUJUI KECAMATAN
+                $pen2 = DB::table('laporan_pengembangan_kehidupan')
+                    ->leftJoin('users_mobile', 'laporan_pengembangan_kehidupan.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn(
+                        'laporan_pengembangan_kehidupan.status',
+                        ['Disetujui1', 'disetujui1', 'DISETUJUI1']
+                    )
                     ->count();
             }
         }
 
-        return view('backend.accpengembangan', compact('pengembangan', 'pen1', 'pen2'));
+        return view('backend.accpengembangan', compact('pen1', 'pen2'));
     }
 }

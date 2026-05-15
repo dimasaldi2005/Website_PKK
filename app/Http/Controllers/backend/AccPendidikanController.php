@@ -19,41 +19,62 @@ class AccPendidikanController extends Controller
         // =========================
         if (Auth::guard('web')->check()) {
 
-            // MENUNGGU ACC KABUPATEN (Hanya melihat yang sudah di-ACC Kecamatan)
+            // MENUNGGU ACC KABUPATEN
             $pend1 = DB::table('laporan_pendidikan_n_keterampilan')
-                ->whereIn('status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                ->leftJoin('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
+
+                ->where(function ($query) {
+
+                    // dari desa yang sudah acc kecamatan
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_pendidikan_n_keterampilan.status',
+                                ['Disetujui1', 'disetujui1', 'DISETUJUI1']
+                            );
+                    })
+
+                        // dari mobile kecamatan
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_pendidikan_n_keterampilan.status',
+                                    ['Proses', 'proses', 'PROSES']
+                                );
+                        });
+                })
+
                 ->count();
 
-            // SUDAH FINAL (Di-ACC Kabupaten)
+            // SUDAH SELESAI ACC KABUPATEN
             $pend2 = DB::table('laporan_pendidikan_n_keterampilan')
-                ->whereIn('status', ['Disetujui2', 'disetujui2', 'DISETUJUI2'])
+                ->whereIn(
+                    'status',
+                    ['Disetujui2', 'disetujui2', 'DISETUJUI2']
+                )
                 ->count();
         }
 
         // =========================
         // 2. WEB KECAMATAN / DESA
         // =========================
-        else if (Auth::guard('pengguna')->check()) {
-
+        elseif (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) { // Role Kecamatan
-
-                // JURUS ANTI-0: Cari semua ID user yang berada di bawah kecamatan ini tanpa filter id_role
-                $desaUsers = DB::table('users_mobile')
-                    ->where('id_subdistrict', $user->id_subdistrict)
-                    ->pluck('id');
-
-                // MENUNGGU PERSETUJUAN (Hanya melihat laporan mentah "Proses" dari desa)
+            if ($user->id_role == 2) {
+                // Kecamatan: Menunggu = Proses | Selesai = Disetujui1
                 $pend1 = DB::table('laporan_pendidikan_n_keterampilan')
-                    ->whereIn('id_user', $desaUsers)
-                    ->whereIn('status', ['proses', 'Proses', 'PROSES'])
+                    ->leftJoin('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_pendidikan_n_keterampilan.status', ['proses', 'Proses', 'PROSES'])
                     ->count();
 
-                // SUDAH DISETUJUI (Sudah di-ACC Kecamatan menjadi Disetujui1)
                 $pend2 = DB::table('laporan_pendidikan_n_keterampilan')
-                    ->whereIn('id_user', $desaUsers)
-                    ->whereIn('status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                    ->leftJoin('users_mobile', 'laporan_pendidikan_n_keterampilan.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_pendidikan_n_keterampilan.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
                     ->count();
             }
         }

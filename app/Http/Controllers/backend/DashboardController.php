@@ -16,6 +16,7 @@ use App\Models\LaporanPokja1;
 use App\Models\LaporanPokja3;
 use App\Models\LaporanPokja4;
 use App\Models\Kesehatan;
+use App\Models\Inovasi;
 use App\Models\KelestarianLingkunganHidup;
 use App\Models\PerencanaanSehat;
 use App\Http\Controllers\Controller;
@@ -71,19 +72,19 @@ class DashboardController extends Controller
                 // ROLE KECAMATAN
                 if ($user->id_role == 2) {
 
-                    $desaIds = Pengguna::where(
-                        'id_subdistrict',
-                        $user->id_subdistrict
-                    )
-                        ->where('id_role', 1)
-                        ->pluck('id');
-
                     return $model
-                        ->whereIn('id_user', $desaIds)
-                        ->where(function ($query) {
-
-                            $query->where('status', 'Proses')
-                                ->orWhere('status', 'Disetujui1');
+                        ->leftJoin(
+                            'users_mobile',
+                            $model->getTable() . '.id_user',
+                            '=',
+                            'users_mobile.id'
+                        )
+                        ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                        // HANYA LAPORAN DESA
+                        ->where('users_mobile.id_role', 1)
+                        ->where(function ($query) use ($model) {
+                            $query->where($model->getTable() . '.status', 'Proses')
+                                ->orWhere($model->getTable() . '.status', 'Disetujui1');
                         });
                 }
             }
@@ -92,11 +93,38 @@ class DashboardController extends Controller
             // WEB KABUPATEN
             // =====================================
 
-            return $model->where(function ($query) {
+            return $model
+                ->leftJoin(
+                    'users_mobile',
+                    $model->getTable() . '.id_user',
+                    '=',
+                    'users_mobile.id'
+                )
 
-                $query->where('status', 'Disetujui1')
-                    ->orWhere('status', 'Disetujui2');
-            });
+                ->where(function ($query) use ($model) {
+
+                    // LAPORAN DESA
+                    $query->where(function ($q) use ($model) {
+
+                        $q->where('users_mobile.id_role', 1)
+
+                            ->where(function ($qq) use ($model) {
+
+                                $qq->where($model->getTable() . '.status', 'Disetujui1')
+                                    ->orWhere($model->getTable() . '.status', 'Disetujui2');
+                            });
+                    })
+
+                        // LAPORAN MOBILE KECAMATAN
+                        ->orWhere(function ($q) use ($model) {
+
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    $model->getTable() . '.status',
+                                    ['Proses', 'Disetujui1','Disetujui2']
+                                );
+                        });
+                });
         };
 
         // =========================================
@@ -161,12 +189,17 @@ class DashboardController extends Controller
         $laporan4 = $getFilteredQuery(
             new LaporanPokja4()
         )->count();
+        
+        $laporan44 = $getFilteredQuery(
+            new Inovasi()
+        )->count();
 
         $totalbidang4 =
             $bidang41 +
             $bidang42 +
             $bidang43 +
-            $laporan4;
+            $laporan44 +
+            $laporan4 ;
 
         return view(
             'backend.dashboard',

@@ -35,29 +35,15 @@ class DecBidangUmumController extends Controller
         elseif (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) { 
-                // --- KECAMATAN ---
-                // JURUS ANTI-0: Hapus filter role 1 agar tidak macet
+            if ($user->id_role == 2) {
                 $data = DB::table('laporan_umum')
                     ->leftJoin('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
                     ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
                     ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                     ->select('laporan_umum.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
-                    // KECAMATAN: Melihat yang sudah mereka ACC (Disetujui1) maupun yang sudah Final (Disetujui2)
-                    ->whereIn('laporan_umum.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1', 'Disetujui2', 'disetujui2', 'DISETUJUI2'])
-                    ->orderBy('id_laporan_umum', 'desc')
-                    ->get();
-            } else {
-                // --- DESA ---
-                // DESA: Melihat riwayat miliknya sendiri yang sudah diproses
-                $data = DB::table('laporan_umum')
-                    ->leftJoin('users_mobile', 'laporan_umum.id_user', '=', 'users_mobile.id')
-                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
-                    ->select('laporan_umum.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                    ->where('laporan_umum.id_user', $user->id)
-                    ->whereIn('laporan_umum.status', ['Disetujui1', 'Disetujui2'])
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_umum.status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
                     ->orderBy('id_laporan_umum', 'desc')
                     ->get();
             }

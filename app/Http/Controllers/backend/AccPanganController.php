@@ -13,63 +13,106 @@ class AccPanganController extends Controller
     {
         $pang1 = 0;
         $pang2 = 0;
-        $data = collect(); // Biar aman kalau di blade ada looping data
+        $data = collect();
 
         // =========================
         // 1. WEB KABUPATEN (ADMIN)
         // =========================
         if (Auth::guard('web')->check()) {
 
-            // MENUNGGU ACC KABUPATEN (Hanya menghitung yang sudah di-ACC Kecamatan)
+            // MENUNGGU ACC KABUPATEN
             $pang1 = DB::table('laporan_pangan')
-                ->whereIn('status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                ->leftJoin(
+                    'users_mobile',
+                    'laporan_pangan.id_user',
+                    '=',
+                    'users_mobile.id'
+                )
+
+                ->where(function ($query) {
+
+                    // dari desa yang sudah acc kecamatan
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_pangan.status',
+                                ['Disetujui1', 'disetujui1', 'DISETUJUI1']
+                            );
+                    })
+
+                    // dari mobile kecamatan
+                    ->orWhere(function ($q) {
+                        $q->where('users_mobile.id_role', 2)
+                            ->whereIn(
+                                'laporan_pangan.status',
+                                ['Proses', 'proses', 'PROSES']
+                            );
+                    });
+                })
+
                 ->count();
 
-            // SUDAH FINAL (Sudah di-ACC Kabupaten/Admin)
+            // SUDAH SELESAI ACC KABUPATEN
             $pang2 = DB::table('laporan_pangan')
-                ->whereIn('status', ['Disetujui2', 'disetujui2', 'DISETUJUI2'])
+                ->whereIn(
+                    'status',
+                    ['Disetujui2', 'disetujui2', 'DISETUJUI2']
+                )
                 ->count();
         }
 
         // =========================
-        // 2. PENGGUNA MOBILE (KECAMATAN / DESA)
+        // 2. WEB KECAMATAN / DESA
         // =========================
-        else if (Auth::guard('pengguna')->check()) {
+        elseif (Auth::guard('pengguna')->check()) {
 
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) { // Role Kecamatan
+            if ($user->id_role == 2) {
 
-                // JURUS ANTI-0: Cari semua ID user di bawah kecamatan ini tanpa filter role
-                $desaUsers = DB::table('users_mobile')
-                    ->where('id_subdistrict', $user->id_subdistrict)
-                    ->pluck('id');
-
-                // MENUNGGU PERSETUJUAN (Data mentah "Proses" dari desa)
+                // MENUNGGU ACC KECAMATAN
                 $pang1 = DB::table('laporan_pangan')
-                    ->whereIn('id_user', $desaUsers)
-                    ->whereIn('status', ['proses', 'Proses', 'PROSES'])
+                    ->leftJoin(
+                        'users_mobile',
+                        'laporan_pangan.id_user',
+                        '=',
+                        'users_mobile.id'
+                    )
+                    ->where(
+                        'users_mobile.id_subdistrict',
+                        $user->id_subdistrict
+                    )
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn(
+                        'laporan_pangan.status',
+                        ['Proses', 'proses', 'PROSES']
+                    )
                     ->count();
 
-                // SUDAH DISETUJUI (Data yang sudah di-ACC Kecamatan menjadi Disetujui1)
+                // SUDAH ACC KECAMATAN
                 $pang2 = DB::table('laporan_pangan')
-                    ->whereIn('id_user', $desaUsers)
-                    ->whereIn('status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
-                    ->count();
-            } else {
-                // UNTUK ROLE DESA (Opsional, agar dashboard desa juga muncul angkanya)
-                $pang1 = DB::table('laporan_pangan')
-                    ->where('id_user', $user->id)
-                    ->whereIn('status', ['proses', 'Proses', 'PROSES'])
-                    ->count();
-
-                $pang2 = DB::table('laporan_pangan')
-                    ->where('id_user', $user->id)
-                    ->whereIn('status', ['Disetujui1', 'disetujui1', 'DISETUJUI1'])
+                    ->leftJoin(
+                        'users_mobile',
+                        'laporan_pangan.id_user',
+                        '=',
+                        'users_mobile.id'
+                    )
+                    ->where(
+                        'users_mobile.id_subdistrict',
+                        $user->id_subdistrict
+                    )
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn(
+                        'laporan_pangan.status',
+                        ['Disetujui1', 'disetujui1', 'DISETUJUI1']
+                    )
                     ->count();
             }
         }
 
-        return view('backend.accpangan', compact('pang1', 'pang2', 'data'));
+        return view(
+            'backend.accpangan',
+            compact('pang1', 'pang2', 'data')
+        );
     }
 }

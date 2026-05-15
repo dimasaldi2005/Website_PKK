@@ -25,44 +25,151 @@ class Pokja3Controller extends Controller
         // 1. WEB KABUPATEN (ADMIN)
         // =====================================
         if (Auth::guard('web')->check()) {
-            // Admin memantau yang sudah di-ACC Kecamatan (Disetujui1) dan yang Final (Disetujui2)
-            $statusAdmin = ['Disetujui1', 'disetujui1', 'DISETUJUI1', 'Disetujui2', 'disetujui2', 'DISETUJUI2'];
+            $statusAdmin = ['Disetujui1', 'Disetujui2'];
 
-            $modelPertama = Pangan::whereIn('status', $statusAdmin)->count();
-            $modelKedua = Sandang::whereIn('status', $statusAdmin)->count();
-            $modelKetiga = Perumahan::whereIn('status', $statusAdmin)->count();
-            $modelKeempat = LaporanPokja3::whereIn('status', $statusAdmin)->count();
-        } 
-        
+            $modelPertama = DB::table('laporan_pangan')
+                ->leftJoin(
+                    'users_mobile',
+                    'laporan_pangan.id_user',
+                    '=',
+                    'users_mobile.id'
+                )
+                ->where(function ($query) {
+                    // DESA
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_pangan.status',
+                                ['Disetujui1', 'Disetujui2']
+                            );
+                    })
+                        // MOBILE KECAMATAN
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_pangan.status',
+                                    ['Proses', 'proses', 'PROSES', 'Disetujui2']
+                                );
+                        });
+                })
+                ->count();
+
+            $modelKedua = DB::table('laporan_sandang')
+                ->leftJoin(
+                    'users_mobile',
+                    'laporan_sandang.id_user',
+                    '=',
+                    'users_mobile.id'
+                )
+                ->where(function ($query) {
+                    // DESA
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_sandang.status',
+                                ['Disetujui1', 'Disetujui2']
+                            );
+                    })
+                        // MOBILE KECAMATAN
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_sandang.status',
+                                    ['Proses', 'proses', 'PROSES', 'Disetujui2']
+                                );
+                        });
+                })
+                ->count();
+
+            $modelKetiga = DB::table('laporan_perumahan')
+                ->leftJoin(
+                    'users_mobile',
+                    'laporan_perumahan.id_user',
+                    '=',
+                    'users_mobile.id'
+                )
+                ->where(function ($query) {
+                    // DESA
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_perumahan.status',
+                                ['Disetujui1', 'Disetujui2']
+                            );
+                    })
+                        // MOBILE KECAMATAN
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_perumahan.status',
+                                    ['Proses', 'proses', 'PROSES', 'Disetujui2']
+                                );
+                        });
+                })
+                ->count();
+            $modelKeempat = DB::table('laporan_kader_pokja3')
+                ->leftJoin(
+                    'users_mobile',
+                    'laporan_kader_pokja3.id_user',
+                    '=',
+                    'users_mobile.id'
+                )
+                ->where(function ($query) {
+                    // DESA
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_kader_pokja3.status',
+                                ['Disetujui1', 'Disetujui2']
+                            );
+                    })
+                        // MOBILE KECAMATAN
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_kader_pokja3.status',
+                                    ['Proses', 'proses', 'PROSES', 'Disetujui2']
+                                );
+                        });
+                })
+                ->count();
+        }
         // =====================================
         // 2. PENGGUNA MOBILE (KECAMATAN / DESA)
         // =====================================
         elseif (Auth::guard('pengguna')->check()) {
             $user = Auth::guard('pengguna')->user();
 
-            if ($user->id_role == 2) { 
-                // --- KECAMATAN ---
-                
-                // JURUS ANTI-0: Cari semua ID user di bawah kecamatan tanpa filter role yang kaku
-                $desaIds = DB::table('users_mobile')
-                    ->where('id_subdistrict', $user->id_subdistrict)
-                    ->pluck('id');
+            if ($user->id_role == 2) {
+                $statusKecamatan = ['Proses', 'Disetujui1'];
 
-                // Kecamatan memantau yang masih Proses dan yang sudah mereka ACC (Disetujui1)
-                $statusKecamatan = ['proses', 'Proses', 'PROSES', 'Disetujui1', 'disetujui1', 'DISETUJUI1'];
+                $modelPertama = DB::table('laporan_pangan')
+                    ->leftJoin('users_mobile', 'laporan_pangan.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_pangan.status', $statusKecamatan)
+                    ->count();
 
-                $modelPertama = Pangan::whereIn('id_user', $desaIds)->whereIn('status', $statusKecamatan)->count();
-                $modelKedua = Sandang::whereIn('id_user', $desaIds)->whereIn('status', $statusKecamatan)->count();
-                $modelKetiga = Perumahan::whereIn('id_user', $desaIds)->whereIn('status', $statusKecamatan)->count();
-                $modelKeempat = LaporanPokja3::whereIn('id_user', $desaIds)->whereIn('status', $statusKecamatan)->count();
+                $modelKedua = DB::table('laporan_sandang')
+                    ->leftJoin('users_mobile', 'laporan_sandang.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_sandang.status', $statusKecamatan)
+                    ->count();
 
-            } else {
-                // --- DESA ---
-                // Menampilkan jumlah laporan milik desa itu sendiri agar dashboard tidak 0
-                $modelPertama = Pangan::where('id_user', $user->id)->count();
-                $modelKedua = Sandang::where('id_user', $user->id)->count();
-                $modelKetiga = Perumahan::where('id_user', $user->id)->count();
-                $modelKeempat = LaporanPokja3::where('id_user', $user->id)->count();
+                $modelKetiga = DB::table('laporan_perumahan')
+                    ->leftJoin('users_mobile', 'laporan_perumahan.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_perumahan.status', $statusKecamatan)
+                    ->count();
+                $modelKeempat = DB::table('laporan_kader_pokja3')
+                    ->leftJoin('users_mobile', 'laporan_kader_pokja3.id_user', '=', 'users_mobile.id')
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    ->whereIn('laporan_kader_pokja3.status', $statusKecamatan)
+                    ->count();
+
             }
         }
 
@@ -101,7 +208,7 @@ class Pokja3Controller extends Controller
                 if ($user->id_role == 2) {
                     $statusKecamatan = ['Proses', 'proses', 'PROSES', 'Disetujui1', 'disetujui1', 'DISETUJUI1'];
                     $query->whereIn("$tabel.status", $statusKecamatan)
-                          ->where('users_mobile.id_subdistrict', $user->id_subdistrict);
+                        ->where('users_mobile.id_subdistrict', $user->id_subdistrict);
                 } else {
                     $query->where("$tabel.id_user", $user->id);
                 }
@@ -121,7 +228,6 @@ class Pokja3Controller extends Controller
                 'bidang' => strtoupper($bidang),
                 'data' => $data
             ]);
-
         } catch (\Throwable $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }

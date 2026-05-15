@@ -150,8 +150,7 @@
                   <th class="text-center align-middle" rowspan="2" scope="col">Desa</th>
                 @endif
                 
-                <th scope="col" colspan="3" class="text-center header-group-title" style="background-color: #fcf8e3;">JUMLAH INDUSTRI RUMAH TANGGA</th>
-                <th class="text-center align-middle" rowspan="2" scope="col">Tata Laksana RT</th>
+                <th scope="col" colspan="3" class="text-center header-group-title" style="background-color: #fcf8e3;">JUMLAH KADER</th>
                 <th scope="col" rowspan="2" class="text-center align-middle">Status</th>
                 <th scope="col" rowspan="2" class="text-center align-middle">Tanggal</th>
                 <th scope="col" rowspan="2" class="text-center align-middle">Aksi</th>
@@ -160,7 +159,7 @@
               <tr>
                 <th class="text-center header-sub-title" scope="col" style="background-color: #fffaf0;">Pangan</th>
                 <th class="text-center header-sub-title" scope="col" style="background-color: #fffaf0;">Sandang</th>
-                <th class="text-center header-sub-title" scope="col" style="background-color: #fffaf0;">Jasa</th>
+                <th class="text-center header-sub-title" scope="col" style="background-color: #fffaf0;">Tata Laksana RT</th>
               </tr>
             </thead>
             <tbody>
@@ -177,7 +176,7 @@
                 
                 <td class="text-center">{{ $got1->pangan ?? '0' }}</td>
                 <td class="text-center">{{ $got1->sandang ?? '0' }}</td>
-                <td class="text-center">{{ $got1->jasa ?? '0' }}</td> <td class="text-center">{{ $got1->tata_laksana_rumah ?? '0' }}</td>
+                <td class="text-center">{{ $got1->tata_laksana_rumah ?? '0' }}</td>
                 
                 <td class="text-center">
                   @if(in_array(strtolower($got1->status), ['proses', 'revisi']))

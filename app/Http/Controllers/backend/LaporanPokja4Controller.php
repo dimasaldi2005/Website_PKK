@@ -16,49 +16,57 @@ class LaporanPokja4Controller extends Controller
     {
         $data = collect();
 
-        // A. JIKA YANG LOGIN ADMIN WEB (KABUPATEN)
-        if (Auth::guard('web')->check()) { 
+        // BLOK 1: MUTLAK HANYA UNTUK KABUPATEN
+        if (Auth::guard('web')->check()) {
             $data = DB::table('laporan_kader_pokja4')
-                ->join('users_mobile', 'laporan_kader_pokja4.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                ->leftJoin('users_mobile', 'laporan_kader_pokja4.id_user', '=', 'users_mobile.id')
+                ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                 ->select('laporan_kader_pokja4.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                // LOGIKA SAKLEK: Kabupaten hanya melihat yang sudah di-ACC Kecamatan
-                ->where('laporan_kader_pokja4.status', 'Disetujui1')
+                // KABUPATEN HANYA BISA MELIHAT DATA YANG SUDAH LEWAT KECAMATAN
+                ->where(function ($query) {
+                    // LAPORAN DARI DESA
+                    $query->where(function ($q) {
+                        $q->where('users_mobile.id_role', 1)
+                            ->whereIn(
+                                'laporan_kader_pokja4.status',
+                                ['Disetujui1', 'disetujui1', 'DISETUJUI1']
+                            );
+                    })
+                        // LAPORAN DARI MOBILE KECAMATAN
+                        ->orWhere(function ($q) {
+                            $q->where('users_mobile.id_role', 2)
+                                ->whereIn(
+                                    'laporan_kader_pokja4.status',
+                                    ['Proses', 'proses', 'PROSES']
+                                );
+                        });
+                })
                 ->orderBy('laporan_kader_pokja4.id_kader_pokja4', 'desc')
                 ->get();
-        } 
-        // B. JIKA YANG LOGIN PENGGUNA MOBILE (KECAMATAN / DESA)
-        else if (Auth::guard('pengguna')->check()) {
-            $user = Auth::guard('pengguna')->user();
-            
-            if ($user->id_role == 2) { 
-                // --- LOGIKA KECAMATAN (Jurus Anti-0) ---
-                $desaIds = DB::table('users_mobile')
-                    ->where('id_subdistrict', $user->id_subdistrict)
-                    ->pluck('id');
 
+            return view('backend.laporanpokja4', compact('data'));
+        }
+
+        // B. JIKA YANG LOGIN PENGGUNA MOBILE (KECAMATAN / DESA)
+        if (Auth::guard('pengguna')->check()) {
+            $user = Auth::guard('pengguna')->user();
+
+            if ($user->id_role == 2) { // KECAMATAN
                 $data = DB::table('laporan_kader_pokja4')
-                    ->join('users_mobile', 'laporan_kader_pokja4.id_user', '=', 'users_mobile.id')
-                    ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                    ->join('village', 'users_mobile.id_village', '=', 'village.id')
+                    ->leftJoin('users_mobile', 'laporan_kader_pokja4.id_user', '=', 'users_mobile.id')
+                    ->leftJoin('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
+                    ->leftJoin('village', 'users_mobile.id_village', '=', 'village.id')
                     ->select('laporan_kader_pokja4.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                    ->whereIn('laporan_kader_pokja4.id_user', $desaIds)
-                    // LOGIKA SAKLEK: Kecamatan hanya melihat laporan mentah (Proses)
+                    ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
+                    ->where('users_mobile.id_role', 1)
+                    // KECAMATAN HANYA BISA MELIHAT DATA MENTAH
                     ->whereIn('laporan_kader_pokja4.status', ['proses', 'Proses', 'PROSES'])
                     ->orderBy('laporan_kader_pokja4.id_kader_pokja4', 'desc')
                     ->get();
-            } else {
-                // --- LOGIKA DESA ---
-                $data = DB::table('laporan_kader_pokja4')
-                    ->join('users_mobile', 'laporan_kader_pokja4.id_user', '=', 'users_mobile.id')
-                    ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                    ->join('village', 'users_mobile.id_village', '=', 'village.id')
-                    ->select('laporan_kader_pokja4.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                    ->where('laporan_kader_pokja4.id_user', $user->id)
-                    ->orderBy('laporan_kader_pokja4.id_kader_pokja4', 'desc')
-                    ->get();
             }
+
+            return view('backend.laporanpokja4', compact('data'));
         }
 
         return view('backend.laporanpokja4', compact('data'));

@@ -466,6 +466,272 @@ class RiwayatController extends Controller
             ], 500);
         }
     }
+    /// =======================================================
+    /// CANCEL REPORT
+    /// =======================================================
+
+    public function cancelReport(Request $request)
+    {
+        try {
+
+            $uuid  = $request->uuid;
+            $orgId = $request->org_id;
+
+            /// ================= VALIDASI =================
+
+            if (
+                !$uuid ||
+                !$orgId
+            ) {
+
+                return response()->json([
+
+                    'statusCode' => 400,
+
+                    'message' =>
+                    'Parameter uuid dan org_id wajib diisi.',
+
+                    'data' => null,
+
+                    'error' => [
+                        'message' =>
+                        'Parameter tidak lengkap'
+                    ]
+
+                ], 400);
+            }
+
+            /// ================= GET TABLE =================
+
+            $table =
+                $this->determineTableFromUUID(
+                    $uuid,
+                    $orgId
+                );
+
+            if (!$table) {
+
+                return response()->json([
+
+                    'statusCode' => 404,
+
+                    'message' =>
+                    'Tabel laporan tidak ditemukan.',
+
+                    'data' => null,
+
+                    'error' => null
+
+                ], 404);
+            }
+
+            /// ================= UPDATE STATUS =================
+
+            $updated = DB::table($table)
+
+                ->where(
+                    'uuid',
+                    $uuid
+                )
+
+                ->update([
+
+                    'status' => 'Dibatalkan'
+                ]);
+
+            if (!$updated) {
+
+                return response()->json([
+
+                    'statusCode' => 404,
+
+                    'message' =>
+                    'Data laporan tidak ditemukan',
+
+                    'data' => null,
+
+                    'error' => null
+
+                ], 404);
+            }
+
+            return response()->json([
+
+                'statusCode' => 200,
+
+                'message' =>
+                'Laporan berhasil dibatalkan',
+
+                'data' => [
+
+                    'uuid' =>
+                    $uuid,
+
+                    'status' =>
+                    'Dibatalkan'
+                ],
+
+                'error' =>
+                null
+
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+
+                'statusCode' => 500,
+
+                'message' =>
+                'Terjadi kesalahan server',
+
+                'data' => null,
+
+                'error' => [
+
+                    'message' =>
+                    $e->getMessage()
+                ]
+
+            ], 500);
+        }
+    }
+
+    /// =======================================================
+    /// UPDATE REPORT
+    /// =======================================================
+
+    public function updateLaporan(Request $request)
+    {
+        try {
+
+            $uuid  = $request->uuid;
+            $orgId = $request->org_id;
+            $data  = $request->data;
+
+            /// ================= VALIDASI =================
+
+            if (
+                !$uuid ||
+                !$orgId ||
+                !$data
+            ) {
+
+                return response()->json([
+
+                    'statusCode' => 400,
+
+                    'message' =>
+                    'Parameter uuid, org_id, dan data wajib diisi.',
+
+                    'data' => null,
+
+                    'error' => [
+                        'message' =>
+                        'Parameter tidak lengkap'
+                    ]
+
+                ], 400);
+            }
+
+            /// ================= GET TABLE =================
+
+            $table =
+                $this->determineTableFromUUID(
+                    $uuid,
+                    $orgId
+                );
+
+            if (!$table) {
+
+                return response()->json([
+
+                    'statusCode' => 404,
+
+                    'message' =>
+                    'Tabel laporan tidak ditemukan.',
+
+                    'data' => null,
+
+                    'error' => null
+
+                ], 404);
+            }
+
+            /// ================= CHECK DATA =================
+
+            $existing = DB::table($table)
+
+                ->where(
+                    'uuid',
+                    $uuid
+                )
+
+                ->first();
+
+            if (!$existing) {
+
+                return response()->json([
+
+                    'statusCode' => 404,
+
+                    'message' =>
+                    'Data laporan tidak ditemukan',
+
+                    'data' => null,
+
+                    'error' => null
+
+                ], 404);
+            }
+
+            /// ================= UPDATE =================
+
+            DB::table($table)
+
+                ->where(
+                    'uuid',
+                    $uuid
+                )
+
+                ->update($data);
+
+            return response()->json([
+
+                'statusCode' => 200,
+
+                'message' =>
+                'Update berhasil',
+
+                'data' => [
+
+                    'uuid' =>
+                    $uuid
+                ],
+
+                'error' =>
+                null
+
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+
+                'statusCode' => 500,
+
+                'message' =>
+                'Terjadi kesalahan server',
+
+                'data' => null,
+
+                'error' => [
+
+                    'message' =>
+                    $e->getMessage()
+                ]
+
+            ], 500);
+        }
+    }
 
     /// =======================================================
     /// FETCH REPORTS
