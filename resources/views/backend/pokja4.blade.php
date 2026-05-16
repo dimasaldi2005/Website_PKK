@@ -105,7 +105,7 @@
               <h5 style="font-weight:600; font-size:14px; color:#1e293b; margin:0; line-height:1.4;">Inovasi</h5>
             </div>
             <div class="d-flex align-items-center gap-3">
-              <span style="font-size:28px; font-weight:600; color:#0369a1;">{{ $modelKelima ?? 0 }}</span>
+              <span style="font-size:28px; font-weight:600; color:#0369a1;"> {{($modelKelima ?? 0) + ($modelKeenam ?? 0) + ($modelKetujuh ?? 0) + ($modelKedelapan ?? 0)}}</span>
               <span style="font-size:13px; color:#94a3b8;">Jumlah total laporan</span>
             </div>
           </div>

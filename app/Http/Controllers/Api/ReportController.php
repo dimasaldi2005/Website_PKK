@@ -1805,4 +1805,817 @@ class ReportController extends Controller
             ], 500);
         }
     }
+    /// ===============================
+    /// INOVASI
+    /// REKAP DESA TAHUNAN
+    /// ===============================
+    public function insertRekapDesaTahunan(Request $request)
+    {
+        try {
+
+            /// ================= VALIDATION =================
+
+            $request->validate([
+
+                'id_user'         => 'required',
+
+                'id_role'         => 'required',
+
+                'id_organization' => 'required',
+
+                'kategori'        => 'required',
+            ]);
+
+            /// ================= UUID =================
+
+            $uuid =
+                strtoupper($request->kategori) .
+                '-RDT-' .
+                strtoupper(Str::random(6));
+
+            /// ================= INSERT =================
+
+            DB::table('rekap_desa_tahunan')->insert([
+
+                'uuid'                     => $uuid,
+
+                'id_user'                  => $request->id_user,
+
+                'id_role'                  => $request->id_role,
+
+                'id_organization'          => $request->id_organization,
+
+                'kategori'                 => strtolower($request->kategori),
+
+                'kader_kesehatan'          => $request->kader_kesehatan ?? 0,
+
+                'gizi'                     => $request->gizi ?? 0,
+
+                'kesling'                  => $request->kesling ?? 0,
+
+                'phbs'                     => $request->phbs ?? 0,
+
+                'kb'                       => $request->kb ?? 0,
+
+                'posyandu'                 => $request->posyandu ?? 0,
+
+                'imunisasi_vaksinasi_bayi_balita'
+                => $request->imunisasi_vaksinasi_bayi_balita ?? 0,
+
+                'pkg'                      => $request->pkg ?? 0,
+
+                'tbc'                      => $request->tbc ?? 0,
+
+                'jamban_wc'                => $request->jamban_wc ?? 0,
+
+                'spal'                     => $request->spal ?? 0,
+
+                'tps'                      => $request->tps ?? 0,
+
+                'jumlah_mck'               => $request->jumlah_mck ?? 0,
+
+                'pdam'                     => $request->pdam ?? 0,
+
+                'sumur'                    => $request->sumur ?? 0,
+
+                'lain_lain'                => $request->lain_lain ?? 0,
+
+                'jml_pus'                  => $request->jml_pus ?? 0,
+
+                'jml_wus'                  => $request->jml_wus ?? 0,
+
+                'akseptor_kb_l'            => $request->akseptor_kb_l ?? 0,
+
+                'akseptor_kb_p'            => $request->akseptor_kb_p ?? 0,
+
+                'jml_kk_tabungan'          => $request->jml_kk_tabungan ?? 0,
+
+                'jml_kk_asuransi'          => $request->jml_kk_asuransi ?? 0,
+
+                'kesehatan_program'        => $request->kesehatan_program ?? 0,
+
+                'kelestarian_lingkungan_hidup'
+                => $request->kelestarian_lingkungan_hidup ?? 0,
+
+                'perencanaan_sehat_program'
+                => $request->perencanaan_sehat_program ?? 0,
+
+                'catatan'                  => $request->catatan ?? '',
+
+                'status'                   => 'Proses',
+
+                'created_at'               => now(),
+
+                'updated_at'               => now(),
+            ]);
+
+            /// ================= GET DATA =================
+
+            $data = DB::table('rekap_desa_tahunan')
+
+                ->leftJoin(
+                    'role_users_mobile',
+                    'rekap_desa_tahunan.id_role',
+                    '=',
+                    'role_users_mobile.id'
+                )
+
+                ->leftJoin(
+                    'role_organization',
+                    'rekap_desa_tahunan.id_organization',
+                    '=',
+                    'role_organization.id'
+                )
+
+                ->where(
+                    'rekap_desa_tahunan.uuid',
+                    $uuid
+                )
+
+                ->select(
+
+                    'rekap_desa_tahunan.*',
+
+                    'role_users_mobile.id AS role_id',
+                    'role_users_mobile.uuid AS role_uuid',
+                    'role_users_mobile.name AS role_name',
+
+                    'role_organization.id AS organization_id',
+                    'role_organization.uuid AS organization_uuid',
+                    'role_organization.name AS organization_name'
+                )
+
+                ->first();
+
+            /// ================= RESPONSE =================
+
+            return response()->json([
+
+                'statusCode' => 200,
+
+                'message' =>
+                'Rekap Desa Tahunan berhasil disimpan',
+
+                'data' => [
+
+                    'id_rekap_desa_tahunan'
+                    => $data->id_rekap_desa_tahunan,
+
+                    'uuid'
+                    => $data->uuid,
+
+                    'id_user'
+                    => $data->id_user,
+
+                    'kategori'
+                    => $data->kategori,
+
+                    'kader_kesehatan'
+                    => $data->kader_kesehatan,
+
+                    'gizi'
+                    => $data->gizi,
+
+                    'kesling'
+                    => $data->kesling,
+
+                    'phbs'
+                    => $data->phbs,
+
+                    'kb'
+                    => $data->kb,
+
+                    'posyandu'
+                    => $data->posyandu,
+
+                    'imunisasi_vaksinasi_bayi_balita'
+                    => $data->imunisasi_vaksinasi_bayi_balita,
+
+                    'pkg'
+                    => $data->pkg,
+
+                    'tbc'
+                    => $data->tbc,
+
+                    'jamban_wc'
+                    => $data->jamban_wc,
+
+                    'spal'
+                    => $data->spal,
+
+                    'tps'
+                    => $data->tps,
+
+                    'jumlah_mck'
+                    => $data->jumlah_mck,
+
+                    'pdam'
+                    => $data->pdam,
+
+                    'sumur'
+                    => $data->sumur,
+
+                    'lain_lain'
+                    => $data->lain_lain,
+
+                    'jml_pus'
+                    => $data->jml_pus,
+
+                    'jml_wus'
+                    => $data->jml_wus,
+
+                    'akseptor_kb_l'
+                    => $data->akseptor_kb_l,
+
+                    'akseptor_kb_p'
+                    => $data->akseptor_kb_p,
+
+                    'jml_kk_tabungan'
+                    => $data->jml_kk_tabungan,
+
+                    'jml_kk_asuransi'
+                    => $data->jml_kk_asuransi,
+
+                    'kesehatan_program'
+                    => $data->kesehatan_program,
+
+                    'kelestarian_lingkungan_hidup'
+                    => $data->kelestarian_lingkungan_hidup,
+
+                    'perencanaan_sehat_program'
+                    => $data->perencanaan_sehat_program,
+
+                    'catatan'
+                    => $data->catatan,
+
+                    'status'
+                    => $data->status,
+
+                    'created_at'
+                    => $data->created_at,
+
+                    'updated_at'
+                    => $data->updated_at,
+
+                    'role' => [
+
+                        'id'
+                        => $data->role_id,
+
+                        'uuid'
+                        => $data->role_uuid,
+
+                        'name'
+                        => $data->role_name,
+                    ],
+
+                    'organization' => [
+
+                        'id'
+                        => $data->organization_id,
+
+                        'uuid'
+                        => $data->organization_uuid,
+
+                        'name'
+                        => $data->organization_name,
+                    ],
+                ],
+
+                'error' => null
+
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+
+                'statusCode' => 500,
+
+                'message' =>
+                'Terjadi kesalahan saat memproses permintaan',
+
+                'data' => null,
+
+                'error' => [
+
+                    'message'
+                    => $e->getMessage(),
+                ]
+
+            ], 500);
+        }
+    }
+    /// =======================================================
+    /// INSERT POSYANDU
+    /// =======================================================
+
+    public function insertPosyandu(Request $request)
+    {
+        try {
+
+            /// ================= VALIDATION =================
+
+            $request->validate([
+                'id_user'         => 'required',
+                'id_role'         => 'required',
+                'id_organization' => 'required',
+                'kategori'        => 'required',
+                'bulan'           => 'required',
+            ]);
+
+            /// ================= UUID =================
+
+            $uuid =
+                strtoupper($request->kategori) .
+                '-POS-' .
+                strtoupper(Str::random(6));
+
+            /// ================= INSERT =================
+
+            DB::table('posyandu')->insert([
+
+                'uuid'                     => $uuid,
+
+                'id_user'                  => $request->id_user,
+
+                'id_role'                  => $request->id_role,
+
+                'id_organization'          => $request->id_organization,
+
+                'kategori'                 => strtolower($request->kategori),
+
+                'bulan'                    => $request->bulan,
+
+                'jml_ibu_hamil'            => $request->jml_ibu_hamil ?? 0,
+
+                'diperiksa'                => $request->diperiksa ?? 0,
+
+                'fe_tablet_darah'          => $request->fe_tablet_darah ?? 0,
+
+                'jml_ibu_menyusui'         => $request->jml_ibu_menyusui ?? 0,
+
+                'kondom'                   => $request->kondom ?? 0,
+
+                'pil'                      => $request->pil ?? 0,
+
+                'implant'                  => $request->implant ?? 0,
+
+                'mop'                      => $request->mop ?? 0,
+
+                'mow'                      => $request->mow ?? 0,
+
+                'iud'                      => $request->iud ?? 0,
+
+                'suntikan'                 => $request->suntikan ?? 0,
+
+                'lain_lain_kb'              => $request->lain_lain_kb ?? 0,
+
+                'jml_balita_l'             => $request->jml_balita_l ?? 0,
+
+                'jml_balita_p'             => $request->jml_balita_p ?? 0,
+
+                'buku_kia_l'               => $request->buku_kia_l ?? 0,
+
+                'buku_kia_p'               => $request->buku_kia_p ?? 0,
+
+                'datang_l'                 => $request->datang_l ?? 0,
+
+                'datang_p'                 => $request->datang_p ?? 0,
+
+                'naik_l'                   => $request->naik_l ?? 0,
+
+                'naik_p'                   => $request->naik_p ?? 0,
+
+                'vit_a_l'                  => $request->vit_a_l ?? 0,
+
+                'vit_a_p'                  => $request->vit_a_p ?? 0,
+
+                'pmt_l'                    => $request->pmt_l ?? 0,
+
+                'pmt_p'                    => $request->pmt_p ?? 0,
+
+                'imunisasi_tt_1'           => $request->imunisasi_tt_1 ?? 0,
+
+                'imunisasi_tt_2'           => $request->imunisasi_tt_2 ?? 0,
+
+                'catatan'                  => $request->catatan ?? '',
+
+                'status'                   => 'Proses',
+
+                'created_at'               => now(),
+
+                'updated_at'               => now(),
+            ]);
+
+            /// ================= GET DATA =================
+
+            $data = DB::table('posyandu')
+
+                ->leftJoin(
+                    'role_users_mobile',
+                    'posyandu.id_role',
+                    '=',
+                    'role_users_mobile.id'
+                )
+
+                ->leftJoin(
+                    'role_organization',
+                    'posyandu.id_organization',
+                    '=',
+                    'role_organization.id'
+                )
+
+                ->where(
+                    'posyandu.uuid',
+                    $uuid
+                )
+
+                ->select(
+
+                    'posyandu.*',
+
+                    'role_users_mobile.id AS role_id',
+                    'role_users_mobile.uuid AS role_uuid',
+                    'role_users_mobile.name AS role_name',
+
+                    'role_organization.id AS organization_id',
+                    'role_organization.uuid AS organization_uuid',
+                    'role_organization.name AS organization_name'
+                )
+
+                ->first();
+
+            /// ================= RESPONSE =================
+
+            return response()->json([
+
+                'statusCode' => 200,
+
+                'message' =>
+                'Posyandu berhasil disimpan',
+
+                'data' => [
+
+                    'id_posyandu'            => $data->id_posyandu,
+
+                    'uuid'                   => $data->uuid,
+
+                    'id_user'                => $data->id_user,
+
+                    'kategori'               => $data->kategori,
+
+                    'bulan'                  => $data->bulan,
+
+                    'jml_ibu_hamil'          => $data->jml_ibu_hamil,
+
+                    'diperiksa'              => $data->diperiksa,
+
+                    'fe_tablet_darah'        => $data->fe_tablet_darah,
+
+                    'jml_ibu_menyusui'       => $data->jml_ibu_menyusui,
+
+                    'kondom'                 => $data->kondom,
+
+                    'pil'                    => $data->pil,
+
+                    'implant'                => $data->implant,
+
+                    'mop'                    => $data->mop,
+
+                    'mow'                    => $data->mow,
+
+                    'iud'                    => $data->iud,
+
+                    'suntikan'               => $data->suntikan,
+
+                    'lain_lain_kb'           => $data->lain_lain_kb,
+
+                    'jml_balita_l'           => $data->jml_balita_l,
+
+                    'jml_balita_p'           => $data->jml_balita_p,
+
+                    'buku_kia_l'             => $data->buku_kia_l,
+
+                    'buku_kia_p'             => $data->buku_kia_p,
+
+                    'datang_l'               => $data->datang_l,
+
+                    'datang_p'               => $data->datang_p,
+
+                    'naik_l'                 => $data->naik_l,
+
+                    'naik_p'                 => $data->naik_p,
+
+                    'vit_a_l'                => $data->vit_a_l,
+
+                    'vit_a_p'                => $data->vit_a_p,
+
+                    'pmt_l'                  => $data->pmt_l,
+
+                    'pmt_p'                  => $data->pmt_p,
+
+                    'imunisasi_tt_1'         => $data->imunisasi_tt_1,
+
+                    'imunisasi_tt_2'         => $data->imunisasi_tt_2,
+
+                    'catatan'                => $data->catatan,
+
+                    'status'                 => $data->status,
+
+                    'created_at'             => $data->created_at,
+
+                    'updated_at'             => $data->updated_at,
+
+                    'role' => [
+                        'id'    => $data->role_id,
+                        'uuid'  => $data->role_uuid,
+                        'name'  => $data->role_name,
+                    ],
+
+                    'organization' => [
+                        'id'    => $data->organization_id,
+                        'uuid'  => $data->organization_uuid,
+                        'name'  => $data->organization_name,
+                    ],
+                ],
+
+                'error' => null
+
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+
+                'statusCode' => 500,
+
+                'message' =>
+                'Terjadi kesalahan saat memproses permintaan',
+
+                'data' => null,
+
+                'error' => [
+                    'message' => $e->getMessage(),
+                ]
+
+            ], 500);
+        }
+    }
+    /// =======================================================
+    /// INSERT KEGIATAN POKJA 4
+    /// =======================================================
+
+    public function insertKegiatanPokja4(Request $request)
+    {
+        try {
+
+            /// ================= VALIDATION =================
+
+            $request->validate([
+                'id_user'         => 'required',
+                'id_role'         => 'required',
+                'id_organization' => 'required',
+                'kategori'        => 'required',
+            ]);
+
+            /// ================= UUID =================
+
+            $uuid =
+                strtoupper($request->kategori) .
+                '-KP4-' .
+                strtoupper(Str::random(6));
+
+            /// ================= INSERT =================
+
+            DB::table('kegiatan_pokja4')->insert([
+
+                'uuid'                     => $uuid,
+
+                'id_user'                  => $request->id_user,
+
+                'id_role'                  => $request->id_role,
+
+                'id_organization'          => $request->id_organization,
+
+                'kategori'                 => strtolower($request->kategori),
+
+                'kader_kesehatan'          => $request->kader_kesehatan ?? 0,
+
+                'gizi'                     => $request->gizi ?? 0,
+
+                'kesling'                  => $request->kesling ?? 0,
+
+                'phbs'                     => $request->phbs ?? 0,
+
+                'kb'                       => $request->kb ?? 0,
+
+                'posyandu'                 => $request->posyandu ?? 0,
+
+                'imunisasi_vaksinasi_bayi_balita'
+                => $request->imunisasi_vaksinasi_bayi_balita ?? 0,
+
+                'pkg'                      => $request->pkg ?? 0,
+
+                'tbc'                      => $request->tbc ?? 0,
+
+                'jamban_wc'                => $request->jamban_wc ?? 0,
+
+                'spal'                     => $request->spal ?? 0,
+
+                'tps'                      => $request->tps ?? 0,
+
+                'jumlah_mck'               => $request->jumlah_mck ?? 0,
+
+                'pdam'                     => $request->pdam ?? 0,
+
+                'sumur'                    => $request->sumur ?? 0,
+
+                'lain_lain'                => $request->lain_lain ?? 0,
+
+                'jml_pus'                  => $request->jml_pus ?? 0,
+
+                'jml_wus'                  => $request->jml_wus ?? 0,
+
+                'akseptor_kb_l'            => $request->akseptor_kb_l ?? 0,
+
+                'akseptor_kb_p'            => $request->akseptor_kb_p ?? 0,
+
+                'kk_memiliki_tabungan'
+                => $request->kk_memiliki_tabungan ?? 0,
+
+                'kk_memiliki_asuransi'
+                => $request->kk_memiliki_asuransi ?? 0,
+
+                'kesehatan'                => $request->kesehatan ?? 0,
+
+                'kelestarian_lingkungan_hidup'
+                => $request->kelestarian_lingkungan_hidup ?? 0,
+
+                'perencanaan_sehat'
+                => $request->perencanaan_sehat ?? 0,
+
+                'catatan'                  => $request->catatan ?? '',
+
+                'status'                   => 'Proses',
+
+                'created_at'               => now(),
+
+                'updated_at'               => now(),
+            ]);
+
+            /// ================= GET DATA =================
+
+            $data = DB::table('kegiatan_pokja4')
+
+                ->leftJoin(
+                    'role_users_mobile',
+                    'kegiatan_pokja4.id_role',
+                    '=',
+                    'role_users_mobile.id'
+                )
+
+                ->leftJoin(
+                    'role_organization',
+                    'kegiatan_pokja4.id_organization',
+                    '=',
+                    'role_organization.id'
+                )
+
+                ->where(
+                    'kegiatan_pokja4.uuid',
+                    $uuid
+                )
+
+                ->select(
+
+                    'kegiatan_pokja4.*',
+
+                    'role_users_mobile.id AS role_id',
+                    'role_users_mobile.uuid AS role_uuid',
+                    'role_users_mobile.name AS role_name',
+
+                    'role_organization.id AS organization_id',
+                    'role_organization.uuid AS organization_uuid',
+                    'role_organization.name AS organization_name'
+                )
+
+                ->first();
+
+            /// ================= RESPONSE =================
+
+            return response()->json([
+
+                'statusCode' => 200,
+
+                'message' =>
+                'Kegiatan Pokja 4 berhasil disimpan',
+
+                'data' => [
+
+                    'id_kegiatan_pokja4'
+                    => $data->id_kegiatan_pokja4,
+
+                    'uuid'             => $data->uuid,
+
+                    'id_user'          => $data->id_user,
+
+                    'kategori'         => $data->kategori,
+
+                    'kader_kesehatan'
+                    => $data->kader_kesehatan,
+
+                    'gizi'             => $data->gizi,
+
+                    'kesling'          => $data->kesling,
+
+                    'phbs'             => $data->phbs,
+
+                    'kb'               => $data->kb,
+
+                    'posyandu'         => $data->posyandu,
+
+                    'imunisasi_vaksinasi_bayi_balita'
+                    => $data->imunisasi_vaksinasi_bayi_balita,
+
+                    'pkg'              => $data->pkg,
+
+                    'tbc'              => $data->tbc,
+
+                    'jamban_wc'        => $data->jamban_wc,
+
+                    'spal'             => $data->spal,
+
+                    'tps'              => $data->tps,
+
+                    'jumlah_mck'       => $data->jumlah_mck,
+
+                    'pdam'             => $data->pdam,
+
+                    'sumur'            => $data->sumur,
+
+                    'lain_lain'        => $data->lain_lain,
+
+                    'jml_pus'          => $data->jml_pus,
+
+                    'jml_wus'          => $data->jml_wus,
+
+                    'akseptor_kb_l'    => $data->akseptor_kb_l,
+
+                    'akseptor_kb_p'    => $data->akseptor_kb_p,
+
+                    'kk_memiliki_tabungan'
+                    => $data->kk_memiliki_tabungan,
+
+                    'kk_memiliki_asuransi'
+                    => $data->kk_memiliki_asuransi,
+
+                    'kesehatan'        => $data->kesehatan,
+
+                    'kelestarian_lingkungan_hidup'
+                    => $data->kelestarian_lingkungan_hidup,
+
+                    'perencanaan_sehat'
+                    => $data->perencanaan_sehat,
+
+                    'catatan'          => $data->catatan,
+
+                    'status'           => $data->status,
+
+                    'created_at'       => $data->created_at,
+
+                    'updated_at'       => $data->updated_at,
+
+                    'role' => [
+                        'id'    => $data->role_id,
+                        'uuid'  => $data->role_uuid,
+                        'name'  => $data->role_name,
+                    ],
+
+                    'organization' => [
+                        'id'    => $data->organization_id,
+                        'uuid'  => $data->organization_uuid,
+                        'name'  => $data->organization_name,
+                    ],
+                ],
+
+                'error' => null
+
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+
+                'statusCode' => 500,
+
+                'message' =>
+                'Terjadi kesalahan saat memproses permintaan',
+
+                'data' => null,
+
+                'error' => [
+                    'message' => $e->getMessage(),
+                ]
+
+            ], 500);
+        }
+    }
 }

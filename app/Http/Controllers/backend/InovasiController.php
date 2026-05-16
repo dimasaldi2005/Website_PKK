@@ -3,188 +3,772 @@
 namespace App\Http\Controllers\backend;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 class InovasiController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | WEB KECAMATAN
+    |--------------------------------------------------------------------------
+    */
+
     public function index()
     {
-        $prioritas = DB::table('rekap_desa_bulanan')->where('kategori', 'prioritas')->count();
-        $unggulan = DB::table('rekap_desa_bulanan')->where('kategori', 'Unggulan')->count();
-        return view('backend.inovasi', compact('prioritas', 'unggulan'));
-    }
+        $statusKecamatan = [
 
-    public function prioritas()
-    {
-        $bulanan = DB::table('rekap_desa_bulanan')->where('kategori', 'prioritas')->count();
-        $tahunan = 0; $posyandu = 0; $kegiatan = 0;
-        return view('backend.prioritas', compact('bulanan', 'tahunan', 'posyandu', 'kegiatan'));
-    }
+            'Proses',
+            'proses',
+            'PROSES',
 
-    public function unggulan()
-    {
-        $bulanan = DB::table('rekap_desa_bulanan')->where('kategori', 'Unggulan')->count();
-        $tahunan = 0; $posyandu = 0; $kegiatan = 0;
-        return view('backend.unggulan', compact('bulanan', 'tahunan', 'posyandu', 'kegiatan'));
+            'Disetujui1',
+            'disetujui1',
+            'DISETUJUI1'
+        ];
+
+        /*
+        |--------------------------------------------------------------------------
+        | AMBIL ID SUBDISTRICT
+        |--------------------------------------------------------------------------
+        */
+
+        $idSubdistrict = null;
+
+        if (Auth::guard('pengguna')->check()) {
+
+            $user = Auth::guard('pengguna')->user();
+
+            $idSubdistrict = $user->id_subdistrict;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | PRIORITAS
+        |--------------------------------------------------------------------------
+        */
+
+        $prioritasBulanan = DB::table('rekap_desa_bulanan')
+
+            ->leftJoin(
+                'users_mobile',
+                'rekap_desa_bulanan.id_user',
+                '=',
+                'users_mobile.id'
+            )
+
+            ->where('rekap_desa_bulanan.kategori', 'prioritas')
+
+            ->where('users_mobile.id_role', 1)
+
+            ->when($idSubdistrict, function ($query) use ($idSubdistrict) {
+
+                $query->where(
+                    'users_mobile.id_subdistrict',
+                    $idSubdistrict
+                );
+            })
+
+            ->whereIn(
+                'rekap_desa_bulanan.status',
+                $statusKecamatan
+            )
+
+            ->count();
+
+        $prioritasTahunan = DB::table('rekap_desa_tahunan')
+
+            ->leftJoin(
+                'users_mobile',
+                'rekap_desa_tahunan.id_user',
+                '=',
+                'users_mobile.id'
+            )
+
+            ->where('rekap_desa_tahunan.kategori', 'prioritas')
+
+            ->where('users_mobile.id_role', 1)
+
+            ->when($idSubdistrict, function ($query) use ($idSubdistrict) {
+
+                $query->where(
+                    'users_mobile.id_subdistrict',
+                    $idSubdistrict
+                );
+            })
+
+            ->whereIn(
+                'rekap_desa_tahunan.status',
+                $statusKecamatan
+            )
+
+            ->count();
+
+        $prioritasPosyandu = DB::table('posyandu')
+
+            ->leftJoin(
+                'users_mobile',
+                'posyandu.id_user',
+                '=',
+                'users_mobile.id'
+            )
+
+            ->where('posyandu.kategori', 'prioritas')
+
+            ->where('users_mobile.id_role', 1)
+
+            ->when($idSubdistrict, function ($query) use ($idSubdistrict) {
+
+                $query->where(
+                    'users_mobile.id_subdistrict',
+                    $idSubdistrict
+                );
+            })
+
+            ->whereIn(
+                'posyandu.status',
+                $statusKecamatan
+            )
+
+            ->count();
+
+        $prioritasKegiatan = DB::table('kegiatan_pokja4')
+
+            ->leftJoin(
+                'users_mobile',
+                'kegiatan_pokja4.id_user',
+                '=',
+                'users_mobile.id'
+            )
+
+            ->where('kegiatan_pokja4.kategori', 'prioritas')
+
+            ->where('users_mobile.id_role', 1)
+
+            ->when($idSubdistrict, function ($query) use ($idSubdistrict) {
+
+                $query->where(
+                    'users_mobile.id_subdistrict',
+                    $idSubdistrict
+                );
+            })
+
+            ->whereIn(
+                'kegiatan_pokja4.status',
+                $statusKecamatan
+            )
+
+            ->count();
+
+        $prioritas =
+            $prioritasBulanan +
+            $prioritasTahunan +
+            $prioritasPosyandu +
+            $prioritasKegiatan;
+
+        /*
+        |--------------------------------------------------------------------------
+        | UNGGULAN
+        |--------------------------------------------------------------------------
+        */
+
+        $unggulanBulanan = DB::table('rekap_desa_bulanan')
+
+            ->leftJoin(
+                'users_mobile',
+                'rekap_desa_bulanan.id_user',
+                '=',
+                'users_mobile.id'
+            )
+
+            ->where('rekap_desa_bulanan.kategori', 'unggulan')
+
+            ->where('users_mobile.id_role', 1)
+
+            ->when($idSubdistrict, function ($query) use ($idSubdistrict) {
+
+                $query->where(
+                    'users_mobile.id_subdistrict',
+                    $idSubdistrict
+                );
+            })
+
+            ->whereIn(
+                'rekap_desa_bulanan.status',
+                $statusKecamatan
+            )
+
+            ->count();
+
+        $unggulanTahunan = DB::table('rekap_desa_tahunan')
+
+            ->leftJoin(
+                'users_mobile',
+                'rekap_desa_tahunan.id_user',
+                '=',
+                'users_mobile.id'
+            )
+
+            ->where('rekap_desa_tahunan.kategori', 'unggulan')
+
+            ->where('users_mobile.id_role', 1)
+
+            ->when($idSubdistrict, function ($query) use ($idSubdistrict) {
+
+                $query->where(
+                    'users_mobile.id_subdistrict',
+                    $idSubdistrict
+                );
+            })
+
+            ->whereIn(
+                'rekap_desa_tahunan.status',
+                $statusKecamatan
+            )
+
+            ->count();
+
+        $unggulanPosyandu = DB::table('posyandu')
+
+            ->leftJoin(
+                'users_mobile',
+                'posyandu.id_user',
+                '=',
+                'users_mobile.id'
+            )
+
+            ->where('posyandu.kategori', 'unggulan')
+
+            ->where('users_mobile.id_role', 1)
+
+            ->when($idSubdistrict, function ($query) use ($idSubdistrict) {
+
+                $query->where(
+                    'users_mobile.id_subdistrict',
+                    $idSubdistrict
+                );
+            })
+
+            ->whereIn(
+                'posyandu.status',
+                $statusKecamatan
+            )
+
+            ->count();
+
+        $unggulanKegiatan = DB::table('kegiatan_pokja4')
+
+            ->leftJoin(
+                'users_mobile',
+                'kegiatan_pokja4.id_user',
+                '=',
+                'users_mobile.id'
+            )
+
+            ->where('kegiatan_pokja4.kategori', 'unggulan')
+
+            ->where('users_mobile.id_role', 1)
+
+            ->when($idSubdistrict, function ($query) use ($idSubdistrict) {
+
+                $query->where(
+                    'users_mobile.id_subdistrict',
+                    $idSubdistrict
+                );
+            })
+
+            ->whereIn(
+                'kegiatan_pokja4.status',
+                $statusKecamatan
+            )
+
+            ->count();
+
+        $unggulan =
+            $unggulanBulanan +
+            $unggulanTahunan +
+            $unggulanPosyandu +
+            $unggulanKegiatan;
+
+        return view(
+            'backend.inovasi',
+            compact(
+                'prioritas',
+                'unggulan'
+            )
+        );
     }
 
     /*
     |--------------------------------------------------------------------------
-    | REKAP BULANAN UNGGULAN (BUG FIX: DATA AWAL TERFILTER)
+    | WEB KABUPATEN
     |--------------------------------------------------------------------------
     */
-    public function unggulanBulanan(Request $request)
+
+    public function kabupaten()
     {
-        $data = collect();
-        $statusFilter = $request->status;
-
-        // =====================================
-        // ADMIN WEB KABUPATEN
-        // =====================================
-        if (Auth::guard('web')->check()) {
-            
-            // JIKA BARU DIBUKA (KOSONG), DEFAULT KE DISETUJUI 1
-            if (empty($statusFilter)) {
-                $statusFilter = 'Disetujui1';
-            }
-
-            $data = DB::table('rekap_desa_bulanan')
-                ->join('users_mobile', 'rekap_desa_bulanan.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->join('village', 'users_mobile.id_village', '=', 'village.id')
-                ->select('rekap_desa_bulanan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                ->where('rekap_desa_bulanan.kategori', 'Unggulan')
-                ->where('rekap_desa_bulanan.status', $statusFilter)
-                ->latest('id_rekap_desa_bulanan')
-                ->get();
-        }
-
-        // =====================================
-        // USER KECAMATAN
-        // =====================================
-        elseif (Auth::guard('pengguna')->check()) {
-            $user = Auth::guard('pengguna')->user();
-
-            if ($user->id_role == 2) {
-                
-                // JIKA BARU DIBUKA (KOSONG), DEFAULT KE PROSES
-                if (empty($statusFilter)) {
-                    $statusFilter = 'Proses';
-                }
-
-                $data = DB::table('rekap_desa_bulanan')
-                    ->join('users_mobile as desa', 'rekap_desa_bulanan.id_user', '=', 'desa.id')
-                    ->join('subdistrict', 'desa.id_subdistrict', '=', 'subdistrict.id')
-                    ->join('village', 'desa.id_village', '=', 'village.id')
-                    ->select('rekap_desa_bulanan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                    ->where('rekap_desa_bulanan.kategori', 'Unggulan')
-                    ->where('desa.id_subdistrict', $user->id_subdistrict)
-                    ->where('desa.id_role', 1)
-                    ->where('rekap_desa_bulanan.status', $statusFilter)
-                    ->latest('id_rekap_desa_bulanan')
-                    ->get();
-            }
-        }
-
-        // Kirim statusFilter ke view agar dropdown terpilih dengan benar
-        $status = $statusFilter;
-        return view('backend.unggulan_bulanan', compact('data', 'status'));
-    }
-
-    /*
+        /*
     |--------------------------------------------------------------------------
-    | FUNGSI EDIT, UPDATE, & HAPUS UNGGULAN
+    | PRIORITAS
     |--------------------------------------------------------------------------
     */
-    public function editUnggulan($id)
-    {
-        $data = DB::table('rekap_desa_bulanan')->where('id_rekap_desa_bulanan', $id)->first();
-        if (!$data) return redirect()->route('unggulan.bulanan')->with(['error' => 'Data tidak ditemukan']);
-        return view('backend.unggulan_bulanan_edit', compact('data'));
-    }
 
-    public function updateUnggulan(Request $request, $id)
-    {
-        try {
-            DB::table('rekap_desa_bulanan')->where('id_rekap_desa_bulanan', $id)->update([
-                'rw' => $request->rw ?? 0,
-                'rt' => $request->rt ?? 0,
-                'dasa_wisma' => $request->dasa_wisma ?? 0,
-                'hamil' => $request->hamil ?? 0,
-                'melahirkan' => $request->melahirkan ?? 0,
-                'nifas' => $request->nifas ?? 0,
-                'meninggal' => $request->meninggal ?? 0,
-                'bayi_lahir_l' => $request->bayi_lahir_l ?? 0,
-                'bayi_lahir_p' => $request->bayi_lahir_p ?? 0,
-                'akte_kelahiran_ada' => $request->akte_kelahiran_ada ?? 0,
-                'akte_kelahiran_tidak' => $request->akte_kelahiran_tidak ?? 0,
-                'bayi_meninggal_l' => $request->bayi_meninggal_l ?? 0,
-                'bayi_meninggal_p' => $request->bayi_meninggal_p ?? 0,
-                'balita_meninggal_l' => $request->balita_meninggal_l ?? 0,
-                'balita_meninggal_p' => $request->balita_meninggal_p ?? 0,
-                'status' => $request->status,
-                'catatan' => $request->catatan,
-                'updated_at' => Carbon::now(),
-            ]);
-            return redirect()->route('unggulan.bulanan')->with(['success' => 'Berhasil Memperbarui Laporan']);
-        } catch (\Exception $e) {
-            return redirect()->back()->with(['error' => 'Gagal memperbarui data: ' . $e->getMessage()]);
-        }
-    }
+        $prioritasBulanan = DB::table('rekap_desa_bulanan')
 
-    public function destroyUnggulan($id)
-    {
-        try {
-            DB::table('rekap_desa_bulanan')->where('id_rekap_desa_bulanan', $id)->delete();
-            return redirect()->route('unggulan.bulanan')->with(['success' => 'Berhasil Menghapus Laporan']);
-        } catch (\Exception $e) {
-            return redirect()->route('unggulan.bulanan')->with(['error' => 'Gagal menghapus data: ' . $e->getMessage()]);
-        }
-    }
+            ->leftJoin(
+                'users_mobile',
+                'rekap_desa_bulanan.id_user',
+                '=',
+                'users_mobile.id'
+            )
 
-    //--------------------------------------------------------------------------
-    // HALAMAN PRIORITAS BULANAN 
-    //--------------------------------------------------------------------------
-    public function prioritasBulanan(Request $request)
-    {
-        $data = collect();
-        $statusFilter = $request->status;
+            ->where('rekap_desa_bulanan.kategori', 'prioritas')
 
-        if (Auth::guard('web')->check()) {
-            if (empty($statusFilter)) $statusFilter = 'Disetujui1';
+            ->where(function ($query) {
 
-            $data = DB::table('rekap_desa_bulanan')
-                ->join('users_mobile', 'rekap_desa_bulanan.id_user', '=', 'users_mobile.id')
-                ->join('subdistrict', 'users_mobile.id_subdistrict', '=', 'subdistrict.id')
-                ->join('village', 'users_mobile.id_village', '=', 'village.id')
-                ->select('rekap_desa_bulanan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                ->where('rekap_desa_bulanan.kategori', 'prioritas')
-                ->where('rekap_desa_bulanan.status', $statusFilter)
-                ->latest('id_rekap_desa_bulanan')
-                ->get();
+                // ROLE 1 = DESA
+                $query->where(function ($q) {
 
-        } elseif (Auth::guard('pengguna')->check()) {
-            $user = Auth::guard('pengguna')->user();
-            if ($user->id_role == 2) {
-                if (empty($statusFilter)) $statusFilter = 'Proses';
+                    $q->where('users_mobile.id_role', 1)
 
-                $data = DB::table('rekap_desa_bulanan')
-                    ->join('users_mobile as desa', 'rekap_desa_bulanan.id_user', '=', 'desa.id')
-                    ->join('subdistrict', 'desa.id_subdistrict', '=', 'subdistrict.id')
-                    ->join('village', 'desa.id_village', '=', 'village.id')
-                    ->select('rekap_desa_bulanan.*', 'subdistrict.name as nama_kec', 'village.name as nama_desa')
-                    ->where('rekap_desa_bulanan.kategori', 'prioritas')
-                    ->where('desa.id_role', 1)
-                    ->where('desa.id_subdistrict', $user->id_subdistrict)
-                    ->where('rekap_desa_bulanan.status', $statusFilter)
-                    ->latest('id_rekap_desa_bulanan')
-                    ->get();
-            }
-        }
-        $status = $statusFilter;
-        return view('backend.prioritas_bulanan', compact('data', 'status'));
+                        ->whereIn(
+                            'rekap_desa_bulanan.status',
+                            [
+                                'Disetujui1',
+                                'disetujui1',
+                                'DISETUJUI1',
+
+                                'Disetujui2',
+                                'disetujui2',
+                                'DISETUJUI2'
+                            ]
+                        );
+                })
+
+                    // ROLE 2 = KECAMATAN
+                    ->orWhere(function ($q) {
+
+                        $q->where('users_mobile.id_role', 2)
+
+                            ->whereIn(
+                                'rekap_desa_bulanan.status',
+                                [
+                                    'Proses',
+                                    'proses',
+                                    'PROSES',
+
+                                    'Disetujui2',
+                                    'disetujui2',
+                                    'DISETUJUI2'
+                                ]
+                            );
+                    });
+            })
+
+            ->count();
+
+        $prioritasTahunan = DB::table('rekap_desa_tahunan')
+
+            ->leftJoin(
+                'users_mobile',
+                'rekap_desa_tahunan.id_user',
+                '=',
+                'users_mobile.id'
+            )
+
+            ->where('rekap_desa_tahunan.kategori', 'prioritas')
+
+            ->where(function ($query) {
+
+                // ROLE 1 = DESA
+                $query->where(function ($q) {
+
+                    $q->where('users_mobile.id_role', 1)
+
+                        ->whereIn(
+                            'rekap_desa_tahunan.status',
+                            [
+                                'Disetujui1',
+                                'disetujui1',
+                                'DISETUJUI1',
+
+                                'Disetujui2',
+                                'disetujui2',
+                                'DISETUJUI2'
+                            ]
+                        );
+                })
+
+                    // ROLE 2 = KECAMATAN
+                    ->orWhere(function ($q) {
+
+                        $q->where('users_mobile.id_role', 2)
+
+                            ->whereIn(
+                                'rekap_desa_tahunan.status',
+                                [
+                                    'Proses',
+                                    'proses',
+                                    'PROSES',
+
+                                    'Disetujui2',
+                                    'disetujui2',
+                                    'DISETUJUI2'
+                                ]
+                            );
+                    });
+            })
+
+            ->count();
+
+        $prioritasPosyandu = DB::table('posyandu')
+
+            ->leftJoin(
+                'users_mobile',
+                'posyandu.id_user',
+                '=',
+                'users_mobile.id'
+            )
+
+            ->where('posyandu.kategori', 'prioritas')
+
+            ->where(function ($query) {
+
+                // ROLE 1 = DESA
+                $query->where(function ($q) {
+
+                    $q->where('users_mobile.id_role', 1)
+
+                        ->whereIn(
+                            'posyandu.status',
+                            [
+                                'Disetujui1',
+                                'disetujui1',
+                                'DISETUJUI1',
+
+                                'Disetujui2',
+                                'disetujui2',
+                                'DISETUJUI2'
+                            ]
+                        );
+                })
+
+                    // ROLE 2 = KECAMATAN
+                    ->orWhere(function ($q) {
+
+                        $q->where('users_mobile.id_role', 2)
+
+                            ->whereIn(
+                                'posyandu.status',
+                                [
+                                    'Proses',
+                                    'proses',
+                                    'PROSES',
+
+                                    'Disetujui2',
+                                    'disetujui2',
+                                    'DISETUJUI2'
+                                ]
+                            );
+                    });
+            })
+
+            ->count();
+
+        $prioritasKegiatan = DB::table('kegiatan_pokja4')
+
+            ->leftJoin(
+                'users_mobile',
+                'kegiatan_pokja4.id_user',
+                '=',
+                'users_mobile.id'
+            )
+
+            ->where('kegiatan_pokja4.kategori', 'prioritas')
+
+            ->where(function ($query) {
+
+                // ROLE 1 = DESA
+                $query->where(function ($q) {
+
+                    $q->where('users_mobile.id_role', 1)
+
+                        ->whereIn(
+                            'kegiatan_pokja4.status',
+                            [
+                                'Disetujui1',
+                                'disetujui1',
+                                'DISETUJUI1',
+
+                                'Disetujui2',
+                                'disetujui2',
+                                'DISETUJUI2'
+                            ]
+                        );
+                })
+
+                    // ROLE 2 = KECAMATAN
+                    ->orWhere(function ($q) {
+
+                        $q->where('users_mobile.id_role', 2)
+
+                            ->whereIn(
+                                'kegiatan_pokja4.status',
+                                [
+                                    'Proses',
+                                    'proses',
+                                    'PROSES',
+
+                                    'Disetujui2',
+                                    'disetujui2',
+                                    'DISETUJUI2'
+                                ]
+                            );
+                    });
+            })
+
+            ->count();
+
+        $prioritas =
+            $prioritasBulanan +
+            $prioritasTahunan +
+            $prioritasPosyandu +
+            $prioritasKegiatan;
+
+        /*
+    |--------------------------------------------------------------------------
+    | UNGGULAN
+    |--------------------------------------------------------------------------
+    */
+
+        $unggulanBulanan = DB::table('rekap_desa_bulanan')
+
+            ->leftJoin(
+                'users_mobile',
+                'rekap_desa_bulanan.id_user',
+                '=',
+                'users_mobile.id'
+            )
+
+            ->where('rekap_desa_bulanan.kategori', 'unggulan')
+
+            ->where(function ($query) {
+
+                // ROLE 1 = DESA
+                $query->where(function ($q) {
+
+                    $q->where('users_mobile.id_role', 1)
+
+                        ->whereIn(
+                            'rekap_desa_bulanan.status',
+                            [
+                                'Disetujui1',
+                                'disetujui1',
+                                'DISETUJUI1',
+
+                                'Disetujui2',
+                                'disetujui2',
+                                'DISETUJUI2'
+                            ]
+                        );
+                })
+
+                    // ROLE 2 = KECAMATAN
+                    ->orWhere(function ($q) {
+
+                        $q->where('users_mobile.id_role', 2)
+
+                            ->whereIn(
+                                'rekap_desa_bulanan.status',
+                                [
+                                    'Proses',
+                                    'proses',
+                                    'PROSES',
+
+                                    'Disetujui2',
+                                    'disetujui2',
+                                    'DISETUJUI2'
+                                ]
+                            );
+                    });
+            })
+
+            ->count();
+
+        $unggulanTahunan = DB::table('rekap_desa_tahunan')
+
+            ->leftJoin(
+                'users_mobile',
+                'rekap_desa_tahunan.id_user',
+                '=',
+                'users_mobile.id'
+            )
+
+            ->where('rekap_desa_tahunan.kategori', 'unggulan')
+
+            ->where(function ($query) {
+
+                // ROLE 1 = DESA
+                $query->where(function ($q) {
+
+                    $q->where('users_mobile.id_role', 1)
+
+                        ->whereIn(
+                            'rekap_desa_tahunan.status',
+                            [
+                                'Disetujui1',
+                                'disetujui1',
+                                'DISETUJUI1',
+
+                                'Disetujui2',
+                                'disetujui2',
+                                'DISETUJUI2'
+                            ]
+                        );
+                })
+
+                    // ROLE 2 = KECAMATAN
+                    ->orWhere(function ($q) {
+
+                        $q->where('users_mobile.id_role', 2)
+
+                            ->whereIn(
+                                'rekap_desa_tahunan.status',
+                                [
+                                    'Proses',
+                                    'proses',
+                                    'PROSES',
+
+                                    'Disetujui2',
+                                    'disetujui2',
+                                    'DISETUJUI2'
+                                ]
+                            );
+                    });
+            })
+
+            ->count();
+
+        $unggulanPosyandu = DB::table('posyandu')
+
+            ->leftJoin(
+                'users_mobile',
+                'posyandu.id_user',
+                '=',
+                'users_mobile.id'
+            )
+
+            ->where('posyandu.kategori', 'unggulan')
+
+            ->where(function ($query) {
+
+                // ROLE 1 = DESA
+                $query->where(function ($q) {
+
+                    $q->where('users_mobile.id_role', 1)
+
+                        ->whereIn(
+                            'posyandu.status',
+                            [
+                                'Disetujui1',
+                                'disetujui1',
+                                'DISETUJUI1',
+
+                                'Disetujui2',
+                                'disetujui2',
+                                'DISETUJUI2'
+                            ]
+                        );
+                })
+
+                    // ROLE 2 = KECAMATAN
+                    ->orWhere(function ($q) {
+
+                        $q->where('users_mobile.id_role', 2)
+
+                            ->whereIn(
+                                'posyandu.status',
+                                [
+                                    'Proses',
+                                    'proses',
+                                    'PROSES',
+
+                                    'Disetujui2',
+                                    'disetujui2',
+                                    'DISETUJUI2'
+                                ]
+                            );
+                    });
+            })
+
+            ->count();
+
+        $unggulanKegiatan = DB::table('kegiatan_pokja4')
+
+            ->leftJoin(
+                'users_mobile',
+                'kegiatan_pokja4.id_user',
+                '=',
+                'users_mobile.id'
+            )
+
+            ->where('kegiatan_pokja4.kategori', 'unggulan')
+
+            ->where(function ($query) {
+
+                // ROLE 1 = DESA
+                $query->where(function ($q) {
+
+                    $q->where('users_mobile.id_role', 1)
+
+                        ->whereIn(
+                            'kegiatan_pokja4.status',
+                            [
+                                'Disetujui1',
+                                'disetujui1',
+                                'DISETUJUI1',
+
+                                'Disetujui2',
+                                'disetujui2',
+                                'DISETUJUI2'
+                            ]
+                        );
+                })
+
+                    // ROLE 2 = KECAMATAN
+                    ->orWhere(function ($q) {
+
+                        $q->where('users_mobile.id_role', 2)
+
+                            ->whereIn(
+                                'kegiatan_pokja4.status',
+                                [
+                                    'Proses',
+                                    'proses',
+                                    'PROSES',
+
+                                    'Disetujui2',
+                                    'disetujui2',
+                                    'DISETUJUI2'
+                                ]
+                            );
+                    });
+            })
+
+            ->count();
+
+        $unggulan =
+            $unggulanBulanan +
+            $unggulanTahunan +
+            $unggulanPosyandu +
+            $unggulanKegiatan;
+
+        return view(
+            'backend.inovasi',
+            compact(
+                'prioritas',
+                'unggulan'
+            )
+        );
     }
 }

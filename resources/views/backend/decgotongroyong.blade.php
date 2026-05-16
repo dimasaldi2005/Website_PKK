@@ -37,7 +37,7 @@
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       border-radius: 10px;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
     }
 
     .table-responsive table {
@@ -49,8 +49,8 @@
     .table-responsive thead th {
       position: sticky;
       top: 0;
-      background: #f8fafc; 
-      color: #334155; 
+      background: #f8fafc;
+      color: #334155;
       z-index: 2;
       font-size: 12px;
       font-weight: 600;
@@ -95,27 +95,127 @@
     .table-responsive::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
-  
+
     /* ===== SIDEBAR & NAVBAR FIX ===== */
-    body { background: #f6f9ff !important; }
-    .header { background: #fff !important; box-shadow: 0 2px 4px rgba(0,0,0,0.08) !important; height: 70px !important; padding: 0 20px !important; z-index: 998 !important; }
-    .header .logo { min-width: auto; padding: 0; margin-left: 15px; }
-    .header .logo img { max-height: 50px; width: 50px; border-radius: 50%; margin-right: 15px; flex-shrink: 0; }
-    .header .logo span { font-size: 15px; font-weight: 700; line-height: 1.3; color: #1a1a1a; white-space: nowrap; display: inline-block; }
-    .toggle-sidebar-btn { color: #1a1a1a !important; font-size: 24px !important; cursor: pointer !important; padding: 10px 15px !important; }
-    .sidebar { width: 300px !important; top: 70px !important; background: #fff !important; border-right: 1px solid #e5e7eb !important; z-index: 997 !important; }
-    .toggle-sidebar .sidebar { width: 80px !important; }
-    .toggle-sidebar .sidebar .nav-link span { display: none !important; }
-    .toggle-sidebar .sidebar .nav-link { justify-content: center !important; padding: 12px 0 !important; }
-    #main { margin-left: 300px !important; margin-top: 70px !important; padding: 25px 35px !important; background: #f6f9ff !important; min-height: calc(100vh - 70px) !important; }
-    .toggle-sidebar #main { margin-left: 80px !important; }
-    .sidebar-nav .nav-link:not(.collapsed) { background: #e8ecff; color: #4154f1; border-radius: 6px; }
-    .sidebar-nav .nav-link:not(.collapsed) i { color: #4154f1; }
-    .sidebar-nav .nav-item { margin-bottom: 4px; }
-    .sidebar-nav .nav-link { display: flex; align-items: center; padding: 12px 20px; font-size: 15px; font-weight: 400; font-family: "Poppins", sans-serif !important; color: #4b5563; transition: all 0.3s; }
-    .sidebar-nav .nav-link i { font-size: 18px; margin-right: 12px; color: #6b7280; }
-    .sidebar-nav .nav-link:hover { background: #f3f4f6; color: #4154f1; }
-    i, .bi, [class^="bi-"], [class*=" bi-"], [class^="fa"], [class*=" fa-"] { font-family: unset !important; }
+    body {
+      background: #f6f9ff !important;
+    }
+
+    .header {
+      background: #fff !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+      height: 70px !important;
+      padding: 0 20px !important;
+      z-index: 998 !important;
+    }
+
+    .header .logo {
+      min-width: auto;
+      padding: 0;
+      margin-left: 15px;
+    }
+
+    .header .logo img {
+      max-height: 50px;
+      width: 50px;
+      border-radius: 50%;
+      margin-right: 15px;
+      flex-shrink: 0;
+    }
+
+    .header .logo span {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.3;
+      color: #1a1a1a;
+      white-space: nowrap;
+      display: inline-block;
+    }
+
+    .toggle-sidebar-btn {
+      color: #1a1a1a !important;
+      font-size: 24px !important;
+      cursor: pointer !important;
+      padding: 10px 15px !important;
+    }
+
+    .sidebar {
+      width: 300px !important;
+      top: 70px !important;
+      background: #fff !important;
+      border-right: 1px solid #e5e7eb !important;
+      z-index: 997 !important;
+    }
+
+    .toggle-sidebar .sidebar {
+      width: 80px !important;
+    }
+
+    .toggle-sidebar .sidebar .nav-link span {
+      display: none !important;
+    }
+
+    .toggle-sidebar .sidebar .nav-link {
+      justify-content: center !important;
+      padding: 12px 0 !important;
+    }
+
+    #main {
+      margin-left: 300px !important;
+      margin-top: 70px !important;
+      padding: 25px 35px !important;
+      background: #f6f9ff !important;
+      min-height: calc(100vh - 70px) !important;
+    }
+
+    .toggle-sidebar #main {
+      margin-left: 80px !important;
+    }
+
+    .sidebar-nav .nav-link:not(.collapsed) {
+      background: #e8ecff;
+      color: #4154f1;
+      border-radius: 6px;
+    }
+
+    .sidebar-nav .nav-link:not(.collapsed) i {
+      color: #4154f1;
+    }
+
+    .sidebar-nav .nav-item {
+      margin-bottom: 4px;
+    }
+
+    .sidebar-nav .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      font-size: 15px;
+      font-weight: 400;
+      font-family: "Poppins", sans-serif !important;
+      color: #4b5563;
+      transition: all 0.3s;
+    }
+
+    .sidebar-nav .nav-link i {
+      font-size: 18px;
+      margin-right: 12px;
+      color: #6b7280;
+    }
+
+    .sidebar-nav .nav-link:hover {
+      background: #f3f4f6;
+      color: #4154f1;
+    }
+
+    i,
+    .bi,
+    [class^="bi-"],
+    [class*=" bi-"],
+    [class^="fa"],
+    [class*=" fa-"] {
+      font-family: unset !important;
+    }
   </style>
 
 </head>
@@ -157,14 +257,14 @@
             <thead>
               <tr>
                 <th scope="col" class="text-center align-middle">No</th>
-                
+
                 @if (Auth::guard('web')->check())
-                  <th class="text-center align-middle" scope="col">Kecamatan</th>
-                  <th class="text-center align-middle" scope="col">Desa</th>
+                <th class="text-center align-middle" scope="col">Kecamatan</th>
+                <th class="text-center align-middle" scope="col">Desa</th>
                 @elseif (Auth::guard('pengguna')->check())
-                  <th class="text-center align-middle" scope="col">Desa</th>
+                <th class="text-center align-middle" scope="col">Desa</th>
                 @endif
-                
+
                 <th class="text-center align-middle" scope="col">Kerja Bakti</th>
                 <th class="text-center align-middle" scope="col">Rukun Kematian</th>
                 <th class="text-center align-middle" scope="col">Keagamaan</th>
@@ -178,53 +278,53 @@
             <tbody>
               @php $no = 1; @endphp
               @forelse ($data2 as $got1)
-                <tr>
-                  <th scope="row" class="text-center">{{ $no++ }}</th>
-                  
-                  @if (Auth::guard('web')->check())
-                    <td class="text-center">{{ $got1->nama_kec }}</td>
-                    <td class="text-center">{{ $got1->nama_desa }}</td>
-                  @elseif (Auth::guard('pengguna')->check())
-                    <td class="text-center">{{ $got1->nama_desa }}</td>
+              <tr>
+                <th scope="row" class="text-center">{{ $no++ }}</th>
+
+                @if (Auth::guard('web')->check())
+                <td class="text-center">{{ $got1->nama_kec }}</td>
+                <td class="text-center">{{ $got1->nama_desa }}</td>
+                @elseif (Auth::guard('pengguna')->check())
+                <td class="text-center">{{ $got1->nama_desa }}</td>
+                @endif
+
+                <td class="text-center">{{ $got1->kerja_bakti ?? '0' }}</td>
+                <td class="text-center">{{ $got1->rukun_kematian ?? '0' }}</td>
+                <td class="text-center">{{ $got1->keagamaan ?? '0' }}</td>
+                <td class="text-center">{{ $got1->jimpitan ?? '0' }}</td>
+                <td class="text-center">{{ $got1->arisan ?? '0' }}</td>
+
+                <td class="text-center">
+                  @if(in_array(strtolower($got1->status), ['proses', 'revisi']))
+                  <span class="badge bg-warning text-dark">{{ $got1->status }}</span>
+                  @elseif(in_array(strtolower($got1->status), ['disetujui1', 'disetujui2']))
+                  <span class="badge bg-success">{{ $got1->status }}</span>
+                  @else
+                  <span class="badge bg-secondary">{{ $got1->status }}</span>
                   @endif
-                  
-                  <td class="text-center">{{ $got1->kerja_bakti ?? '0' }}</td>
-                  <td class="text-center">{{ $got1->rukun_kematian ?? '0' }}</td>
-                  <td class="text-center">{{ $got1->keagamaan ?? '0' }}</td>
-                  <td class="text-center">{{ $got1->jimpitan ?? '0' }}</td>
-                  <td class="text-center">{{ $got1->arisan ?? '0' }}</td>
-                  
-                  <td class="text-center">
-                    @if(in_array(strtolower($got1->status), ['proses', 'revisi']))
-                      <span class="badge bg-warning text-dark">{{ $got1->status }}</span>
-                    @elseif(in_array(strtolower($got1->status), ['disetujui1', 'disetujui2']))
-                      <span class="badge bg-success">{{ $got1->status }}</span>
-                    @else
-                      <span class="badge bg-secondary">{{ $got1->status }}</span>
-                    @endif
-                  </td>
-                  
-                  <td class="text-center">{{ \Carbon\Carbon::parse($got1->created_at)->format('d/m/Y') }}</td>
-                  
-                  <td class="text-center">
-                    <form action="{{ route('decgotongroyong.destroy', $got1->id_pokja1_bidang2)}}" method="POST" class="d-inline delete-form">
-                      @csrf
-                      @method('DELETE')
-                      <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(this)" data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus Data">
-                        <i class="bi bi-trash"></i>
-                      </button>
-                    </form>
-                  </td>
-                </tr>
+                </td>
+
+                <td class="text-center">{{ \Carbon\Carbon::parse($got1->created_at)->format('d/m/Y') }}</td>
+
+                <td class="text-center">
+                  <form action="{{ route('decgotongroyong.destroy', $got1->id_pokja1_bidang2)}}" method="POST" class="d-inline delete-form">
+                    @csrf
+                    @method('DELETE')
+                    <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(this)" data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus Data">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
               @empty
-                <tr>
-                  <td colspan="10" class="text-center py-5">
-                    <div class="alert alert-danger mb-0">
-                      <i class="bi bi-exclamation-triangle-fill me-2"></i> 
-                      Tidak ada data laporan gotong royong
-                    </div>
-                  </td>
-                </tr>
+              <tr>
+                <td colspan="10" class="text-center py-5">
+                  <div class="alert alert-danger mb-0">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Tidak ada data laporan gotong royong
+                  </div>
+                </td>
+              </tr>
               @endforelse
             </tbody>
           </table>
@@ -249,7 +349,7 @@
   <script>
     // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl)
     })
 
@@ -272,5 +372,6 @@
   </script>
 
 </body>
+
 </html>
 {{-- @endsection --}}

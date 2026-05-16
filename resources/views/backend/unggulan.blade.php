@@ -318,7 +318,7 @@
 
                     <div class="card info-card">
 
-                        <a href="#">
+                        <a href="{{ route('unggulan.tahunan') }}">
 
                             <div class="card-body">
 
@@ -360,7 +360,7 @@
 
                     <div class="card info-card">
 
-                        <a href="#">
+                        <a href="{{ route('unggulan.posyandu') }}">
 
                             <div class="card-body">
 
@@ -402,7 +402,7 @@
 
                     <div class="card info-card">
 
-                        <a href="#">
+                        <a href="{{ route('unggulan.pokja4') }}">
 
                             <div class="card-body">
 

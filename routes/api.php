@@ -82,3 +82,6 @@ Route::post('/report/kesehatan', [ReportController::class, 'insertKesehatan']);
 Route::post('/report/lingkungan-hidup', [ReportController::class, 'insertLingkunganHidup']);
 Route::post('/report/perencanaan-sehat', [ReportController::class, 'insertPerencanaanSehat']);
 Route::post('/report/rekap-desa-bulanan', [ ReportController::class, 'insertRekapDesaBulanan']);
+Route::post('/report/rekap-desa-tahunan', [ ReportController::class, 'insertRekapDesaTahunan']);
+Route::post('/report/posyandu', [ ReportController::class, 'insertPosyandu']);
+Route::post('/report/kegiatan-pokja4', [ ReportController::class, 'insertKegiatanPokja4']);

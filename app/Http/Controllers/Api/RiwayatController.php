@@ -37,7 +37,10 @@ class RiwayatController extends Controller
             'laporan_bidang_kesehatan',
             'laporan_kelestarian_lingkungan_hidup',
             'laporan_perencanaan_sehat',
-            'rekap_desa_bulanan'
+            'rekap_desa_bulanan',
+            'rekap_desa_tahunan',
+            'posyandu',
+            'kegiatan_pokja4'
         ],
 
         5 => [
@@ -74,8 +77,8 @@ class RiwayatController extends Controller
             'KP4B1'     => 'laporan_bidang_kesehatan',
             'KP4B2'     => 'laporan_kelestarian_lingkungan_hidup',
             'KP4B3'     => 'laporan_perencanaan_sehat',
-            'PRIORITAS' => 'rekap_desa_bulanan',
-            'UNGGULAN'  => 'rekap_desa_bulanan'
+            'PRIORITAS' => ['rekap_desa_bulanan', 'rekap_desa_tahunan','posyandu', 'kegiatan_pokja4'],
+            'UNGGULAN'  => ['rekap_desa_bulanan', 'rekap_desa_tahunan','posyandu', 'kegiatan_pokja4']
         ],
 
         5 => [
@@ -800,11 +803,28 @@ class RiwayatController extends Controller
         $uuid,
         $orgId
     ) {
+        $prefix = explode('-', $uuid)[0];
 
-        $prefix =
-            explode('-', $uuid)[0];
-
-        return $this->uuidMapping[$orgId][$prefix]
+        $table = $this->uuidMapping[$orgId][$prefix]
             ?? null;
+
+        // jika mapping array
+        if (is_array($table)) {
+
+            foreach ($table as $tbl) {
+
+                $exists = DB::table($tbl)
+                    ->where('uuid', $uuid)
+                    ->exists();
+
+                if ($exists) {
+                    return $tbl;
+                }
+            }
+
+            return null;
+        }
+
+        return $table;
     }
 }

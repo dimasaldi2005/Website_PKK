@@ -154,7 +154,7 @@
 
                     <div class="card info-card sales-card">
 
-                        <a href="{{ route('inovasi.unggulan') }}">
+                        <a href="{{ route('unggulan.index') }}">
 
                             <div class="card-body">
 

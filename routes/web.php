@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\frontend\HomeController;
 use App\Http\Controllers\backend\ProfileController;
 use App\Http\Controllers\frontend\BeritaController;
@@ -14,14 +15,19 @@ use App\Http\Controllers\backend\ChangePasswordController;
 use App\Http\Controllers\backend\InputPengumumanController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\backend\KesehatanController;
+use App\Http\Controllers\backend\UnggulanController;
 use App\Http\Controllers\backend\BidangUmumController;
 use App\Http\Controllers\backend\GotongRoyongController;
+use App\Http\Controllers\backend\RekapBulananController;
 use App\Http\Controllers\backend\JumlahBeritaController;
 use App\Http\Controllers\backend\GaleriController;
 use App\Http\Controllers\Auth\OtpController;
 use App\Http\Controllers\backend\InovasiController;
 use App\Http\Controllers\backend\Pokja1ExportController;
 use App\Http\Controllers\backend\Pokja4ExportController;
+use App\Http\Controllers\backend\PosyanduController;
+use App\Http\Controllers\backend\RekapTahunanController;
+use App\Http\Controllers\backend\KegiatanPokja4Controller;
 
 
 /*
@@ -29,6 +35,7 @@ use App\Http\Controllers\backend\Pokja4ExportController;
 | 1. ROUTE PUBLIC / FRONTEND (TIDAK PERLU LOGIN)
 |--------------------------------------------------------------------------
 */
+
 Route::get('/', [HomeController::class, 'index']);
 
 Route::resource('home', App\Http\Controllers\frontend\HomeController::class);
@@ -86,21 +93,21 @@ Route::middleware(['auth:web,pengguna', 'prevent-back-history'])->group(function
     // === MENU UTAMA & PROFILE ===
     Route::resource('profile', App\Http\Controllers\backend\ProfileController::class);
     Route::resource('change_password', App\Http\Controllers\backend\ChangePasswordController::class);
-    
+
     // === FITUR DATA & POKJA ===
     Route::resource('kesehatan', App\Http\Controllers\backend\KesehatanController::class);
     Route::get('/kesehatan/filter', [App\Http\Controllers\backend\KesehatanController::class, 'filter'])->name('kesehatan.filter');
 
     Route::get('/bidangumum/filter', [App\Http\Controllers\backend\BidangUmumController::class, 'filter'])->name('bidangumum.filter');
     Route::get('/bidangumum/export-json', [App\Http\Controllers\backend\BidangUmumController::class, 'getExportData'])->name('bidangumum.exportJson');
-    
+
     Route::get('/gotongroyong/filter', [App\Http\Controllers\backend\GotongRoyongController::class, 'filter'])->name('gotongroyong.filter');
     Route::get('/pendidikan/filter', [App\Http\Controllers\backend\PendidikanController::class, 'filter'])->name('pendidikan.filter');
     Route::get('/pangan/filter', [App\Http\Controllers\backend\PanganController::class, 'filter'])->name('pangan.filter');
-    
+
     Route::resource('kelestarian_lingkungan_hidup', App\Http\Controllers\backend\KelestarianLingkunganHidupController::class);
     Route::resource('perencanaan_sehat', App\Http\Controllers\backend\PerencanaanSehatController::class);
-    
+
     // === GALERI ===
     Route::resource('galeripokja1', App\Http\Controllers\backend\Galeri1Controller::class);
     Route::get('/galeripokja1/filter', [App\Http\Controllers\backend\Galeri1Controller::class, 'filter'])->name('galeripokja1.filter');
@@ -188,20 +195,168 @@ Route::middleware(['auth:web,pengguna', 'prevent-back-history'])->group(function
     | INOVASI & REKAP BULANAN (YANG SEBELUMNYA JEBOL, SEKARANG AMAN!)
     |--------------------------------------------------------------------------
     */
-    Route::get('/inovasi', [InovasiController::class, 'index'])->name('inovasi.index');
-    Route::get('/inovasi/prioritas', [InovasiController::class, 'prioritas'])->name('inovasi.prioritas');
-    Route::get('/inovasi/unggulan', [InovasiController::class, 'unggulan'])->name('inovasi.unggulan');
+    Route::get('/inovasi', function () {
 
-    Route::get('/inovasi/prioritas/bulanan', [InovasiController::class, 'prioritasBulanan'])->name('prioritas.bulanan');
-    Route::get('/inovasi/unggulan/bulanan', [InovasiController::class, 'unggulanBulanan'])->name('unggulan.bulanan');
+        if (Auth::guard('web')->check()) {
 
-    Route::get('/inovasi/unggulan/bulanan/edit/{id}', [InovasiController::class, 'editUnggulan'])->name('unggulan.bulanan.edit');
-    Route::put('/inovasi/unggulan/bulanan/update/{id}', [InovasiController::class, 'updateUnggulan'])->name('unggulan.bulanan.update');
-    Route::delete('/inovasi/unggulan/bulanan/hapus/{id}', [InovasiController::class, 'destroyUnggulan'])->name('unggulan.bulanan.destroy');
+            return app(
+                \App\Http\Controllers\backend\InovasiController::class
+            )->kabupaten();
+        }
 
-    Route::get('/inovasi/prioritas/bulanan/edit/{id}', [InovasiController::class, 'editPrioritas'])->name('prioritas.bulanan.edit');
-    Route::put('/inovasi/prioritas/bulanan/update/{id}', [InovasiController::class, 'updatePrioritas'])->name('prioritas.bulanan.update');
-    Route::delete('/inovasi/prioritas/bulanan/hapus/{id}', [InovasiController::class, 'destroyPrioritas'])->name('prioritas.bulanan.destroy');
+        return app(
+            \App\Http\Controllers\backend\InovasiController::class
+        )->index();
+    })->name('inovasi.index');
+
+    Route::get('/inovasi/prioritas', [InovasiController::class, 'prioritas'])
+        ->name('inovasi.prioritas');
+
+    /*
+|--------------------------------------------------------------------------
+| PRIORITAS BULANAN
+|--------------------------------------------------------------------------
+*/
+
+    Route::get(
+        '/inovasi/prioritas/bulanan',
+        [InovasiController::class, 'prioritasBulanan']
+    )->name('prioritas.bulanan');
+
+    Route::get(
+        '/inovasi/prioritas/bulanan/edit/{id}',
+        [InovasiController::class, 'editPrioritas']
+    )->name('prioritas.bulanan.edit');
+
+    Route::put(
+        '/inovasi/prioritas/bulanan/update/{id}',
+        [InovasiController::class, 'updatePrioritas']
+    )->name('prioritas.bulanan.update');
+
+    Route::delete(
+        '/inovasi/prioritas/bulanan/hapus/{id}',
+        [InovasiController::class, 'destroyPrioritas']
+    )->name('prioritas.bulanan.destroy');
+
+    /*
+|--------------------------------------------------------------------------
+| UNGGULAN
+|--------------------------------------------------------------------------
+*/
+
+    Route::get('/inovasi/unggulan', function () {
+
+        if (Auth::guard('web')->check()) {
+
+            return app(
+                \App\Http\Controllers\backend\UnggulanController::class
+            )->kabupaten();
+        }
+
+        return app(
+            \App\Http\Controllers\backend\UnggulanController::class
+        )->index();
+    })->name('unggulan.index');
+
+    /*
+|--------------------------------------------------------------------------
+| UNGGULAN BULANAN
+|--------------------------------------------------------------------------
+*/
+
+    Route::get(
+        '/inovasi/unggulan/bulanan',
+        [RekapBulananController::class, 'unggulan']
+    )->name('unggulan.bulanan');
+
+    Route::get(
+        '/inovasi/unggulan/bulanan/edit/{id}',
+        [RekapBulananController::class, 'editUnggulan']
+    )->name('unggulan.bulanan.edit');
+
+    Route::put(
+        '/inovasi/unggulan/bulanan/update/{id}',
+        [RekapBulananController::class, 'updateUnggulan']
+    )->name('unggulan.bulanan.update');
+
+    Route::delete(
+        '/inovasi/unggulan/bulanan/hapus/{id}',
+        [RekapBulananController::class, 'destroyUnggulan']
+    )->name('unggulan.bulanan.destroy');
+
+    /*
+|--------------------------------------------------------------------------
+| UNGGULAN TAHUNAN
+|--------------------------------------------------------------------------
+*/
+
+    Route::get(
+        '/inovasi/unggulan/tahunan',
+        [RekapTahunanController::class, 'unggulan']
+    )->name('unggulan.tahunan');
+
+    Route::get(
+        '/inovasi/unggulan/tahunan/edit/{id}',
+        [RekapTahunanController::class, 'editUnggulan']
+    )->name('unggulan.tahunan.edit');
+
+    Route::put(
+        '/inovasi/unggulan/tahunan/update/{id}',
+        [RekapTahunanController::class, 'updateUnggulan']
+    )->name('unggulan.tahunan.update');
+
+    Route::delete(
+        '/inovasi/unggulan/tahunan/hapus/{id}',
+        [RekapTahunanController::class, 'destroyUnggulan']
+    )->name('unggulan.tahunan.destroy');
+
+    /*
+|--------------------------------------------------------------------------
+| POSYANDU
+|--------------------------------------------------------------------------
+*/
+
+    Route::get(
+        '/inovasi/posyandu',
+        [PosyanduController::class, 'index']
+    )->name('unggulan.posyandu');
+
+    Route::get(
+        '/inovasi/posyandu/edit/{id}',
+        [PosyanduController::class, 'edit']
+    )->name('unggulan.posyandu.edit');
+
+    Route::put(
+        '/inovasi/posyandu/update/{id}',
+        [PosyanduController::class, 'update']
+    )->name('unggulan.posyandu.update');
+
+    Route::delete(
+        '/inovasi/posyandu/hapus/{id}',
+        [PosyanduController::class, 'destroy']
+    )->name('unggulan.posyandu.destroy');
+
+    Route::get(
+        '/inovasi/pokja4',
+        [KegiatanPokja4Controller::class, 'index']
+    )->name('unggulan.pokja4');
+
+    Route::get(
+        '/inovasi/pokja4/edit/{id}',
+        [KegiatanPokja4Controller::class, 'edit']
+    )->name('unggulan.pokja4.edit');
+
+    Route::put(
+        '/inovasi/pokja4/update/{id}',
+        [KegiatanPokja4Controller::class, 'update']
+    )->name('unggulan.pokja4.update');
+
+    Route::delete(
+        '/inovasi/pokja4/hapus/{id}',
+        [KegiatanPokja4Controller::class, 'destroy']
+    )->name('unggulan.pokja4.destroy');
+
+
 
     /*
     |--------------------------------------------------------------------------
@@ -230,5 +385,4 @@ Route::middleware(['auth:web,pengguna', 'prevent-back-history'])->group(function
         Route::resource('input_berita', App\Http\Controllers\backend\InputBeritaController::class);
         Route::resource('input_pengumuman', App\Http\Controllers\backend\InputPengumumanController::class);
     });
-
 });
