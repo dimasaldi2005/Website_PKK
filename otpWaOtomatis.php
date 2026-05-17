@@ -1,7 +1,7 @@
 <?php
 
-$token = "E81E3krC90YF22AI6xzp";
-$target = "082142568403";
+$token = "otuLSYYpavqCBPE6LpXA";
+$target = "082142064308";
 
 while (true) {
     $curl = curl_init();

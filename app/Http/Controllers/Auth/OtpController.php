@@ -72,13 +72,18 @@ class OtpController extends Controller
             ->first();
 
         if (!$user) {
-            return back()->withErrors(['otp' => 'OTP salah atau sudah kadaluarsa.']);
+            return back()->withErrors([
+                'otp' => 'OTP salah atau sudah kadaluarsa.'
+            ]);
         }
 
-        $user->kode_otp = null;
+        // RESET OTP
+        $user->kode_otp = '';
         $user->save();
 
-        return view('auth.reset_password_otp', ['phone_number' => $request->phone_number]);
+        return view('auth.reset_password_otp', [
+            'phone_number' => $request->phone_number
+        ]);
     }
 
     public function resetPassword(Request $request)
@@ -88,15 +93,27 @@ class OtpController extends Controller
             'password' => 'required|min:6|confirmed',
         ]);
 
-        $user = Pengguna::where('phone_number', $request->phone_number)->first();
+        $user = Pengguna::where(
+            'phone_number',
+            $request->phone_number
+        )->first();
+
         if (!$user) {
-            return back()->withErrors(['phone_number' => 'Nomor tidak ditemukan.']);
+            return back()->withErrors([
+                'phone_number' => 'Nomor tidak ditemukan.'
+            ]);
         }
 
         $user->password = Hash::make($request->password);
-        $user->kode_otp = null;
+
+        // RESET OTP
+        $user->kode_otp = '';
+
         $user->save();
 
-        return redirect('/login')->with('success', 'Password berhasil diubah. Silakan login.');
+        return redirect('/login')->with(
+            'success',
+            'Password berhasil diubah. Silakan login.'
+        );
     }
 }
