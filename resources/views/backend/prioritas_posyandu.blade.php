@@ -8,7 +8,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Rekap Laporan Posyandu - Unggulan</title>
+    <title>Rekap Laporan Posyandu - Prioritas</title>
 
     <link href="{{ asset('backend/assets/img/favicon.png') }}" rel="icon">
     <link href="{{ asset('backend/assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
@@ -256,7 +256,7 @@
     <main id="main" class="main">
 
         <div class="pagetitle">
-            <h1>Rekap Posyandu - Unggulan</h1>
+            <h1>Rekap Posyandu - Prioritas</h1>
         </div>
 
         @if ($message = Session::get('success'))
@@ -739,7 +739,7 @@
 
                                     @if($bolehEdit)
 
-                                    <a href="{{ route('unggulan.posyandu.edit', $item->id_posyandu) }}"
+                                    <a href="{{ route('prioritas.posyandu.edit', $item->id_posyandu) }}"
                                         class="btn btn-sm btn-info text-white me-1"
                                         data-bs-toggle="tooltip"
                                         title="Review Data">
@@ -750,7 +750,7 @@
 
                                     @endif
 
-                                    <form action="{{ route('unggulan.posyandu.destroy', $item->id_posyandu)}}"
+                                    <form action="{{ route('prioritas.posyandu.destroy', $item->id_posyandu)}}"
                                         method="POST"
                                         class="d-inline delete-form">
 

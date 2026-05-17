@@ -191,10 +191,11 @@ Route::middleware(['auth:web,pengguna', 'prevent-back-history'])->group(function
     Route::resource('galerilaporanpokja4', App\Http\Controllers\backend\GaleriLaporanPokja4Controller::class);
 
     /*
-    |--------------------------------------------------------------------------
-    | INOVASI & REKAP BULANAN (YANG SEBELUMNYA JEBOL, SEKARANG AMAN!)
-    |--------------------------------------------------------------------------
-    */
+|--------------------------------------------------------------------------
+| INOVASI & REKAP BULANAN
+|--------------------------------------------------------------------------
+*/
+
     Route::get('/inovasi', function () {
 
         if (Auth::guard('web')->check()) {
@@ -209,8 +210,27 @@ Route::middleware(['auth:web,pengguna', 'prevent-back-history'])->group(function
         )->index();
     })->name('inovasi.index');
 
-    Route::get('/inovasi/prioritas', [InovasiController::class, 'prioritas'])
-        ->name('inovasi.prioritas');
+
+    /*
+|--------------------------------------------------------------------------
+| PRIORITAS
+|--------------------------------------------------------------------------
+*/
+
+    Route::get('/inovasi/prioritas', function () {
+
+        if (Auth::guard('web')->check()) {
+
+            return app(
+                \App\Http\Controllers\backend\PrioritasController::class
+            )->kabupaten();
+        }
+
+        return app(
+            \App\Http\Controllers\backend\PrioritasController::class
+        )->index();
+    })->name('prioritas.index');
+
 
     /*
 |--------------------------------------------------------------------------
@@ -220,23 +240,105 @@ Route::middleware(['auth:web,pengguna', 'prevent-back-history'])->group(function
 
     Route::get(
         '/inovasi/prioritas/bulanan',
-        [InovasiController::class, 'prioritasBulanan']
+        [RekapBulananController::class, 'prioritas']
     )->name('prioritas.bulanan');
 
     Route::get(
         '/inovasi/prioritas/bulanan/edit/{id}',
-        [InovasiController::class, 'editPrioritas']
+        [RekapBulananController::class, 'editPrioritas']
     )->name('prioritas.bulanan.edit');
 
     Route::put(
         '/inovasi/prioritas/bulanan/update/{id}',
-        [InovasiController::class, 'updatePrioritas']
+        [RekapBulananController::class, 'updatePrioritas']
     )->name('prioritas.bulanan.update');
 
     Route::delete(
         '/inovasi/prioritas/bulanan/hapus/{id}',
-        [InovasiController::class, 'destroyPrioritas']
+        [RekapBulananController::class, 'destroyPrioritas']
     )->name('prioritas.bulanan.destroy');
+
+
+    /*
+|--------------------------------------------------------------------------
+| PRIORITAS TAHUNAN
+|--------------------------------------------------------------------------
+*/
+
+    Route::get(
+        '/inovasi/prioritas/tahunan',
+        [RekapTahunanController::class, 'prioritas']
+    )->name('prioritas.tahunan');
+
+    Route::get(
+        '/inovasi/prioritas/tahunan/edit/{id}',
+        [RekapTahunanController::class, 'editPrioritas']
+    )->name('prioritas.tahunan.edit');
+
+    Route::put(
+        '/inovasi/prioritas/tahunan/update/{id}',
+        [RekapTahunanController::class, 'updatePrioritas']
+    )->name('prioritas.tahunan.update');
+
+    Route::delete(
+        '/inovasi/prioritas/tahunan/hapus/{id}',
+        [RekapTahunanController::class, 'destroyPrioritas']
+    )->name('prioritas.tahunan.destroy');
+
+
+    /*
+|--------------------------------------------------------------------------
+| PRIORITAS POSYANDU
+|--------------------------------------------------------------------------
+*/
+
+    Route::get(
+        '/inovasi/prioritas/posyandu',
+        [PosyanduController::class, 'prioritas']
+    )->name('prioritas.posyandu');
+
+    Route::get(
+        '/inovasi/prioritas/posyandu/edit/{id}',
+        [PosyanduController::class, 'editPrioritas']
+    )->name('prioritas.posyandu.edit');
+
+    Route::put(
+        '/inovasi/prioritas/posyandu/update/{id}',
+        [PosyanduController::class, 'updatePrioritas']
+    )->name('prioritas.posyandu.update');
+
+    Route::delete(
+        '/inovasi/prioritas/posyandu/hapus/{id}',
+        [PosyanduController::class, 'destroyPrioritas']
+    )->name('prioritas.posyandu.destroy');
+
+
+    /*
+|--------------------------------------------------------------------------
+| PRIORITAS KEGIATAN POKJA 4
+|--------------------------------------------------------------------------
+*/
+
+    Route::get(
+        '/inovasi/prioritas/pokja4',
+        [KegiatanPokja4Controller::class, 'prioritas']
+    )->name('prioritas.pokja4');
+
+    Route::get(
+        '/inovasi/prioritas/pokja4/edit/{id}',
+        [KegiatanPokja4Controller::class, 'editPrioritas']
+    )->name('prioritas.pokja4.edit');
+
+    Route::put(
+        '/inovasi/prioritas/pokja4/update/{id}',
+        [KegiatanPokja4Controller::class, 'updatePrioritas']
+    )->name('prioritas.pokja4.update');
+
+    Route::delete(
+        '/inovasi/prioritas/pokja4/hapus/{id}',
+        [KegiatanPokja4Controller::class, 'destroyPrioritas']
+    )->name('prioritas.pokja4.destroy');
+
 
     /*
 |--------------------------------------------------------------------------
@@ -257,6 +359,7 @@ Route::middleware(['auth:web,pengguna', 'prevent-back-history'])->group(function
             \App\Http\Controllers\backend\UnggulanController::class
         )->index();
     })->name('unggulan.index');
+
 
     /*
 |--------------------------------------------------------------------------
@@ -284,6 +387,7 @@ Route::middleware(['auth:web,pengguna', 'prevent-back-history'])->group(function
         [RekapBulananController::class, 'destroyUnggulan']
     )->name('unggulan.bulanan.destroy');
 
+
     /*
 |--------------------------------------------------------------------------
 | UNGGULAN TAHUNAN
@@ -310,53 +414,59 @@ Route::middleware(['auth:web,pengguna', 'prevent-back-history'])->group(function
         [RekapTahunanController::class, 'destroyUnggulan']
     )->name('unggulan.tahunan.destroy');
 
+
     /*
 |--------------------------------------------------------------------------
-| POSYANDU
+| UNGGULAN POSYANDU
 |--------------------------------------------------------------------------
 */
 
     Route::get(
-        '/inovasi/posyandu',
+        '/inovasi/unggulan/posyandu',
         [PosyanduController::class, 'index']
     )->name('unggulan.posyandu');
 
     Route::get(
-        '/inovasi/posyandu/edit/{id}',
+        '/inovasi/unggulan/posyandu/edit/{id}',
         [PosyanduController::class, 'edit']
     )->name('unggulan.posyandu.edit');
 
     Route::put(
-        '/inovasi/posyandu/update/{id}',
+        '/inovasi/unggulan/posyandu/update/{id}',
         [PosyanduController::class, 'update']
     )->name('unggulan.posyandu.update');
 
     Route::delete(
-        '/inovasi/posyandu/hapus/{id}',
+        '/inovasi/unggulan/posyandu/hapus/{id}',
         [PosyanduController::class, 'destroy']
     )->name('unggulan.posyandu.destroy');
 
+
+    /*
+|--------------------------------------------------------------------------
+| UNGGULAN KEGIATAN POKJA 4
+|--------------------------------------------------------------------------
+*/
+
     Route::get(
-        '/inovasi/pokja4',
+        '/inovasi/unggulan/pokja4',
         [KegiatanPokja4Controller::class, 'index']
     )->name('unggulan.pokja4');
 
     Route::get(
-        '/inovasi/pokja4/edit/{id}',
+        '/inovasi/unggulan/pokja4/edit/{id}',
         [KegiatanPokja4Controller::class, 'edit']
     )->name('unggulan.pokja4.edit');
 
     Route::put(
-        '/inovasi/pokja4/update/{id}',
+        '/inovasi/unggulan/pokja4/update/{id}',
         [KegiatanPokja4Controller::class, 'update']
     )->name('unggulan.pokja4.update');
 
     Route::delete(
-        '/inovasi/pokja4/hapus/{id}',
+        '/inovasi/unggulan/pokja4/hapus/{id}',
         [KegiatanPokja4Controller::class, 'destroy']
     )->name('unggulan.pokja4.destroy');
-
-
 
     /*
     |--------------------------------------------------------------------------

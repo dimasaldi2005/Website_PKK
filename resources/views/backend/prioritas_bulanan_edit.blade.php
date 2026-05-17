@@ -8,7 +8,7 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>Review Laporan Unggulan Posyandu</title>
+    <title>Review Laporan Prioritas Bulanan</title>
 
     <meta content="" name="description">
     <meta content="" name="keywords">
@@ -169,9 +169,7 @@
 
     <!-- ======= Header ======= -->
     <header id="header" class="header fixed-top d-flex align-items-center">
-
         <div class="d-flex align-items-center w-100">
-
             <i class="bi bi-list toggle-sidebar-btn"></i>
 
             <a href="{{ route('dashboard') }}"
@@ -186,11 +184,9 @@
                 </span>
 
             </a>
-
         </div>
 
         <nav class="header-nav ms-auto"></nav>
-
     </header>
     <!-- End Header -->
 
@@ -207,14 +203,14 @@
                 <div class="col-md-12 mx-auto mt-2">
 
                     <div class="pagetitle">
-                        <h1>Review Laporan Unggulan Posyandu</h1>
+                        <h1>Review Laporan Prioritas Bulanan</h1>
                     </div>
 
                     <div class="card">
 
                         <div class="card-body mt-4">
 
-                            <form action="{{ route('unggulan.posyandu.update', $data->id_posyandu) }}"
+                            <form action="{{ route('prioritas.bulanan.update', $data->id_rekap_desa_bulanan) }}"
                                 method="POST"
                                 enctype="multipart/form-data"
                                 onsubmit="event.preventDefault(); confirmSubmission(event)">
@@ -224,391 +220,204 @@
 
                                 <div class="form-outline mb-4">
 
-                                    {{-- ID --}}
                                     <div class="form-outline mb-4 mt-3">
-
                                         <label class="form-label">
-                                            ID Posyandu
+                                            ID Laporan Prioritas
                                         </label>
 
                                         <input type="text"
                                             class="form-control"
-                                            value="{{ $data->id_posyandu }}"
+                                            value="{{ $data->id_rekap_desa_bulanan }}"
                                             readonly>
-
                                     </div>
 
-                                    {{-- BULAN --}}
                                     <div class="form-outline mb-4 mt-3">
-
                                         <label class="form-label">
-                                            Bulan
-                                        </label>
-
-                                        <input type="text"
-                                            class="form-control"
-                                            value="{{ $data->bulan }}"
-                                            readonly>
-
-                                    </div>
-
-                                    {{-- DATA IBU --}}
-                                    <div class="form-outline mb-4 mt-3">
-
-                                        <label class="form-label">
-                                            Jumlah Ibu Hamil
+                                            Jumlah RW
                                         </label>
 
                                         <input type="number"
                                             class="form-control"
-                                            value="{{ $data->jml_ibu_hamil }}"
+                                            name="rw"
+                                            value="{{ $data->rw }}"
                                             readonly>
-
                                     </div>
 
                                     <div class="form-outline mb-4 mt-3">
-
                                         <label class="form-label">
-                                            Diperiksa
+                                            Jumlah RT
                                         </label>
 
                                         <input type="number"
                                             class="form-control"
-                                            value="{{ $data->diperiksa }}"
+                                            name="rt"
+                                            value="{{ $data->rt }}"
                                             readonly>
-
                                     </div>
 
                                     <div class="form-outline mb-4 mt-3">
-
                                         <label class="form-label">
-                                            FE Tablet Darah
+                                            Jumlah Dasa Wisma
                                         </label>
 
                                         <input type="number"
                                             class="form-control"
-                                            value="{{ $data->fe_tablet_darah }}"
+                                            name="dasa_wisma"
+                                            value="{{ $data->dasa_wisma }}"
                                             readonly>
-
                                     </div>
 
                                     <div class="form-outline mb-4 mt-3">
-
                                         <label class="form-label">
-                                            Jumlah Ibu Menyusui
+                                            Ibu Hamil
                                         </label>
 
                                         <input type="number"
                                             class="form-control"
-                                            value="{{ $data->jml_ibu_menyusui }}"
+                                            name="hamil"
+                                            value="{{ $data->hamil }}"
                                             readonly>
-
                                     </div>
 
-                                    {{-- ASEPTOR KB --}}
                                     <div class="form-outline mb-4 mt-3">
-
                                         <label class="form-label">
-                                            Kondom
+                                            Ibu Melahirkan
                                         </label>
 
                                         <input type="number"
                                             class="form-control"
-                                            value="{{ $data->kondom }}"
+                                            name="melahirkan"
+                                            value="{{ $data->melahirkan }}"
                                             readonly>
-
                                     </div>
 
                                     <div class="form-outline mb-4 mt-3">
-
                                         <label class="form-label">
-                                            Pil
+                                            Ibu Nifas
                                         </label>
 
                                         <input type="number"
                                             class="form-control"
-                                            value="{{ $data->pil }}"
+                                            name="nifas"
+                                            value="{{ $data->nifas }}"
                                             readonly>
-
                                     </div>
 
                                     <div class="form-outline mb-4 mt-3">
-
                                         <label class="form-label">
-                                            Implant
+                                            Ibu Meninggal
                                         </label>
 
                                         <input type="number"
                                             class="form-control"
-                                            value="{{ $data->implant }}"
+                                            name="meninggal"
+                                            value="{{ $data->meninggal }}"
                                             readonly>
-
                                     </div>
 
                                     <div class="form-outline mb-4 mt-3">
-
                                         <label class="form-label">
-                                            MOP
+                                            Bayi Lahir (Laki-laki)
                                         </label>
 
                                         <input type="number"
                                             class="form-control"
-                                            value="{{ $data->mop }}"
+                                            name="bayi_lahir_l"
+                                            value="{{ $data->bayi_lahir_l }}"
                                             readonly>
-
                                     </div>
 
                                     <div class="form-outline mb-4 mt-3">
-
                                         <label class="form-label">
-                                            MOW
+                                            Bayi Lahir (Perempuan)
                                         </label>
 
                                         <input type="number"
                                             class="form-control"
-                                            value="{{ $data->mow }}"
+                                            name="bayi_lahir_p"
+                                            value="{{ $data->bayi_lahir_p }}"
                                             readonly>
-
                                     </div>
 
                                     <div class="form-outline mb-4 mt-3">
-
                                         <label class="form-label">
-                                            IUD
+                                            Akte Kelahiran (Ada)
                                         </label>
 
                                         <input type="number"
                                             class="form-control"
-                                            value="{{ $data->iud }}"
+                                            name="akte_kelahiran_ada"
+                                            value="{{ $data->akte_kelahiran_ada }}"
                                             readonly>
-
                                     </div>
 
                                     <div class="form-outline mb-4 mt-3">
-
                                         <label class="form-label">
-                                            Suntikan
+                                            Akte Kelahiran (Tidak)
                                         </label>
 
                                         <input type="number"
                                             class="form-control"
-                                            value="{{ $data->suntikan }}"
+                                            name="akte_kelahiran_tidak"
+                                            value="{{ $data->akte_kelahiran_tidak }}"
                                             readonly>
-
                                     </div>
 
                                     <div class="form-outline mb-4 mt-3">
-
                                         <label class="form-label">
-                                            Lain-lain KB
+                                            Bayi Meninggal (Laki-laki)
                                         </label>
 
                                         <input type="number"
                                             class="form-control"
-                                            value="{{ $data->lain_lain_kb }}"
+                                            name="bayi_meninggal_l"
+                                            value="{{ $data->bayi_meninggal_l }}"
                                             readonly>
-
                                     </div>
 
-                                    {{-- BALITA --}}
                                     <div class="form-outline mb-4 mt-3">
-
                                         <label class="form-label">
-                                            Jumlah Balita L
+                                            Bayi Meninggal (Perempuan)
                                         </label>
 
                                         <input type="number"
                                             class="form-control"
-                                            value="{{ $data->jml_balita_l }}"
+                                            name="bayi_meninggal_p"
+                                            value="{{ $data->bayi_meninggal_p }}"
                                             readonly>
-
                                     </div>
 
                                     <div class="form-outline mb-4 mt-3">
-
                                         <label class="form-label">
-                                            Jumlah Balita P
+                                            Balita Meninggal (Laki-laki)
                                         </label>
 
                                         <input type="number"
                                             class="form-control"
-                                            value="{{ $data->jml_balita_p }}"
+                                            name="balita_meninggal_l"
+                                            value="{{ $data->balita_meninggal_l }}"
                                             readonly>
-
                                     </div>
 
                                     <div class="form-outline mb-4 mt-3">
-
                                         <label class="form-label">
-                                            Buku KIA L
+                                            Balita Meninggal (Perempuan)
                                         </label>
 
                                         <input type="number"
                                             class="form-control"
-                                            value="{{ $data->buku_kia_l }}"
+                                            name="balita_meninggal_p"
+                                            value="{{ $data->balita_meninggal_p }}"
                                             readonly>
-
                                     </div>
 
                                     <div class="form-outline mb-4 mt-3">
-
-                                        <label class="form-label">
-                                            Buku KIA P
-                                        </label>
-
-                                        <input type="number"
-                                            class="form-control"
-                                            value="{{ $data->buku_kia_p }}"
-                                            readonly>
-
+                                        <label for="id_user" class="form-label">Id Pengguna</label>
+                                        <input type="text" name="id_user" id="id_user" class="form-control" required readonly
+                                            oninvalid="this.setCustomValidity('Harap lengkapi id pengguna')"
+                                            oninput="this.setCustomValidity('')" placeholder="Masukkan Judul" value="{{ $data->id_user }}" />
                                     </div>
 
-                                    <div class="form-outline mb-4 mt-3">
-
-                                        <label class="form-label">
-                                            Datang L
-                                        </label>
-
-                                        <input type="number"
-                                            class="form-control"
-                                            value="{{ $data->datang_l }}"
-                                            readonly>
-
-                                    </div>
-
-                                    <div class="form-outline mb-4 mt-3">
-
-                                        <label class="form-label">
-                                            Datang P
-                                        </label>
-
-                                        <input type="number"
-                                            class="form-control"
-                                            value="{{ $data->datang_p }}"
-                                            readonly>
-
-                                    </div>
-
-                                    <div class="form-outline mb-4 mt-3">
-
-                                        <label class="form-label">
-                                            Naik L
-                                        </label>
-
-                                        <input type="number"
-                                            class="form-control"
-                                            value="{{ $data->naik_l }}"
-                                            readonly>
-
-                                    </div>
-
-                                    <div class="form-outline mb-4 mt-3">
-
-                                        <label class="form-label">
-                                            Naik P
-                                        </label>
-
-                                        <input type="number"
-                                            class="form-control"
-                                            value="{{ $data->naik_p }}"
-                                            readonly>
-
-                                    </div>
-
-                                    <div class="form-outline mb-4 mt-3">
-
-                                        <label class="form-label">
-                                            Vitamin A L
-                                        </label>
-
-                                        <input type="number"
-                                            class="form-control"
-                                            value="{{ $data->vit_a_l }}"
-                                            readonly>
-
-                                    </div>
-
-                                    <div class="form-outline mb-4 mt-3">
-
-                                        <label class="form-label">
-                                            Vitamin A P
-                                        </label>
-
-                                        <input type="number"
-                                            class="form-control"
-                                            value="{{ $data->vit_a_p }}"
-                                            readonly>
-
-                                    </div>
-
-                                    <div class="form-outline mb-4 mt-3">
-
-                                        <label class="form-label">
-                                            PMT L
-                                        </label>
-
-                                        <input type="number"
-                                            class="form-control"
-                                            value="{{ $data->pmt_l }}"
-                                            readonly>
-
-                                    </div>
-
-                                    <div class="form-outline mb-4 mt-3">
-
-                                        <label class="form-label">
-                                            PMT P
-                                        </label>
-
-                                        <input type="number"
-                                            class="form-control"
-                                            value="{{ $data->pmt_p }}"
-                                            readonly>
-
-                                    </div>
-
-                                    {{-- IMUNISASI --}}
-                                    <div class="form-outline mb-4 mt-3">
-
-                                        <label class="form-label">
-                                            Imunisasi TT I
-                                        </label>
-
-                                        <input type="number"
-                                            class="form-control"
-                                            value="{{ $data->imunisasi_tt_1 }}"
-                                            readonly>
-
-                                    </div>
-
-                                    <div class="form-outline mb-4 mt-3">
-
-                                        <label class="form-label">
-                                            Imunisasi TT II
-                                        </label>
-
-                                        <input type="number"
-                                            class="form-control"
-                                            value="{{ $data->imunisasi_tt_2 }}"
-                                            readonly>
-
-                                    </div>
-
-                                    {{-- USER --}}
-                                    <div class="form-outline mb-4 mt-3">
-
-                                        <label class="form-label">
-                                            Id Pengguna
-                                        </label>
-
-                                        <input type="text"
-                                            class="form-control"
-                                            value="{{ $data->id_user }}"
-                                            readonly>
-
-                                    </div>
-
-                                    {{-- STATUS --}}
                                     <div id="statusAlert"
                                         class="alert alert-danger d-none"
                                         role="alert">
@@ -616,41 +425,19 @@
                                     </div>
 
                                     <div class="form-outline mb-4">
-
-                                        <label for="status" class="form-label">
-                                            Status
-                                        </label>
-
-                                        <select name="status"
-                                            class="datepicker-trigger form-control hasDatepicker">
-
-                                            <option value="">
-                                                --Pilih--
-                                            </option>
-
-                                            <option value="Revisi">
-                                                Revisi
-                                            </option>
-
+                                        <label for="status" class="form-label">Status</label>
+                                        <select name="status" class="datepicker-trigger form-control hasDatepicker"
+                                            onchange="exibeMsg(this.value);">
+                                            <option value="">--Pilih--</option>
+                                            <option value="Revisi">Revisi</option>
                                             @if(Auth::guard('pengguna')->check())
-
-                                            <option value="Disetujui1">
-                                                Disetujui (Kecamatan)
-                                            </option>
-
+                                            <option value="Disetujui1">Disetujui (Kecamatan)</option>
                                             @else
-
-                                            <option value="Disetujui2">
-                                                Disetujui (Admin)
-                                            </option>
-
+                                            <option value="Disetujui2">Disetujui (Admin)</option>
                                             @endif
-
                                         </select>
-
                                     </div>
 
-                                    {{-- CATATAN --}}
                                     <div class="form-outline mb-1 mt-3">
 
                                         <label class="form-label">
@@ -662,7 +449,6 @@
                                             class="form-control"
                                             placeholder="Masukkan Catatan"
                                             value="{{ $data->catatan }}" />
-
                                     </div>
 
                                     <p class="mb-4">
@@ -672,7 +458,6 @@
                                         <b>Revisi</b>
                                     </p>
 
-                                    {{-- TANGGAL --}}
                                     <div class="form-outline mb-4 mt-3">
 
                                         <label class="form-label">
@@ -683,18 +468,14 @@
                                             class="form-control"
                                             value="{{ \Carbon\Carbon::parse($data->created_at)->format('Y-m-d H:i:s') }}"
                                             readonly>
-
                                     </div>
 
-                                    {{-- BUTTON --}}
                                     <div class="text-end pt-1 pb-1 mt-4">
 
                                         <button
                                             class="btn btn-success ps-xxl-5 pe-xxl-5 mr-auto background-blue-1 mb-2 fw-semibold fs-5"
                                             type="submit">
-
                                             Upload
-
                                         </button>
 
                                     </div>
@@ -715,8 +496,23 @@
 
     </main>
 
+    <!-- Back To Top -->
+    <a href="#"
+        class="back-to-top d-flex align-items-center justify-content-center">
+        <i class="bi bi-arrow-up-short"></i>
+    </a>
+
     <!-- Vendor JS -->
+    <script src="{{ asset('backend/assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
     <script src="{{ asset('backend/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/vendor/chart.js/chart.umd.js') }}"></script>
+    <script src="{{ asset('backend/assets/vendor/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/vendor/quill/quill.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/vendor/simple-datatables/simple-datatables.js') }}"></script>
+    <script src="{{ asset('backend/assets/vendor/tinymce/tinymce.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/vendor/php-email-form/validate.js') }}"></script>
+
+    <!-- Main JS -->
     <script src="{{ asset('backend/assets/js/main.js') }}"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

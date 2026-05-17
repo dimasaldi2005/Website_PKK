@@ -8,7 +8,7 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>Review Laporan Unggulan Posyandu</title>
+    <title>Review Laporan Prioritas Posyandu</title>
 
     <meta content="" name="description">
     <meta content="" name="keywords">
@@ -207,14 +207,14 @@
                 <div class="col-md-12 mx-auto mt-2">
 
                     <div class="pagetitle">
-                        <h1>Review Laporan Unggulan Posyandu</h1>
+                        <h1>Review Laporan Prioritas Posyandu</h1>
                     </div>
 
                     <div class="card">
 
                         <div class="card-body mt-4">
 
-                            <form action="{{ route('unggulan.posyandu.update', $data->id_posyandu) }}"
+                            <form action="{{ route('prioritas.posyandu.update', $data->id_posyandu) }}"
                                 method="POST"
                                 enctype="multipart/form-data"
                                 onsubmit="event.preventDefault(); confirmSubmission(event)">

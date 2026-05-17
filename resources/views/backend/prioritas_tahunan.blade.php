@@ -8,7 +8,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Rekap Laporan Posyandu - Unggulan</title>
+    <title>Rekap Desa Tahunan - Unggulan</title>
 
     <link href="{{ asset('backend/assets/img/favicon.png') }}" rel="icon">
     <link href="{{ asset('backend/assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
@@ -256,7 +256,7 @@
     <main id="main" class="main">
 
         <div class="pagetitle">
-            <h1>Rekap Posyandu - Unggulan</h1>
+            <h1>Rekap Desa Tahunan - Prioritas</h1>
         </div>
 
         @if ($message = Session::get('success'))
@@ -336,170 +336,289 @@
 
                         <thead>
 
+                            <!-- ===================================================== -->
+                            <!-- BARIS 1 -->
+                            <!-- ===================================================== -->
                             <tr>
 
-                                <th rowspan="3" class="text-center align-middle">
+                                <th rowspan="4" class="text-center align-middle">
                                     NO
                                 </th>
 
-                                @if (Auth::guard('web')->check())
+                                <th rowspan="4"
+                                    class="text-center align-middle"
+                                    style="min-width:260px;">
 
-                                <th rowspan="3" class="text-center align-middle">
-                                    KECAMATAN
+                                    NAMA WILAYAH <br>
+                                    (DUSUN/DES/KEL/KEC/KAB/KOTA/PROV)
+
                                 </th>
 
-                                <th rowspan="3" class="text-center align-middle">
-                                    DESA
+                                <!-- KESEHATAN -->
+                                <th colspan="9" class="text-center align-middle">
+                                    KESEHATAN
                                 </th>
 
-                                @elseif (Auth::guard('pengguna')->check())
-
-                                <th rowspan="3" class="text-center align-middle">
-                                    DESA
+                                <!-- KELESTARIAN -->
+                                <th colspan="7" class="text-center align-middle">
+                                    KELESTARIAN LINGKUNGAN HIDUP
                                 </th>
 
-                                @endif
-
-                                <th rowspan="3" class="text-center align-middle rotate-header">
-                                    BULAN
+                                <!-- PERENCANAAN -->
+                                <th colspan="6" class="text-center align-middle">
+                                    PERENCANAAN SEHAT
                                 </th>
 
-                                <th rowspan="3" class="text-center align-middle rotate-header">
-                                    JML. IBU HAMIL
+                                <!-- PROGRAM -->
+                                <th colspan="3" class="text-center align-middle">
+
+                                    PROGRAM UNGGULAN <br>
+                                    GERAKAN KELUARGA SEHAT <br>
+                                    TANGGAP & TANGGUH <br>
+                                    BENCANA (GKSTTB)
+
                                 </th>
 
-                                <th rowspan="3" class="text-center align-middle rotate-header">
-                                    DIPERIKSA
-                                </th>
-
-                                <th rowspan="3" class="text-center align-middle rotate-header">
-                                    FE TAB (TABLET DARAH)
-                                </th>
-
-                                <th rowspan="3" class="text-center align-middle rotate-header">
-                                    JML. IBU MENYUSUI
-                                </th>
-
-                                {{-- ASEPTOR KB --}}
-                                <th colspan="8" class="text-center align-middle">
-                                    JML. ASEPTOR KB
-                                </th>
-
-                                {{-- PENIMBANGAN --}}
-                                <th colspan="12" class="text-center align-middle">
-                                    PENIMBANGAN BALITA
-                                </th>
-
-                                {{-- IMUNISASI --}}
-                                <th colspan="2" class="text-center align-middle">
-                                    IMUNISASI TT IBU HAMIL
-                                </th>
-
-                                <th rowspan="3" class="text-center align-middle">
+                                <th rowspan="4" class="text-center align-middle">
                                     STATUS
                                 </th>
 
-                                <th rowspan="3" class="text-center align-middle">
+                                <th rowspan="4" class="text-center align-middle">
                                     TANGGAL
                                 </th>
 
-                                <th rowspan="3" class="text-center align-middle">
+                                <th rowspan="4" class="text-center align-middle">
                                     AKSI
                                 </th>
 
                             </tr>
 
+                            <!-- ===================================================== -->
+                            <!-- BARIS 2 -->
+                            <!-- ===================================================== -->
                             <tr>
 
-                                {{-- ASEPTOR KB --}}
-                                <th rowspan="2" class="text-center align-middle rotate-header">
-                                    KONDOM
+                                <!-- KESEHATAN -->
+                                <th colspan="5" class="text-center align-middle">
+                                    JUMLAH KADER
                                 </th>
 
-                                <th rowspan="2" class="text-center align-middle rotate-header">
-                                    PIL
+                                <th rowspan="3"
+                                    class="text-center align-middle rotate-text">
+
+                                    POSYANDU
+
                                 </th>
 
-                                <th rowspan="2" class="text-center align-middle rotate-header">
-                                    IMPLANT
+                                <th rowspan="3"
+                                    class="text-center align-middle rotate-text">
+
+                                    IMUNISASI/VAKSINASI BAYI/BALITA
+
                                 </th>
 
-                                <th rowspan="2" class="text-center align-middle rotate-header">
-                                    MOP
+                                <th rowspan="3"
+                                    class="text-center align-middle rotate-text">
+
+                                    PKG
+
                                 </th>
 
-                                <th rowspan="2" class="text-center align-middle rotate-header">
-                                    MOW
+                                <th rowspan="3"
+                                    class="text-center align-middle rotate-text">
+
+                                    TBC
+
                                 </th>
 
-                                <th rowspan="2" class="text-center align-middle rotate-header">
-                                    IUD
+                                <!-- KELESTARIAN -->
+                                <th colspan="3" class="text-center align-middle">
+
+                                    JUMLAH RUMAH <br>
+                                    YANG MEMILIKI
+
                                 </th>
 
-                                <th rowspan="2" class="text-center align-middle rotate-header">
-                                    SUNTIKAN
+                                <th rowspan="3"
+                                    class="text-center align-middle">
+
+                                    JUMLAH MCK
+
                                 </th>
 
-                                <th rowspan="2" class="text-center align-middle rotate-header">
-                                    LAIN-LAIN
+                                <th colspan="3"
+                                    class="text-center align-middle">
+
+                                    JUMLAH KRT <br>
+                                    YANG MENGGUNAKAN AIR
+
                                 </th>
 
-                                {{-- BALITA --}}
-                                <th colspan="2" class="text-center align-middle">
-                                    JML. BALITA (S)
+                                <!-- PERENCANAAN -->
+                                <th rowspan="3"
+                                    class="text-center align-middle">
+
+                                    JML PUS
+
                                 </th>
 
-                                <th colspan="2" class="text-center align-middle">
-                                    JML. BALITA YANG MEMILIKI BUKU KIA (K)
+                                <th rowspan="3"
+                                    class="text-center align-middle">
+
+                                    JML WUS
+
                                 </th>
 
-                                <th colspan="2" class="text-center align-middle">
-                                    JML. YANG DATANG (D)
+                                <th colspan="2"
+                                    class="text-center align-middle">
+
+                                    JML AKSEPTOR KB
+
                                 </th>
 
-                                <th colspan="2" class="text-center align-middle">
-                                    JML. YANG NAIK (N)
+                                <th rowspan="3"
+                                    class="text-center align-middle">
+
+                                    JML. KK YANG <br>
+                                    MEMILIKI TABUNGAN <br>
+                                    KELUARGA
+
                                 </th>
 
-                                <th colspan="2" class="text-center align-middle">
-                                    JML. YANG MENDAPAT VIT A
+                                <th rowspan="3"
+                                    class="text-center align-middle">
+
+                                    JML. KK YANG <br>
+                                    MEMILIKI ASURANSI <br>
+                                    KESEHATAN
+
                                 </th>
 
-                                <th colspan="2" class="text-center align-middle">
-                                    JML. YANG MENDAPAT PMT
+                                <!-- PROGRAM -->
+                                <th rowspan="3"
+                                    class="text-center align-middle program-vertical">
+
+                                    KESEHATAN
+
                                 </th>
 
-                                {{-- IMUNISASI --}}
-                                <th rowspan="2" class="text-center align-middle">
-                                    I
+                                <th rowspan="3"
+                                    class="text-center align-middle program-vertical">
+
+                                    KELESTARIAN <br>
+                                    LINGKUNGAN HIDUP
+
                                 </th>
 
-                                <th rowspan="2" class="text-center align-middle">
-                                    II
+                                <th rowspan="3"
+                                    class="text-center align-middle program-vertical">
+
+                                    PERENCANAAN <br>
+                                    SEHAT
+
                                 </th>
 
                             </tr>
 
+                            <!-- ===================================================== -->
+                            <!-- BARIS 3 -->
+                            <!-- ===================================================== -->
                             <tr>
 
-                                {{-- BALITA --}}
-                                <th class="text-center align-middle">L</th>
-                                <th class="text-center align-middle">P</th>
+                                <!-- JUMLAH KADER -->
+                                <th rowspan="2"
+                                    class="text-center align-middle rotate-text">
 
-                                <th class="text-center align-middle">L</th>
-                                <th class="text-center align-middle">P</th>
+                                    KADER KESEHATAN
 
-                                <th class="text-center align-middle">L</th>
-                                <th class="text-center align-middle">P</th>
+                                </th>
 
-                                <th class="text-center align-middle">L</th>
-                                <th class="text-center align-middle">P</th>
+                                <th rowspan="2"
+                                    class="text-center align-middle rotate-text">
 
-                                <th class="text-center align-middle">L</th>
-                                <th class="text-center align-middle">P</th>
+                                    GIZI
 
-                                <th class="text-center align-middle">L</th>
-                                <th class="text-center align-middle">P</th>
+                                </th>
+
+                                <th rowspan="2"
+                                    class="text-center align-middle rotate-text">
+
+                                    KESLING
+
+                                </th>
+
+                                <th rowspan="2"
+                                    class="text-center align-middle rotate-text">
+
+                                    PHBS
+
+                                </th>
+
+                                <th rowspan="2"
+                                    class="text-center align-middle rotate-text">
+
+                                    KB
+
+                                </th>
+
+                                <!-- RUMAH -->
+                                <th rowspan="2"
+                                    class="text-center align-middle rotate-text">
+
+                                    JAMBAN (WC)
+
+                                </th>
+
+                                <th rowspan="2"
+                                    class="text-center align-middle rotate-text">
+
+                                    SPAL
+
+                                </th>
+
+                                <th rowspan="2"
+                                    class="text-center align-middle rotate-text">
+
+                                    TPS
+
+                                </th>
+
+                                <!-- AIR -->
+                                <th rowspan="2"
+                                    class="text-center align-middle rotate-text">
+
+                                    PDAM
+
+                                </th>
+
+                                <th rowspan="2"
+                                    class="text-center align-middle rotate-text">
+
+                                    SUMUR
+
+                                </th>
+
+                                <th rowspan="2"
+                                    class="text-center align-middle rotate-text">
+
+                                    LAIN-LAIN
+
+                                </th>
+
+                                <!-- AKSEPTOR -->
+                                <th rowspan="2"
+                                    class="text-center align-middle">
+
+                                    L
+
+                                </th>
+
+                                <th rowspan="2"
+                                    class="text-center align-middle">
+
+                                    P
+
+                                </th>
 
                             </tr>
 
@@ -517,143 +636,44 @@
                                     {{ $no++ }}
                                 </td>
 
-                                @if (Auth::guard('web')->check())
-
-                                <td class="text-center">
-                                    {{ $item->nama_kec ?? '-' }}
-                                </td>
-
-                                <td class="text-center">
+                                <td>
                                     {{ $item->nama_desa ?? '-' }}
                                 </td>
 
-                                @elseif (Auth::guard('pengguna')->check())
+                                <!-- KESEHATAN -->
+                                <td class="text-center">{{ $item->kader_kesehatan ?? 0 }}</td>
+                                <td class="text-center">{{ $item->gizi ?? 0 }}</td>
+                                <td class="text-center">{{ $item->kesling ?? 0 }}</td>
+                                <td class="text-center">{{ $item->phbs ?? 0 }}</td>
+                                <td class="text-center">{{ $item->kb ?? 0 }}</td>
+                                <td class="text-center">{{ $item->posyandu ?? 0 }}</td>
+                                <td class="text-center">{{ $item->imunisasi_vaksinasi_bayi_balita ?? 0 }}</td>
+                                <td class="text-center">{{ $item->pkg ?? 0 }}</td>
+                                <td class="text-center">{{ $item->tbc ?? 0 }}</td>
 
-                                <td class="text-center">
-                                    {{ $item->nama_desa ?? '-' }}
-                                </td>
+                                <!-- KELESTARIAN -->
+                                <td class="text-center">{{ $item->jamban_wc ?? 0 }}</td>
+                                <td class="text-center">{{ $item->spal ?? 0 }}</td>
+                                <td class="text-center">{{ $item->tps ?? 0 }}</td>
+                                <td class="text-center">{{ $item->jumlah_mck ?? 0 }}</td>
+                                <td class="text-center">{{ $item->pdam ?? 0 }}</td>
+                                <td class="text-center">{{ $item->sumur ?? 0 }}</td>
+                                <td class="text-center">{{ $item->lain_lain ?? 0 }}</td>
 
-                                @endif
+                                <!-- PERENCANAAN -->
+                                <td class="text-center">{{ $item->jml_pus ?? 0 }}</td>
+                                <td class="text-center">{{ $item->jml_wus ?? 0 }}</td>
+                                <td class="text-center">{{ $item->akseptor_kb_l ?? 0 }}</td>
+                                <td class="text-center">{{ $item->akseptor_kb_p ?? 0 }}</td>
+                                <td class="text-center">{{ $item->jml_kk_tabungan ?? 0 }}</td>
+                                <td class="text-center">{{ $item->jml_kk_asuransi ?? 0 }}</td>
 
-                                {{-- BULAN --}}
-                                <td class="text-center">
-                                    {{ $item->bulan ?? '-' }}
-                                </td>
+                                <!-- PROGRAM -->
+                                <td class="text-center">{{ $item->kesehatan_program ?? 0 }}</td>
+                                <td class="text-center">{{ $item->kelestarian_lingkungan_hidup ?? 0 }}</td>
+                                <td class="text-center">{{ $item->perencanaan_sehat_program ?? 0 }}</td>
 
-                                {{-- IBU HAMIL --}}
-                                <td class="text-center">
-                                    {{ $item->jml_ibu_hamil ?? 0 }}
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $item->diperiksa ?? 0 }}
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $item->fe_tablet_darah ?? 0 }}
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $item->jml_ibu_menyusui ?? 0 }}
-                                </td>
-
-                                {{-- ASEPTOR KB --}}
-                                <td class="text-center">
-                                    {{ $item->kondom ?? 0 }}
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $item->pil ?? 0 }}
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $item->implant ?? 0 }}
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $item->mop ?? 0 }}
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $item->mow ?? 0 }}
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $item->iud ?? 0 }}
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $item->suntikan ?? 0 }}
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $item->lain_lain_kb ?? 0 }}
-                                </td>
-
-                                {{-- JML BALITA (S) --}}
-                                <td class="text-center">
-                                    {{ $item->jml_balita_l ?? 0 }}
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $item->jml_balita_p ?? 0 }}
-                                </td>
-
-                                {{-- BUKU KIA --}}
-                                <td class="text-center">
-                                    {{ $item->buku_kia_l ?? 0 }}
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $item->buku_kia_p ?? 0 }}
-                                </td>
-
-                                {{-- DATANG --}}
-                                <td class="text-center">
-                                    {{ $item->datang_l ?? 0 }}
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $item->datang_p ?? 0 }}
-                                </td>
-
-                                {{-- NAIK --}}
-                                <td class="text-center">
-                                    {{ $item->naik_l ?? 0 }}
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $item->naik_p ?? 0 }}
-                                </td>
-
-                                {{-- VIT A --}}
-                                <td class="text-center">
-                                    {{ $item->vit_a_l ?? 0 }}
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $item->vit_a_p ?? 0 }}
-                                </td>
-
-                                {{-- PMT --}}
-                                <td class="text-center">
-                                    {{ $item->pmt_l ?? 0 }}
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $item->pmt_p ?? 0 }}
-                                </td>
-
-                                {{-- IMUNISASI --}}
-                                <td class="text-center">
-                                    {{ $item->imunisasi_tt_1 ?? 0 }}
-                                </td>
-
-                                <td class="text-center">
-                                    {{ $item->imunisasi_tt_2 ?? 0 }}
-                                </td>
-
-                                {{-- STATUS --}}
+                                <!-- STATUS -->
                                 <td class="text-center">
 
                                     @if(in_array(strtolower($item->status), ['proses', 'revisi']))
@@ -678,12 +698,10 @@
 
                                 </td>
 
-                                {{-- TANGGAL --}}
                                 <td class="text-center">
                                     {{ \Carbon\Carbon::parse($item->created_at)->format('d/m/Y H:i') }}
                                 </td>
 
-                                {{-- AKSI --}}
                                 <td class="text-center" style="white-space: nowrap;">
 
                                     @php
@@ -739,7 +757,7 @@
 
                                     @if($bolehEdit)
 
-                                    <a href="{{ route('unggulan.posyandu.edit', $item->id_posyandu) }}"
+                                    <a href="{{ route('prioritas.tahunan.edit', $item->id_rekap_desa_tahunan) }}"
                                         class="btn btn-sm btn-info text-white me-1"
                                         data-bs-toggle="tooltip"
                                         title="Review Data">
@@ -750,7 +768,7 @@
 
                                     @endif
 
-                                    <form action="{{ route('unggulan.posyandu.destroy', $item->id_posyandu)}}"
+                                    <form action="{{ route('prioritas.tahunan.destroy', $item->id_rekap_desa_tahunan)}}"
                                         method="POST"
                                         class="d-inline delete-form">
 
@@ -777,9 +795,9 @@
 
                             <tr>
 
-                                <td colspan="60" class="text-center py-5">
+                                <td colspan="100" class="text-center py-5">
 
-                                    <div class="alert alert-danger mb-0">
+                                    <div class="alert alert-danger mb-0 w-100">
                                         <i class="bi bi-exclamation-triangle-fill me-2"></i>
                                         Tidak ada data laporan.
                                     </div>
@@ -791,6 +809,7 @@
                             @endforelse
 
                         </tbody>
+
                     </table>
 
                 </div>

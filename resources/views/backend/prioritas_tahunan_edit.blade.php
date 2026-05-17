@@ -1,3 +1,4 @@
+```php
 {{-- @extends('backend/layouts.template') --}}
 {{-- @section('content1') --}}
 
@@ -25,9 +26,11 @@
 
     <!-- Main CSS -->
     <link href="{{ asset('backend/assets/css/style.css') }}" rel="stylesheet">
+
     <style>
         * {
             font-family: "Poppins", sans-serif !important;
+            font-weight: 400 !important;
         }
 
         body {
@@ -58,7 +61,7 @@
 
         .header .logo span {
             font-size: 15px;
-            font-weight: 700;
+            font-weight: 700 !important;
             line-height: 1.3;
             color: #1a1a1a;
             white-space: nowrap;
@@ -124,7 +127,7 @@
             align-items: center;
             padding: 12px 20px;
             font-size: 15px;
-            font-weight: 400;
+            font-weight: 400 !important;
             color: #4b5563;
             transition: all 0.3s;
         }
@@ -140,6 +143,65 @@
             color: #4154f1;
         }
 
+        .card {
+            border: none;
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .card-body {
+            padding: 1.5rem !important;
+        }
+
+        .pagetitle h1 {
+            font-size: 20px;
+            font-weight: 700 !important;
+            color: #012970;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 400 !important;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 10px !important;
+            min-height: 44px !important;
+            border: 1px solid #d1d5db !important;
+            font-size: 15px !important;
+            font-weight: 400 !important;
+            padding: 10px 14px !important;
+            box-shadow: none !important;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #4154f1 !important;
+            box-shadow: 0 0 0 0.1rem rgba(65, 84, 241, 0.15) !important;
+        }
+
+        .btn-success {
+            border-radius: 10px !important;
+            padding: 10px 28px !important;
+            font-size: 15px !important;
+            font-weight: 500 !important;
+        }
+
+        p {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        b,
+        strong {
+            font-weight: 600 !important;
+        }
+
         i,
         .bi,
         [class^="bi-"],
@@ -149,7 +211,6 @@
             font-family: unset !important;
         }
     </style>
-
 </head>
 
 <body>
@@ -187,7 +248,7 @@
 
 
         <div class="pagetitle">
-            <h1>Review Laporan Unggulan Tahunan</h1>
+            <h1>Review Laporan Prioritas Tahunan</h1>
         </div>
         <section class="section">
 
@@ -196,7 +257,7 @@
 
                 <div class="card-body p-4">
 
-                    <form action="{{ route('unggulan.tahunan.update', $data->id_rekap_desa_tahunan) }}"
+                    <form action="{{ route('prioritas.tahunan.update', $data->id_rekap_desa_tahunan) }}"
                         method="POST"
                         enctype="multipart/form-data"
                         onsubmit="event.preventDefault(); confirmSubmission(event)">
@@ -536,7 +597,7 @@
 
                             </div>
 
-                            <div class="text-end pt-1 pb-1 mt-4">
+                            <div class="text-end pt-1 mt-4">
 
                                 <button
                                     class="btn btn-success ps-xxl-5 pe-xxl-5 mr-auto background-blue-1 mb-2 fw-semibold fs-5"

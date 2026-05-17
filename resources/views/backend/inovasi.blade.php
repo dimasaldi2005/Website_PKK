@@ -112,7 +112,7 @@
 
                     <div class="card info-card sales-card">
 
-                        <a href="{{ route('inovasi.prioritas') }}">
+                        <a href="{{ route('prioritas.index') }}">
 
                             <div class="card-body">
 

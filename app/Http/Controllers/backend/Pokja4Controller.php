@@ -255,7 +255,10 @@ class Pokja4Controller extends Controller
                     'users_mobile.id'
                 )
 
-                ->where('rekap_desa_bulanan.kategori', 'unggulan')
+                ->where(function ($query) {
+                    $query->where('rekap_desa_bulanan.kategori', 'unggulan')
+                          ->orWhere('rekap_desa_bulanan.kategori', 'prioritas');
+                })
 
                 ->where(function ($query) use (
                     $statusDesaKabupaten,
@@ -302,7 +305,10 @@ class Pokja4Controller extends Controller
                     'users_mobile.id'
                 )
 
-                ->where('rekap_desa_tahunan.kategori', 'unggulan')
+                ->where(function ($query) {
+                    $query->where('rekap_desa_tahunan.kategori', 'unggulan')
+                          ->orWhere('rekap_desa_tahunan.kategori', 'prioritas');
+                })
 
                 ->where(function ($query) use (
                     $statusDesaKabupaten,
@@ -349,7 +355,10 @@ class Pokja4Controller extends Controller
                     'users_mobile.id'
                 )
 
-                ->where('posyandu.kategori', 'unggulan')
+                ->where(function ($query) {
+                    $query->where('posyandu.kategori', 'unggulan')
+                          ->orWhere('posyandu.kategori', 'prioritas');
+                })
 
                 ->where(function ($query) use (
                     $statusDesaKabupaten,
@@ -396,7 +405,10 @@ class Pokja4Controller extends Controller
                     'users_mobile.id'
                 )
 
-                ->where('kegiatan_pokja4.kategori', 'unggulan')
+                ->where(function ($query) {
+                    $query->where('kegiatan_pokja4.kategori', 'unggulan')
+                          ->orWhere('kegiatan_pokja4.kategori', 'prioritas');
+                })
 
                 ->where(function ($query) use (
                     $statusDesaKabupaten,
@@ -508,7 +520,10 @@ class Pokja4Controller extends Controller
                         '=',
                         'users_mobile.id'
                     )
-                    ->where('rekap_desa_bulanan.kategori', 'unggulan')
+                    ->where(function ($query) {
+                        $query->where('rekap_desa_bulanan.kategori', 'unggulan')
+                              ->orWhere('rekap_desa_bulanan.kategori', 'prioritas');
+                    })
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
                     ->where('users_mobile.id_role', 1)
                     ->whereIn(
@@ -524,7 +539,10 @@ class Pokja4Controller extends Controller
                         '=',
                         'users_mobile.id'
                     )
-                    ->where('rekap_desa_tahunan.kategori', 'unggulan')
+                    ->where(function ($query) {
+                        $query->where('rekap_desa_tahunan.kategori', 'unggulan')
+                              ->orWhere('rekap_desa_tahunan.kategori', 'prioritas');
+                    })
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
                     ->where('users_mobile.id_role', 1)
                     ->whereIn(
@@ -540,7 +558,10 @@ class Pokja4Controller extends Controller
                         '=',
                         'users_mobile.id'
                     )
-                    ->where('posyandu.kategori', 'unggulan')
+                    ->where(function ($query) {
+                        $query->where('posyandu.kategori', 'unggulan')
+                              ->orWhere('posyandu.kategori', 'prioritas');
+                    })
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
                     ->where('users_mobile.id_role', 1)
                     ->whereIn(
@@ -556,7 +577,10 @@ class Pokja4Controller extends Controller
                         '=',
                         'users_mobile.id'
                     )
-                    ->where('kegiatan_pokja4.kategori', 'unggulan')
+                    ->where(function ($query) {
+                        $query->where('kegiatan_pokja4.kategori', 'unggulan')
+                              ->orWhere('kegiatan_pokja4.kategori', 'prioritas');
+                    })
                     ->where('users_mobile.id_subdistrict', $user->id_subdistrict)
                     ->where('users_mobile.id_role', 1)
                     ->whereIn(
